@@ -7,7 +7,7 @@
     app = angular.module('treeTableTest', deps);
     app.controller(
         'CategoryMenuController', [
-            '$scope', '$translate', function ($scope, $translate) {
+            '$scope', function ($scope) {
                 var tree;
                 $scope.tree_data = {};
                 $scope.my_tree = tree = {};
@@ -23,7 +23,7 @@
                     field:       "Name",
                     titleClass:  'text-center',
                     cellClass:   'v-middle',
-                    displayName: $translate.instant('system.category.menu.name')
+                    displayName: 'system.category.menu.name'
                 };
                 $scope.col_defs = [
                     {
@@ -59,7 +59,7 @@
                 if (_temp_btn) {
                     $scope.col_defs.push(
                         {
-                            displayName:  $translate.instant('App.Button.Option'),
+                            displayName:  'App.Button.Option',
                             titleStyle:   {
                                 'width': '100pt'
                             },
