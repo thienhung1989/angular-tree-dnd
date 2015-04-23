@@ -39,7 +39,7 @@ $scope.$callbacks = {
 };
 ```
 * Functions extended in control (attribute 'tree-control'):
-```js
+```html
 	tree.expand_all();
 	tree.collapse_all();
 	tree.select_first_branch();
