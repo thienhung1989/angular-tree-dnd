@@ -1,0 +1,26 @@
+{
+    "name": "angular-tree-table",
+    "version": "0.1.0",
+    "description":"A Grid That display column tree and display column other to nest in a row by AngularJS, using CSS animation and Bootstrap style",
+    "main":["src/ng-tree-table.css","src/ng-tree-table.js"],
+    "licence":"MIT",
+    "keywords":["angularjs","bootstrap", "tree", "grid","widget", "table"],
+    "authors":["Nguyễn Thiện Hùng"],
+    "homepage"  :"https://github.com/thienhung1989/angular-tree-table",
+    "repository":{
+        "type":"git",
+        "url":"git://github.com/thienhung1989/angular-tree-table"
+    },
+    "ignore": [
+        "temp",
+        "test",
+        ".gitignore",
+        "bower.json",
+        "package.json",
+        "README.md"
+    ],
+    "dependencies": {
+        "angular": ">=1.1.16",
+        "bootstrap": ">=2.3"
+    }
+}
