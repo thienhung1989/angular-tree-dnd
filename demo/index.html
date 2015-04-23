@@ -20,14 +20,7 @@
         <br/><br/>
         <div ng-show="showMinDir">
 			<strong>Full Directive: </strong>
-			<code>
-				<tree-table tree-data="tree_data" tree-control="my_tree" callbacks="callbacks" drag-enabled="true"
-					icon-leaf="none" icon-expand="fa fa-fw fa-angle-right" icon-collapse="fa fa-fw fa-angle-down"
-					column-defs="col_defs" expand-on="expanding_property"
-					on-select="my_tree_handler(branch)" on-click="my_tree_handler(branch)" data-indent="30"
-					data-indent-unit="px" data-indent-plus="15">
-				</tree-table>
-			</code>
+			<code><tree-table tree-data="tree_data" tree-control="my_tree" callbacks="callbacks" drag-enabled="true"icon-leaf="none" icon-expand="fa fa-fw fa-angle-right" icon-collapse="fa fa-fw fa-angle-down"column-defs="col_defs" expand-on="expanding_property"	on-select="my_tree_handler(branch)" on-click="my_tree_handler(branch)" data-indent="30"	data-indent-unit="px" data-indent-plus="15"></tree-table></code>
 		</div>
 		
         <div ng-show="!showMinDir">
@@ -48,8 +41,8 @@
 			<span class="pull-right m-r-sm"></span>
 		</div>
 		<div ng-init="app.settings.container = false;">
-            <button ng-click="my_tree.expand_all()" class="btn btn-default btn-sm">Expand All</button>
-            <button ng-click="my_tree.collapse_all()" class="btn btn-default btn-sm">Collapse All</button>
+            		<button ng-click="my_tree.expand_all()" class="btn btn-default btn-sm">Expand All</button>
+            		<button ng-click="my_tree.collapse_all()" class="btn btn-default btn-sm">Collapse All</button>
 			<button ng-click="remove_branch()" class="btn btn-default btn-sm">Remove Selected</button>
 			<tree-table tree-data="tree_data" tree-control="my_tree" callbacks="callbacks" drag-enabled="true"
 				icon-leaf="none" icon-expand="fa fa-fw fa-angle-right" icon-collapse="fa fa-fw fa-angle-down"
