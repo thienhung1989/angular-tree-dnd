@@ -2,7 +2,9 @@
     angular.module('template/treeTable/treeTable.html', []).run(
         [
             '$templateCache', function ($templateCache) {
-            $templateCache.put('template/treeTable/treeTable.html', "");
+            $templateCache.put(
+                'template/treeTable/treeTable.html', "<table class=\"table\">\n" + "	<thead>\n" + "	<tr>\n" + "		<th ng-class=\"expandingProperty.titleClass\" ng-style=\"expandingProperty.titleStyle\">\n" + "			{{expandingProperty.displayName || expandingProperty.field || expandingProperty}}\n" + "		</th>\n" + "		<th ng-repeat=\"col in colDefinitions\" ng-class=\"col.titleClass\" ng-style=\"col.titleStyle\">\n" + "			{{col.displayName || col.field}}\n" + "		</th>\n" + "	</tr>\n" + "	</thead>\n" + "	<tbody>\n" + "	<tr tree-table-node ng-repeat=\"row in tree_rows track by $id(row.__uid__ + '_' + row.__index__ + '_' + row.__index_real__ )\" ng-show=\"row.__visible__\"\n" + "		ng-class=\"(row.__selected__ ? ' active':'')\" class=\"ng-animate \">\n" + "		<td ng-if=\"!expandingProperty.template\" tree-table-node-handle\n" + "			ng-style=\"expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}\"\n" + "			ng-click=\"user_clicks_branch(row)\" ng-class=\"expandingProperty.cellClass\"\n" + "			compile=\"expandingProperty.cellTemplate\">\n" + "				<label class=\"i-checks checkbox-inline tree-label\" ng-click=\"on_user_click(row)\"\n" + "					   data-nodrag>\n" + "					<i></i>\n" + "					{{row[expandingProperty.field] || row[expandingProperty]}}\n" + "				</label>\n" + "				<a data-nodrag>\n" + "					<i ng-class=\"row.__tree_icon__\" ng-click=\"row.__expanded__ = !row.__expanded__\"\n" + "					   class=\"tree-icon\"></i>\n" + "				</a>\n" + "		</td>\n" + "		<td ng-if=\"expandingProperty.template\" compile=\"expandingProperty.template\"></td>\n" + "		<td ng-repeat=\"col in colDefinitions\" ng-class=\"col.cellClass\" ng-style=\"col.cellStyle\"\n" + "			compile=\"col.cellTemplate\">\n" + "			{{row[col.field]}}\n" + "		</td>\n" + "	</tr>\n" + "	</tbody>\n" + "</table>"
+            );
         }]
     );
     angular.module(
@@ -17,7 +19,7 @@
                         // Watch for changes to expression.
                         scope.$watch(
                             attrs.compile, function (new_val) {
-                                if(new_val != null) {
+                                if (new_val != null) {
                                     /*
                                      * Compile creates a linking function
                                      * that can be used with any scope.
@@ -106,7 +108,6 @@
                                         } else {
                                             _parent = $scope.treeData;
                                         }
-
 
                                         if (_parent != _parent_remove || _node.__index__ != new_index) {
 
@@ -776,14 +777,13 @@
                                 return $scope.$parent.next($scope.$modelValue.__index_real__);
                             }
 
-                            $scope.getPrev = function(index){
+                            $scope.getPrev = function (index) {
                                 return $scope.$parent.prev(index);
                             }
 
                             $scope.getNext = function (index) {
                                 return $scope.$parent.next(index);
                             }
-
 
                             $scope.node = function () {
                                 return $scope.$modelValue;
@@ -793,9 +793,9 @@
                                 return $scope.$modelValue;
                             }
 
-                            $scope.visible = function(node){
-                                if(node != null){
-                                    return node.__visible__ ? node: $scope.visible($scope.tree_rows[node.__parent__]);
+                            $scope.visible = function (node) {
+                                if (node != null) {
+                                    return node.__visible__ ? node : $scope.visible($scope.tree_rows[node.__parent__]);
                                 }
                                 return null;
                             }
@@ -898,7 +898,9 @@
                             // Prevents cursor to change rapidly in Opera 12.16 and IE when dragging an element
                             var hStyle = (scope.$element[0].querySelector('.tree-table-handle') || scope.$element[0]).currentStyle;
                             if (hStyle) {
-                                document.body.setAttribute('tree-table-cursor', $document.find('body').css('cursor') || '');
+                                document.body.setAttribute(
+                                    'tree-table-cursor', $document.find('body').css('cursor') || ''
+                                );
                                 $document.find('body').css({'cursor': hStyle.cursor + '!important'});
                             }
 
@@ -1118,9 +1120,9 @@
                                             // increase horizontal level if previous sibling exists and is not collapsed
                                             if (pos.distX > 0) {
                                                 //get node visible
-                                                var _visible =  scope.visible(_target.node);
+                                                var _visible = scope.visible(_target.node);
 
-                                                if (_visible!= null && _target.pos != -1 && _visible.__level__ >= dragInfo.level) {
+                                                if (_visible != null && _target.pos != -1 && _visible.__level__ >= dragInfo.level) {
                                                     dragInfo.level++;
                                                     $helper.replaceIndent(placeElm, dragInfo.level);
                                                 }
