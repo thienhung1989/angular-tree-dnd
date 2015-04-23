@@ -7,7 +7,7 @@
     app = angular.module('treeTableTest', deps);
     app.controller(
         'CategoryMenuController', [
-            '$scope', '$state', '$translate', function ($scope, $state, $translate) {
+            '$scope', '$translate', function ($scope, $translate) {
                 var tree;
                 $scope.tree_data = {};
                 $scope.my_tree = tree = {};
