@@ -108,6 +108,7 @@
                                         } else {
                                             _parent = $scope.treeData;
                                         }
+
                                         if (_parent != _parent_remove || _node.__index__ != new_index) {
 
                                             var _node_removed = _parent_remove.splice(_node.__index__, 1)[0];
@@ -394,7 +395,7 @@
                             _data = scope.treeData;
                             _len = _data.length;
 
-                            scope.tree_rows = [];
+                            var _tree_rows = [];
                             if (_len > 0) {
                                 var _i, do_f;
                                 do_f = function (branch, parent, level, visible, index) {
@@ -426,14 +427,14 @@
                                         }
                                     }
                                     // Insert item vertically
-                                    var _index_real = scope.tree_rows.length;
+                                    var _index_real = _tree_rows.length;
                                     branch.__index__ = index;
                                     branch.__index_real__ = _index_real;
                                     branch.__level__ = level;
                                     branch.__tree_icon__ = _tree_icon;
                                     branch.__visible__ = visible;
 
-                                    scope.tree_rows.push(
+                                    _tree_rows.push(
                                         branch
                                     );
 
@@ -455,6 +456,7 @@
                                     do_f(_data[_i], null, 1, true, _i);
                                 }
                             }
+                            scope.tree_rows = _tree_rows;
                             return scope.tree_rows;
                         };
 
@@ -904,7 +906,9 @@
 
                             var _tbody = angular.element($window.document.createElement('tbody'));
                             // moving item with descendant
-                            var height = 0, _last;
+
+                            scope.$element[0].parentNode.insertBefore(placeElm[0], scope.$element[0]);
+                            var height = 0;
 
                             var drag_descendant = function (element, len) {
                                 var _i;
@@ -914,14 +918,11 @@
                                     if (scope.config.hiddenClass) {
                                         element.addClass(scope.config.hiddenClass);
                                     }
-                                    _last = element;
                                     element = element.next();
                                 }
                             }
                             drag_descendant(scope.$element, scope.node().__dept__);
                             dragElm.append(_tbody);
-
-                            _last.after(placeElm);
 
                             placeElm.css('height', height + 'px');
 
@@ -1094,6 +1095,7 @@
 
                                                 $helper.replaceIndent(placeElm, dragInfo.level);
                                                 targetElm[0].parentNode.insertBefore(placeElm[0], targetElm[0]);
+                                                //placeElm.insertBefore(targetElm);
                                             } else {
                                                 targetElm.after(placeElm);
 
@@ -1124,7 +1126,7 @@
                                                     dragInfo.level++;
                                                     $helper.replaceIndent(placeElm, dragInfo.level);
                                                 }
-                                            } else if (pos.distX < 0 && !_target.node.__expanded__) {
+                                            } else if (pos.distX < 0 && dragInfo.isTargetEmpty()) {
                                                 dragInfo.level = dragInfo.level - 1;
                                                 $helper.replaceIndent(placeElm, dragInfo.level);
                                             }
@@ -1151,7 +1153,7 @@
                                         _passed = scope.$callbacks.beforeDrop(dragInfo);
                                     }
                                 );
-                                
+
                                 var rollback_descendant = function (element, len) {
                                     var _i;
                                     for (_i = 0; _i < len; _i++) {
@@ -1321,6 +1323,9 @@
                             isDirty: function (index) {
                                 return this.node.__index_real__ <= index && index <= this.node.__index_real__ + this.node.__dept__ - 1;
                             },
+                            isTargetEmpty: function(){
+                                return !this.target.node.__expanded__ || (this.target.node.__index_real__ == this.node.__parent__ && this.target.node.__children__.length == 1);
+                            },
                             next:    function () {
                                 if (this.node.__index_real__ < this.source.length - 1) {
                                     return this.source[this.node.__index_real__ + 1];
@@ -1405,11 +1410,7 @@
                         pos.dirAx = newAx;
                     },
                     replaceIndent:   function (e, indent) {
-                        e.find('td:eq(0)').css(
-                            {
-                                'left': this.calsIndent(indent)
-                            }
-                        );
+                        angular.element(e.children()[0]).css('left', this.calsIndent(indent));
                     },
                     hidden:          function (e) {
                         if (angular.isFunction(e.hide)) {
@@ -1430,7 +1431,6 @@
             handleClass:      'tree-table-handle',
             placeHolderClass: 'tree-table-placeholder',
             dragClass:        'tree-table-drag',
-            dragThreshold:    3,
             levelThreshold:   30
         }
     );
