@@ -5,7 +5,7 @@
     "main":["src/ng-tree-table.css","src/ng-tree-table.js"],
     "licence":"MIT",
     "keywords":["angularjs","bootstrap", "tree", "grid","widget", "table"],
-    "authors":["Nguyễn Thiện Hùng"],
+    "authors":["Nguyen Thien Hung"],
     "homepage"  :"https://github.com/thienhung1989/angular-tree-table",
     "repository":{
         "type":"git",
