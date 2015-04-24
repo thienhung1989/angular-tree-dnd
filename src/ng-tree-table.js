@@ -3,32 +3,7 @@
         [
             '$templateCache', function ($templateCache) {
             $templateCache.put(
-                'template/treeTable/treeTable.html', ""+
-                "<table class=\"tree-table table\">\n" 
-                + "	<thead>\n" 
-                + "	<tr>\n" 
-                + "		<th ng-class=\"expandingProperty.titleClass\" ng-style=\"expandingProperty.titleStyle\">\n" 
-                + "			{{expandingProperty.displayName || expandingProperty.field || expandingProperty}}\n" 
-                + "		</th>\n" 
-                + "		<th ng-repeat=\"col in colDefinitions\" ng-class=\"col.titleClass\" ng-style=\"col.titleStyle\">\n" 
-                + "			{{col.displayName || col.field}}\n" 
-                + "		</th>\n" 
-                + "	</tr>\n" 
-                + "	</thead>\n" 
-                + "	<tbody>\n" 
-                + "	<tr tree-table-node ng-repeat=\"row in tree_rows track by $id(row.__uid__ + '_' + row.__index__ + '_' + row.__index_real__ )\" ng-show=\"row.__visible__\"\n" 
-                + "		ng-class=\"(row.__selected__ ? ' active':'')\" class=\"ng-animate \">\n" 
-                + "		<td ng-if=\"!expandingProperty.template\" tree-table-node-handle\n" 
-                + "			ng-style=\"expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}\"\n" 
-                + "			ng-click=\"user_clicks_branch(row)\" ng-class=\"expandingProperty.cellClass\"\n" 
-                + "			compile=\"expandingProperty.cellTemplate\">\n" 
-                + "				{{row[expandingProperty.field] || row[expandingProperty]}}\n" 
-                + "				<a data-nodrag>\n" 
-                + "					<i ng-class=\"row.__tree_icon__\" ng-click=\"row.__expanded__ = !row.__expanded__\"\n" 
-                + "					   class=\"tree-icon\"></i>\n" 
-                + "				</a>\n" 
-                + "		</td>\n" 
-                + "		<td ng-if=\"expandingProperty.template\" compile=\"expandingProperty.template\"></td>\n" + "		<td ng-repeat=\"col in colDefinitions\" ng-class=\"col.cellClass\" ng-style=\"col.cellStyle\"\n" + "			compile=\"col.cellTemplate\">\n" + "			{{row[col.field]}}\n" + "		</td>\n" + "	</tr>\n" + "	</tbody>\n" + "</table>"
+                'template/treeTable/treeTable.html', "" + "<table class=\"tree-table table\">\n" + "	<thead>\n" + "	<tr>\n" + "		<th ng-class=\"expandingProperty.titleClass\" ng-style=\"expandingProperty.titleStyle\">\n" + "			{{expandingProperty.displayName || expandingProperty.field || expandingProperty}}\n" + "		</th>\n" + "		<th ng-repeat=\"col in colDefinitions\" ng-class=\"col.titleClass\" ng-style=\"col.titleStyle\">\n" + "			{{col.displayName || col.field}}\n" + "		</th>\n" + "	</tr>\n" + "	</thead>\n" + "	<tbody>\n" + "	<tr tree-table-node ng-repeat=\"row in tree_rows track by (row.__index__ + '_' + row.__index_real__ + '_' + row.__uid__) \" ng-show=\"row.__visible__\"\n" + "		ng-class=\"(row.__selected__ ? ' active':'')\" class=\"ng-animate \">\n" + "		<td ng-if=\"!expandingProperty.template\" tree-table-node-handle\n" + "			ng-style=\"expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}\"\n" + "			ng-click=\"user_clicks_branch(row)\" ng-class=\"expandingProperty.cellClass\"\n" + "			compile=\"expandingProperty.cellTemplate\">\n" + "				<a data-nodrag>\n" + "					<i ng-class=\"row.__tree_icon__\" ng-click=\"row.__expanded__ = !row.__expanded__\"\n" + "					   class=\"tree-icon\"></i>\n" + "				</a>\n" + "				{{row[expandingProperty.field] || row[expandingProperty]}}\n" + "		</td>\n" + "		<td ng-if=\"expandingProperty.template\" compile=\"expandingProperty.template\"></td>\n" + "		<td ng-repeat=\"col in colDefinitions\" ng-class=\"col.cellClass\" ng-style=\"col.cellStyle\"\n" + "			compile=\"col.cellTemplate\">\n" + "			{{row[col.field]}}\n" + "		</td>\n" + "	</tr>\n" + "	</tbody>\n" + "</table>"
             );
         }]
     );
@@ -133,7 +108,6 @@
                                         } else {
                                             _parent = $scope.treeData;
                                         }
-
                                         if (_parent != _parent_remove || _node.__index__ != new_index) {
 
                                             var _node_removed = _parent_remove.splice(_node.__index__, 1)[0];
@@ -420,7 +394,7 @@
                             _data = scope.treeData;
                             _len = _data.length;
 
-                            var _tree_rows = [];
+                            scope.tree_rows = [];
                             if (_len > 0) {
                                 var _i, do_f;
                                 do_f = function (branch, parent, level, visible, index) {
@@ -452,14 +426,14 @@
                                         }
                                     }
                                     // Insert item vertically
-                                    var _index_real = _tree_rows.length;
+                                    var _index_real = scope.tree_rows.length;
                                     branch.__index__ = index;
                                     branch.__index_real__ = _index_real;
                                     branch.__level__ = level;
                                     branch.__tree_icon__ = _tree_icon;
                                     branch.__visible__ = visible;
 
-                                    _tree_rows.push(
+                                    scope.tree_rows.push(
                                         branch
                                     );
 
@@ -481,7 +455,6 @@
                                     do_f(_data[_i], null, 1, true, _i);
                                 }
                             }
-                            scope.tree_rows = _tree_rows;
                             return scope.tree_rows;
                         };
 
@@ -929,10 +902,9 @@
                                 $document.find('body').css({'cursor': hStyle.cursor + '!important'});
                             }
 
-                            scope.$element.before(placeElm);
                             var _tbody = angular.element($window.document.createElement('tbody'));
                             // moving item with descendant
-                            var height = 0;
+                            var height = 0, _last;
 
                             var drag_descendant = function (element, len) {
                                 var _i;
@@ -942,12 +914,14 @@
                                     if (scope.config.hiddenClass) {
                                         element.addClass(scope.config.hiddenClass);
                                     }
+                                    _last = element;
                                     element = element.next();
                                 }
                             }
-
                             drag_descendant(scope.$element, scope.node().__dept__);
                             dragElm.append(_tbody);
+
+                            _last.after(placeElm);
 
                             placeElm.css('height', height + 'px');
 
@@ -1119,8 +1093,7 @@
                                                 }
 
                                                 $helper.replaceIndent(placeElm, dragInfo.level);
-                                                //targetElm[0].parentNode.insertBefore(placeElm[0], targetElm[0]);
-                                                placeElm.insertBefore(targetElm);
+                                                targetElm[0].parentNode.insertBefore(placeElm[0], targetElm[0]);
                                             } else {
                                                 targetElm.after(placeElm);
 
@@ -1172,28 +1145,13 @@
 
                             if (dragElm) {
                                 var _passed = false;
+
                                 scope.$apply(
                                     function () {
                                         _passed = scope.$callbacks.beforeDrop(dragInfo);
                                     }
                                 );
-
-                                if (_passed) {
-                                    var drop_descendant = function (place, element, len) {
-                                        var _i;
-                                        for (_i = 0; _i < len; _i++) {
-                                            place.after(element);
-                                            if (scope.config.hiddenClass) {
-                                                element.removeClass(scope.config.hiddenClass);
-                                            }
-                                            place = element;
-                                            element = element.next();
-                                        }
-                                    }
-
-                                    drop_descendant(placeElm, scope.$element, scope.node().__dept__);
-
-                                } else {
+                                if (!_passed) {
                                     var rollback_descendant = function (element, len) {
                                         var _i;
                                         for (_i = 0; _i < len; _i++) {
