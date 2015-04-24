@@ -5,6 +5,10 @@
 This product is the combination and optimization of 2: https://github.com/angular-ui-tree/angular-ui-tree (Drag2Drop) và https://github.com/khan4019/tree-grid-directive (Display Tree2Table).
 
 Đây là sản phẩm kết hợp và tối ưu từ 2: https://github.com/angular-ui-tree/angular-ui-tree (Drag2Drop) và https://github.com/khan4019/tree-grid-directive (Display Tree2Table).
+* Install bower:
+```js
+bower angular-tree-table install
+```
 
 * Function 'filter' & 'group by' not add in ng-repeate (it's slow & incompatible with $id($$hash) )
 * Functions extended in callback (able change by attribute):
