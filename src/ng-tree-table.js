@@ -1151,18 +1151,17 @@
                                         _passed = scope.$callbacks.beforeDrop(dragInfo);
                                     }
                                 );
-                                if (!_passed) {
-                                    var rollback_descendant = function (element, len) {
-                                        var _i;
-                                        for (_i = 0; _i < len; _i++) {
-                                            if (scope.config.hiddenClass) {
-                                                element.removeClass(scope.config.hiddenClass);
-                                            }
-                                            element = element.next();
+                                
+                                var rollback_descendant = function (element, len) {
+                                    var _i;
+                                    for (_i = 0; _i < len; _i++) {
+                                        if (scope.config.hiddenClass) {
+                                            element.removeClass(scope.config.hiddenClass);
                                         }
+                                        element = element.next();
                                     }
-                                    rollback_descendant(scope.$element, scope.node().__dept__);
                                 }
+                                rollback_descendant(scope.$element, scope.node().__dept__);
 
                                 placeElm.remove();
                                 dragElm.remove();
