@@ -47,7 +47,6 @@
                     replace:     true,
                     controller:  [
                         '$scope', '$element', '$attrs', 'tgConfig', function ($scope, $element, $attrs, tgConfig) {
-
                             $scope.$type = 'TreeTable';
                             $scope.dragEnabled = true;
                             $scope.dragDelay = 0;
@@ -125,11 +124,17 @@
                                 beforeDrop:  function (event) {
                                     return true;
                                 },
-                                calsIndent:  function (level) {
-                                    if (level - 1 < 1) {
-                                        return $scope.indent_plus + ($scope.indent_unit ? $scope.indent_unit : 'px');
+                                calsIndent:  function (level, skipUnit) {
+                                    var _unit = $scope.indent_unit ? $scope.indent_unit : 'px';
+                                    if (!skipUnit) {
+                                        _unit = $scope.indent_unit ? $scope.indent_unit : 'px';
                                     } else {
-                                        return ($scope.indent * (level - 1)) + $scope.indent_plus + ($scope.indent_unit ? $scope.indent_unit : 'px');
+                                        _unit = '';
+                                    }
+                                    if (level - 1 < 1) {
+                                        return $scope.indent_plus + _unit;
+                                    } else {
+                                        return ($scope.indent * (level - 1)) + $scope.indent_plus + _unit;
                                     }
                                 },
                                 dragEnabled: function () {
@@ -183,6 +188,12 @@
                         callbacks:   '='
                     },
                     link:        function (scope, element, attrs) {
+
+                        scope.$watch(
+                            attrs.treeData, function (newValue) {
+                                console.log('hre', newValue)
+                            }
+                        );
 
                         scope.$watch(
                             attrs.callbacks, function (optCallbacks) {
@@ -895,15 +906,6 @@
                             dragElm.css('width', ($helper.width(scope.$element) + 10) + 'px');
                             dragElm.css('z-index', 9999);
 
-                            // Prevents cursor to change rapidly in Opera 12.16 and IE when dragging an element
-                            var hStyle = (scope.$element[0].querySelector('.tree-table-handle') || scope.$element[0]).currentStyle;
-                            if (hStyle) {
-                                document.body.setAttribute(
-                                    'tree-table-cursor', $document.find('body').css('cursor') || ''
-                                );
-                                $document.find('body').css({'cursor': hStyle.cursor + '!important'});
-                            }
-
                             var _tbody = angular.element($window.document.createElement('tbody'));
                             // moving item with descendant
 
@@ -921,6 +923,7 @@
                                     element = element.next();
                                 }
                             }
+
                             drag_descendant(scope.$element, scope.node().__dept__);
                             dragElm.append(_tbody);
 
@@ -992,7 +995,6 @@
                                 if ((leftElmPos + 10) > document_width) {
                                     leftElmPos = document_width - 10;
                                 }
-
                                 dragElm.css(
                                     {
                                         'left': leftElmPos + 'px',
@@ -1189,13 +1191,6 @@
                                 dragInfo = null;
                             }
 
-                            // Restore cursor in Opera 12.16 and IE
-                            var oldCur = document.body.getAttribute('tree-table-cursor');
-                            if (oldCur !== null) {
-                                $document.find('body').css({'cursor': oldCur});
-                                document.body.removeAttribute('tree-table-cursor');
-                            }
-
                             angular.element($document).unbind('touchend', dragEndEvent); // Mobile
                             angular.element($document).unbind('touchcancel', dragEndEvent); // Mobile
                             angular.element($document).unbind('touchmove', dragMoveEvent); // Mobile
@@ -1313,32 +1308,32 @@
                     },
                     dragInfo:        function (scope) {
                         return {
-                            node:    scope.node(),
-                            scope:   scope,
-                            level:   scope.node().__level__,
-                            target:  {
+                            node:          scope.node(),
+                            scope:         scope,
+                            level:         scope.node().__level__,
+                            target:        {
                                 node: scope.prev(),
                                 pos:  1,
                             },
-                            isDirty: function (index) {
+                            isDirty:       function (index) {
                                 return this.node.__index_real__ <= index && index <= this.node.__index_real__ + this.node.__dept__ - 1;
                             },
-                            isTargetEmpty: function(){
+                            isTargetEmpty: function () {
                                 return !this.target.node.__expanded__ || (this.target.node.__index_real__ == this.node.__parent__ && this.target.node.__children__.length == 1);
                             },
-                            next:    function () {
+                            next:          function () {
                                 if (this.node.__index_real__ < this.source.length - 1) {
                                     return this.source[this.node.__index_real__ + 1];
                                 }
                                 return null;
                             },
-                            prev:    function () {
+                            prev:          function () {
                                 if (this.node.__index_real__ > 0) {
                                     return this.source[this.node.__index_real__ - 1];
                                 }
                                 return null;
                             },
-                            attach:  function (node, pos) {
+                            attach:        function (node, pos) {
                                 this.target.node = node;
                                 this.target.pos = pos;
                             }
@@ -1409,10 +1404,12 @@
                         }
                         pos.dirAx = newAx;
                     },
-                    replaceIndent:   function (e, indent) {
-                        angular.element(e.children()[0]).css('left', this.calsIndent(indent));
+                    replaceIndent:   function (e, indent, attr) {
+                        attr = attr ? attr : 'left';
+                        angular.element(e.children()[0]).css(attr, this.calsIndent(indent));
                     },
-                    hidden:          function (e) {
+
+                    hidden: function (e) {
                         if (angular.isFunction(e.hide)) {
                             e.hide();
                         } else {
@@ -1422,6 +1419,56 @@
                     }
                 };
             }]
+    ).factory(
+        '$TreeTableConvert', function () {
+            return {
+                line2tree: function (data, primaryKey, parentKey) {
+                    if (!data || data.length == 0 || !primaryKey || !parentKey) {
+                        return [];
+                    }
+
+                    var tree = [], rootIds = [], item = data[0], _primary = item[primaryKey], treeObjs = {}, parentId, parent, len = data.length, i = 0;
+                    while (i < len) {
+                        item = data[i++];
+                        _primary = item[primaryKey];
+                        treeObjs[_primary] = item;
+                        parentId = item[parentKey];
+                        if (parentId) {
+                            parent = treeObjs[parentId];
+                            if (parent.__children__) {
+                                parent.__children__.push(item);
+                            } else {
+                                parent.__children__ = [item];
+                            }
+                        } else {
+                            rootIds.push(_primary);
+                        }
+                    }
+                    len = rootIds.length;
+                    for (i = 0; i < len; i++) {
+                        tree.push(treeObjs[rootIds[i]]);
+                    }
+                    return tree;
+                },
+                tree2tree: function (data, parentKey) {
+                    var access_child = function (data) {
+                        var _tree = [];
+                        var _i, _len = data.length, _copy, _child;
+                        for (_i = 0; _i < _len; _i++) {
+                            _copy = angular.copy(data[_i]);
+                            if (angular.isArray(_copy[parentKey]) && _copy[parentKey].length > 0) {
+                                _child = access_child(_copy[parentKey]);
+                                delete(_copy[parentKey]);
+                                _copy.__children__ = _child;
+                            }
+                            _tree.push(_copy);
+                        }
+                        return _tree;
+                    }
+                    return access_child(data);
+                }
+            }
+        }
     ).constant(
         'tgConfig', {
             treeClass:        'tree-table',
