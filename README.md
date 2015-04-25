@@ -129,3 +129,79 @@ $scope.$callbacks = {
 </script>
 ```
 
+# Change Log
+## V1.0.2
+###Add function $TreeTableConvert.line2tree -> convert data line to tree vaild.
+
+**Desciption**
+
+```js
+line2tree(data, keyPrimary, keyParent);
+```
+
+**Example:**
+```js
+var data = [
+	{
+		id: 1, 
+		parent: null
+	},
+	{id: 2},
+	{id: 3},
+	{id: 4},
+	{
+		id: 5,
+		parent: 4
+	}
+]
+
+*$scope.tree_data = $TreeTableConvert.line2tree(data, 'id', 'parent');
+
+```
+
+***
+
+###Add function $TreeTableConvert.tree2tree -> convert data tree to tree vaild.
+
+**Desciption**
+```js
+line2tree(data, keyChildren);
+```
+
+**Example:**
+
+```js
+var data = [
+	id: 1
+	children: [
+		{id: 2},
+		{id: 3},
+		{id: 4}
+		{
+			id: 5,
+			children: []
+		}
+	]
+];
+
+$scope.tree_data = $TreeTableConvert.tree2tree(data, 'children');
+```
+
+***
+
+**Result data tree vaild**
+```js
+   data = [
+	id: 1
+	__children__: [
+		{id: 2},
+		{id: 3},
+		{id: 4}
+		{
+			id: 5,
+			__children__: []
+		}
+	]
+]
+```
+
