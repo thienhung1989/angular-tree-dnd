@@ -10,29 +10,105 @@
   <body ng-controller="CategoryMenuController" style="margin:20px">
     <div class="row container">
         <h1 class="text-center">angular-tree-table</h1>
-		<h4 class=" text-center text-info">[Angular 1.x] Display tree table & event DrapnDrop, field 'td' by tree (other normal) (Without jQuery)</h4>
-        <h4 class=" text-center text-info">A Grid that display column tree and display column other to nest in a row by AngularJS, using CSS animation and Bootstrap style</h4>
+		<h4 class=" text-center text-info">[Angular 1.x] Display tree table & event DrapnDrop, field 'td' by tree (other normal)</h4>
+        <h4 class=" text-center text-info">A Grid That display column tree and display column other to nest in a row by AngularJS, using CSS animation and Bootstrap style</h4>
         <p class="text-center"><a class="btn btn-success" href="https://github.com/thienhung1989/angular-tree-table">Code on github</a></p>
+		<p class="text-center"><a class="btn btn-success" ng-click="showlog = !showlog" href="">{{ (!showlog) ? 'Show Log' : 'Show Tree'}}</a></p>
+		
+		<p class="text-center"><a class="btn btn-success" ng-show="!showlog" ng-click="ShowTreeTable = (!ShowTreeTable || ShowTreeTable == 1 ? 2 : 1)" href="">{{ (showTreeTable == 1) ? 'Show Tree 1' : 'Show Tree 2'}}</a></p>
     </div>
-    	
-    	<button ng-click="my_tree.expand_all()" class="btn btn-default btn-sm">Expand All</button>
-    	<button ng-click="my_tree.collapse_all()" class="btn btn-default btn-sm">Collapse All</button>
-	<button ng-click="remove_branch()" class="btn btn-default btn-sm">Remove Selected</button>
-	<tree-table 
-		tree-data="tree_data" 
-		tree-control="my_tree" drag-enabled="true"
-		column-defs="col_defs" 
-		expand-on="expanding_property"
-		on-select="my_tree_handler(branch)" 
-		on-click="my_tree_handler(branch)" 
-		data-indent="30"
-		data-indent-unit="px" 
-		data-indent-plus="15">
-	</tree-table>
+	<div class="col-xs-2">
+		<div class="btn-group-vertical btn-sm">
+			<button class="btn btn-success btn-sm" ng-disabled="true"><b>--- Directive ---</b></button>
+			<button ng-click="my_tree.expand_all()" class="btn btn-default btn-sm">expand_all</button>
+			<button ng-click="my_tree.collapse_all()" class="btn btn-default btn-sm">collapse_all</button>
+			<button ng-click="log=my_tree.select_first_branch()" class="btn btn-default btn-sm">select_first_branch</button>
+			<button ng-click="log=my_tree.select_next_branch(branch)" class="btn btn-default btn-sm">select_next_branch</button>
+			<button ng-click="log=my_tree.select_prev_branch(branch)" class="btn btn-default btn-sm">select_prev_branch</button>
+			<button ng-click="log=my_tree.select_next_sibling(branch)" class="btn btn-default btn-sm">select_next_sibling</button>
+			<button ng-click="log=my_tree.select_prev_sibling(branch)" class="btn btn-default btn-sm">select_prev_sibling</button>
+			<button ng-click="log=my_tree.select_parent_branch(branch)" class="btn btn-default btn-sm">select_parent_branch</button>
+			<button ng-click="my_tree.expand_branch(branch)" class="btn btn-default btn-sm">expand_branch</button>
+			<button ng-click="my_tree.collapse_branch(branch)" class="btn btn-default btn-sm">collapse_branch</button>
+			
+			<button class="btn btn-success btn-sm" ng-disabled="true"><b>--- Event ---</b></button>
+			<button ng-click="log=my_tree.last_descendant(branch)" class="btn btn-default btn-sm">last_descendant</button>
+			<button ng-click="branch=my_tree.get_selected_branch()" class="btn btn-default btn-sm">get_selected_branch</button>
+			<button ng-click="log=my_tree.get_first_child(branch)" class="btn btn-default btn-sm">get_first_child</button>
+			<button ng-click="log=my_tree.get_children(branch)" class="btn btn-default btn-sm">get_children</button>
+			<button ng-click="log=my_tree.get_first_branch()" class="btn btn-default btn-sm">get_first_branch</button>
+			<button ng-click="log=my_tree.get_next_branch(branch)" class="btn btn-default btn-sm">get_next_branch</button>
+			<button ng-click="log=my_tree.get_prev_branch(branch)" class="btn btn-default btn-sm">get_prev_branch</button>
+			<button ng-click="log=my_tree.get_parent_branch(branch)" class="btn btn-default btn-sm">get_parent_branch</button>
+			<button ng-click="log=my_tree.get_next_sibling(branch)" class="btn btn-default btn-sm">get_next_sibling</button>
+			<button ng-click="log=my_tree.get_prev_sibling(branch)" class="btn btn-default btn-sm">get_prev_sibling</button>
+			<button ng-click="log=my_tree.get_siblings(branch)" class="btn btn-default btn-sm">get_siblings</button>
+			<button ng-click="log=my_tree.get_closest_ancestor_next_sibling(branch)" class="btn btn-default btn-sm">get_closest_ancestor_next_sibling</button>
+
+		</div>
+	</div>
+	<div class="col-xs-10">
+		<pre ng-show="showlog">{{ log | json }}</pre>
+		<div ng-show="!showlog">
+		
+			<div ng-show="!ShowTreeTable || ShowTreeTable == 1">
+				<tree-table 
+					tree-data="tree_data" 
+					tree-control="my_tree" drag-enabled="true"
+					column-defs="col_defs" 
+					expand-on="expanding_property"
+					on-select="my_tree_handler(branch)" 
+					on-click="my_tree_handler(branch)" 
+					data-indent="30"
+					data-indent-unit="px" 
+					data-indent-plus="15">
+				</tree-table>
+			</div>
+			<div ng-show="ShowTreeTable == 2">
+				<script type="text/ng-template" id="tree-table-template.html">
+					<div>
+						<table class="table" ng-style="{
+							'width': 'auto',
+							'border-collapse': 'separate',
+							'border-spacing': '2px'
+						}">
+							<tbody>
+								<tr tree-table-node
+									ng-repeat="row in tree_rows track by (row.__index_real__ + '_' + row.__index__ + '_' +  row[primaryKey])"
+									ng-show="row.__visible__" ng-class="(row.__selected__ ? ' active':'')"
+									class="ng-animate ">
+									<td ng-if="!expandingProperty.template"
+										ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {
+											'left': $callbacks.calsIndent(row.__level__),
+											'border': '2px dashed red',
+											}"
+										ng-click="user_clicks_branch(row)" ng-class="expandingProperty.cellClass"
+										compile="expandingProperty.cellTemplate" ng-style="border: 1px;">
+									
+										<a class="btn btn-sm btn-default btn-icon" tree-table-node-handle>
+											<i class="fa fa-sort text-muted m-r-sm"></i>
+											=
+										</a> 
+										{{row[expandingProperty.field] || row[expandingProperty]}} 
+										<a> 
+											<i ng-class="row.__tree_icon__" ng-click="row.__expanded__ = !row.__expanded__"
+											class="tree-icon"></i> 
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</script>
+				
+			</div>
+		</div>
+	</div>
+	
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.js"></script>
     <!-- for local development -->
     <!--
-        <script src="../lib/angular/angular.min.js"></script>
+        <script src="../src/angular.js"></script>
     -->
     <script src="../src/ng-tree-table.js"></script>
     <script src="controller.js"></script>
