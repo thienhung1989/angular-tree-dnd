@@ -206,6 +206,26 @@ $scope.tree_data = $TreeTableConvert.tree2tree(data, 'children');
 ```
 
 ## v1.0.3
-* Add attribute 'primaryKey' to filter & reload data in repeate best (instead of default __uid__ = now())
+* Add attribute 'primaryKey' to filter & reload data in repeat best (instead of default __uid__ = now())
+* Add function `hashedTree` to `track by` on ng-repeat
 * Fix any error when drag.
 * Add demo new.
+```js
+    	<tree-table 
+    		tree-data="tree_data" 
+    		tree-control="my_tree" 
+    		primary-key="primaryKey" 
+    		callbacks="callbacks"
+                drag-enabled="true" 
+                icon-leaf="none" 
+                icon-expand="fa fa-fw fa-angle-right"
+                icon-collapse="fa fa-fw fa-angle-down" 
+                column-defs="col_defs" 
+                expand-on="expanding_property"
+                template-url="tree-table-template.html" 
+                on-select="my_tree_handler(branch)"
+                on-click="my_tree_handler(branch)" 
+                data-indent="30" data-indent-unit="px"
+                data-indent-plus="15">
+        </tree-table>
+```
