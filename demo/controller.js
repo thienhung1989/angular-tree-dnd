@@ -7,10 +7,13 @@
     app = angular.module('treeTableTest', deps);
     app.controller(
         'CategoryMenuController', [
-            '$scope', function ($scope) {
+            '$scope', '$TreeTableConvert', function ($scope, $TreeTableConvert) {
                 var tree;
                 $scope.tree_data = {};
                 $scope.my_tree = tree = {};
+				$scope.branch = {};
+				$scope.log = {};
+				
                 $scope.remove_branch = function () {
                     return $scope.my_tree.remove_branch();
                 }
@@ -23,7 +26,7 @@
                     field:       "Name",
                     titleClass:  'text-center',
                     cellClass:   'v-middle',
-                    displayName: 'system.category.menu.name'
+                    displayName: 'Name'
                 };
                 $scope.col_defs = [
                     {
@@ -48,27 +51,6 @@
                         displayName:  'Remove',
                         cellTemplate: '<button ng-click="treeControl.remove_branch(row)" class="btn btn-default btn-sm">Remove</button>'
                     }];
-                var _temp_btn = '';
-                _temp_btn = "<a class=\"btn btn-sm btn-success\" ui-sref='system.category.menu.edit({ id: row.DemographicId})'><i class='fa fa-pencil'></i></a>";
-
-                if (_temp_btn) {
-                    _temp_btn += "&nbsp";
-                }
-                _temp_btn += "<a class=\"btn btn-sm btn-danger\" ui-sref='system.category.menu.delete({ id: row.DemographicId})'><i class='fa fa-trash'></i></a>";
-
-                if (_temp_btn) {
-                    $scope.col_defs.push(
-                        {
-                            displayName:  'App.Button.Option',
-                            titleStyle:   {
-                                'width': '100pt'
-                            },
-                            titleClass:   'text-center',
-                            cellClass:    'v-middle text-center',
-                            cellTemplate: _temp_btn
-                        }
-                    );
-                }
 
                 $scope.callbacks = {
                     accept: function (source, dest, index_dest) {
@@ -207,35 +189,7 @@
                         "TimeZone":      "BST"
                     }];
 
-                var myTreeData = getTree(rawTreeData, 'DemographicId', 'ParentId');
-
-                $scope.tree_data = myTreeData;
-                function getTree(data, primaryIdName, parentIdName) {
-                    if (!data || data.length == 0 || !primaryIdName || !parentIdName) {
-                        return [];
-                    }
-                    var tree = [], rootIds = [], item = data[0], primaryKey = item[primaryIdName], treeObjs = {}, parentId, parent, len = data.length, i = 0;
-                    while (i < len) {
-                        item = data[i++];
-                        primaryKey = item[primaryIdName];
-                        treeObjs[primaryKey] = item;
-                        parentId = item[parentIdName];
-                        if (parentId) {
-                            parent = treeObjs[parentId];
-                            if (parent.__children__) {
-                                parent.__children__.push(item);
-                            } else {
-                                parent.__children__ = [item];
-                            }
-                        } else {
-                            rootIds.push(primaryKey);
-                        }
-                    }
-                    for (var i = 0; i < rootIds.length; i++) {
-                        tree.push(treeObjs[rootIds[i]]);
-                    }
-                    return tree;
-                }
+                $scope.tree_data = $TreeTableConvert.line2tree(rawTreeData, 'DemographicId', 'ParentId');
             }]
     );
 })();
