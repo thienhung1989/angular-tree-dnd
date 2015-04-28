@@ -101,11 +101,25 @@
 					</div>
 				</script>
 				
+				<tree-table 
+					tree-data="tree_data" 
+					tree-control="my_tree" drag-enabled="true"
+					column-defs="[]" 
+					expand-on="expanding_property"
+					on-select="my_tree_handler(branch)" 
+					on-click="my_tree_handler(branch)" 
+					template-url="tree-table-template.html" 
+					icon-leaf="none" 
+					icon-expand="fa fa-fw fa-angle-right" 
+					icon-collapse="fa fa-fw fa-angle-down"
+					data-indent="30"
+					data-indent-unit="px" 
+					data-indent-plus="15">
+				</tree-table>
 			</div>
 		</div>
 	</div>
-	
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.js"></script>
     <!-- for local development -->
     <!--
         <script src="../src/angular.js"></script>
