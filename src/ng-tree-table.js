@@ -3,7 +3,8 @@
         [
             '$templateCache', function ($templateCache) {
             $templateCache.put(
-                'template/treeTable/treeTable.html', "" + "<table class=\"tree-table table\">\n" + "	<thead>\n" + "	<tr>\n" + "		<th ng-class=\"expandingProperty.titleClass\" ng-style=\"expandingProperty.titleStyle\">\n" + "			{{expandingProperty.displayName || expandingProperty.field || expandingProperty}}\n" + "		</th>\n" + "		<th ng-repeat=\"col in colDefinitions\" ng-class=\"col.titleClass\" ng-style=\"col.titleStyle\">\n" + "			{{col.displayName || col.field}}\n" + "		</th>\n" + "	</tr>\n" + "	</thead>\n" + "	<tbody>\n" + "	<tr tree-table-node ng-repeat=\"row in tree_rows track by (row.__index__ + '_' + row.__index_real__ + '_' + row.__uid__) \" ng-show=\"row.__visible__\"\n" + "		ng-class=\"(row.__selected__ ? ' active':'')\" class=\"ng-animate \">\n" + "		<td ng-if=\"!expandingProperty.template\" tree-table-node-handle\n" + "			ng-style=\"expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}\"\n" + "			ng-click=\"user_clicks_branch(row)\" ng-class=\"expandingProperty.cellClass\"\n" + "			compile=\"expandingProperty.cellTemplate\">\n" + "				<a data-nodrag>\n" + "					<i ng-class=\"row.__tree_icon__\" ng-click=\"row.__expanded__ = !row.__expanded__\"\n" + "					   class=\"tree-icon\"></i>\n" + "				</a>\n" + "				{{row[expandingProperty.field] || row[expandingProperty]}}\n" + "		</td>\n" + "		<td ng-if=\"expandingProperty.template\" compile=\"expandingProperty.template\"></td>\n" + "		<td ng-repeat=\"col in colDefinitions\" ng-class=\"col.cellClass\" ng-style=\"col.cellStyle\"\n" + "			compile=\"col.cellTemplate\">\n" + "			{{row[col.field]}}\n" + "		</td>\n" + "	</tr>\n" + "	</tbody>\n" + "</table>"
+                'template/treeTable/treeTable.html',
+                "" + "<table class=\"tree-table table\">\n" + "	<thead>\n" + "	<tr>\n" + "		<th ng-class=\"expandingProperty.titleClass\" ng-style=\"expandingProperty.titleStyle\">\n" + "			{{expandingProperty.displayName || expandingProperty.field || expandingProperty}}\n" + "		</th>\n" + "		<th ng-repeat=\"col in colDefinitions\" ng-class=\"col.titleClass\" ng-style=\"col.titleStyle\">\n" + "			{{col.displayName || col.field}}\n" + "		</th>\n" + "	</tr>\n" + "	</thead>\n" + "	<tbody>\n" + "	<tr tree-table-node ng-repeat=\"row in tree_rows track by (row.__index__ + '_' + row.__index_real__ + '_' + row.__uid__) \" ng-show=\"row.__visible__\"\n" + "		ng-class=\"(row.__selected__ ? ' active':'')\" class=\"ng-animate \">\n" + "		<td ng-if=\"!expandingProperty.template\" tree-table-node-handle\n" + "			ng-style=\"expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}\"\n" + "			ng-click=\"user_clicks_branch(row)\" ng-class=\"expandingProperty.cellClass\"\n" + "			compile=\"expandingProperty.cellTemplate\">\n" + "				<a data-nodrag>\n" + "					<i ng-class=\"row.__tree_icon__\" ng-click=\"row.__expanded__ = !row.__expanded__\"\n" + "					   class=\"tree-icon\"></i>\n" + "				</a>\n" + "				{{row[expandingProperty.field] || row[expandingProperty]}}\n" + "		</td>\n" + "		<td ng-if=\"expandingProperty.template\" compile=\"expandingProperty.template\"></td>\n" + "		<td ng-repeat=\"col in colDefinitions\" ng-class=\"col.cellClass\" ng-style=\"col.cellStyle\"\n" + "			compile=\"col.cellTemplate\">\n" + "			{{row[col.field]}}\n" + "		</td>\n" + "	</tr>\n" + "	</tbody>\n" + "</table>"
             );
         }]
     );
@@ -45,6 +46,20 @@
                 return {
                     restrict:    'E',
                     replace:     true,
+                    scope:       {
+                        treeData:    '=',
+                        columnDefs:  '=',
+                        expandOn:    '=',
+                        onSelect:    '&',
+                        onClick:     '&',
+                        treeControl: '=',
+                        tree:        '=treeControl',
+                        callbacks:   '=',
+                        primaryKey:  '=?'
+                    },
+                    templateUrl: function (tElement, tAttrs) {
+                        return tAttrs.templateUrl || treeTableTemplate.getPath();
+                    },
                     controller:  [
                         '$scope', '$element', '$attrs', 'tgConfig', function ($scope, $element, $attrs, tgConfig) {
                             $scope.$type = 'TreeTable';
@@ -54,6 +69,7 @@
                             $scope.indent_plus = 15;
                             $scope.indent_unit = 'px';
                             $scope.tree_rows = [];
+
                             $scope.$callbacks = {
                                 accept:      function (scopeDrag, scopeTarget, align) {
                                     return true;
@@ -63,7 +79,7 @@
                                 },
                                 dropped:     function (info, accepted) {
                                     if (accepted) {
-                                        var _node = info.node, _target = info.target.node;
+                                        var _node = info.node, _target = info.target;
                                         var _parent_remove = null;
                                         var new_index = 0;
 
@@ -174,26 +190,9 @@
                                 return null;
                             }
                         }],
-                    templateUrl: function (tElement, tAttrs) {
-                        return tAttrs.templateUrl || treeTableTemplate.getPath();
-                    },
-                    replace:     true,
-                    scope:       {
-                        treeData:    '=',
-                        columnDefs:  '=',
-                        expandOn:    '=',
-                        onSelect:    '&',
-                        onClick:     '&',
-                        treeControl: '=',
-                        callbacks:   '='
-                    },
                     link:        function (scope, element, attrs) {
-
-                        scope.$watch(
-                            attrs.treeData, function (newValue) {
-                                console.log('hre', newValue)
-                            }
-                        );
+                        scope.primaryKey = scope.primaryKey || '__uid__';
+                        $helper.calsIndent = scope.$callbacks.calsIndent;
 
                         scope.$watch(
                             attrs.callbacks, function (optCallbacks) {
@@ -211,9 +210,10 @@
                             }, true
                         );
 
-                        /**watch
-                         *
-                         */
+                        if (angular.isString(attrs.indentUnit)) {
+                            scope.indent_unit = attrs.indentUnit;
+                        }
+
                         scope.$watch(
                             attrs.dragEnabled, function (val) {
                                 if ((typeof val) == "boolean") {
@@ -230,13 +230,6 @@
                             }
                         );
 
-                        scope.$watch(
-                            attrs.indentUnit, function (val) {
-                                if ((typeof val) == "string") {
-                                    scope.indent_unit = val;
-                                }
-                            }
-                        );
                         scope.$watch(
                             attrs.indentPlus, function (val) {
                                 if ((typeof val) == "number") {
@@ -266,8 +259,7 @@
                         expand_level = parseInt(attrs.expandLevel, 10);
 
                         if (!scope.treeData) {
-                            console.log('No data was defined for the tree, please define treeData!');
-                            return;
+                            scope.treeData = [];
                         }
 
                         if (attrs.expandOn) {
@@ -288,25 +280,25 @@
                                 scope.expandingProperty = expandingProperty;
                             }
                         }
-
-                        if (!attrs.columnDefs || !(attrs.columnDefs && angular.isArray(scope.columnDefs) && scope.columnDefs.length > 0)) {
-                            if (scope.treeData.length) {
-                                var _col_defs = [], _firstRow = scope.treeData[0], _unwantedColumn = [
-                                    'children', 'level', 'expanded', expandingProperty];
-                                for (var idx in _firstRow) {
-                                    if (_unwantedColumn.indexOf(idx) === -1) {
-                                        _col_defs.push(
-                                            {
-                                                field: idx
-                                            }
-                                        );
-                                    }
-                                }
-                                scope.colDefinitions = _col_defs;
-                            }
-                        } else {
-                            scope.colDefinitions = scope.columnDefs;
-                        }
+                        //                        // Auto get Defs except attribute __level__ ....
+                        //                        if (!attrs.columnDefs || !(attrs.columnDefs && angular.isArray(scope.columnDefs) && scope.columnDefs.length > 0)) {
+                        //                            if (scope.treeData.length) {
+                        //                                var _col_defs = [], _firstRow = scope.treeData[0];
+                        //                                var regex = new RegExp("(__([a-zA-Z0-9_\-]*)__|^" + expandingProperty + "$)");
+                        //                                for (var idx in _firstRow) {
+                        //                                    if (!regex.test(idx)) {
+                        //                                        _col_defs.push(
+                        //                                            {
+                        //                                                field: idx
+                        //                                            }
+                        //                                        );
+                        //                                    }
+                        //                                }
+                        //                                scope.colDefinitions = _col_defs;
+                        //                            }
+                        //                        } else {
+                        scope.colDefinitions = scope.columnDefs || [];
+                        //                        }
 
                         var for_each_branch = function (f) {
                             var do_f, _i, _len, _ref;
@@ -411,9 +403,10 @@
                                 var _i, do_f;
                                 do_f = function (branch, parent, level, visible, index) {
                                     var _i, _len, _tree_icon;
-
-                                    if (branch.__uid__ == null) {
-                                        branch.__uid__ = "" + Math.random();
+                                    if (!scope.primaryKey) {
+                                        if (branch.__uid__ == null) {
+                                            branch.__uid__ = "" + Math.random();
+                                        }
                                     }
 
                                     if (!angular.isArray(branch.__children__)) {
@@ -455,7 +448,11 @@
                                     if (_len > 0) {
                                         for (_i = 0; _i < _len; _i++) {
                                             _dept = _dept + do_f(
-                                                branch.__children__[_i], _index_real, level + 1, visible && branch.__expanded__, _i
+                                                branch.__children__[_i],
+                                                _index_real,
+                                                level + 1,
+                                                visible && branch.__expanded__,
+                                                _i
                                             );
                                         }
                                     }
@@ -475,6 +472,7 @@
 
                         if (scope.treeControl != null) {
                             if (angular.isObject(scope.treeControl)) {
+
                                 tree = scope.treeControl;
                                 tree.expand_all = function () {
                                     for_each_branch(
@@ -725,6 +723,9 @@
                                         }
                                     }
                                 };
+                                tree.reload_data = function () {
+                                    return on_treeData_change();
+                                };
                                 return tree.select_prev_branch = function (b) {
                                     var prev;
                                     if (b == null) {
@@ -944,8 +945,16 @@
                             angular.element($document).bind('mousemove', dragMoveEvent);
                             angular.element($document).bind('mouseleave', dragCancelEvent);
 
-                            document_height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-                            document_width = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
+                            document_height = Math.max(
+                                body.scrollHeight,
+                                body.offsetHeight,
+                                html.clientHeight,
+                                html.scrollHeight,
+                                html.offsetHeight
+                            );
+                            document_width = Math.max(
+                                body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth
+                            );
                         };
 
                         var dragMove = function (e) {
@@ -1081,18 +1090,10 @@
                                             if (targetBefore) {
                                                 // Insert Element before Target
                                                 if (dragInfo.isDirty(targetNode.node().__index_real__ - 1)) {
-                                                    var _prev = scope.getPrev(dragInfo.node.__index_real__);
-                                                    if (_prev) {
-                                                        dragInfo.attach(_prev, 1);
-                                                    } else {
-                                                        dragInfo.attach(null, 0);
-                                                    }
+                                                    //dragInfo.target = scope.getPrev(dragInfo.node.__index_real__);
+                                                    dragInfo.target = scope.prev();
                                                 } else {
-                                                    if (targetNode.prev()) {
-                                                        dragInfo.attach(targetNode.prev(), 1);
-                                                    } else {
-                                                        dragInfo.attach(null, 1);
-                                                    }
+                                                    dragInfo.target = targetNode.prev();
                                                 }
 
                                                 $helper.replaceIndent(placeElm, dragInfo.level);
@@ -1100,8 +1101,7 @@
                                                 //placeElm.insertBefore(targetElm);
                                             } else {
                                                 targetElm.after(placeElm);
-
-                                                dragInfo.attach(targetNode.node(), 1);
+                                                dragInfo.target = targetNode.node();
 
                                                 var _level = dragInfo.level;
                                                 if (targetNode.data().__expanded__) {
@@ -1118,13 +1118,12 @@
                                     if (pos.dirAx && pos.distAxX >= scope.config.levelThreshold) {
                                         pos.distAxX = 0;
                                         var _target = dragInfo.target;
-                                        if (_target.node) {
+                                        if (_target) {
                                             // increase horizontal level if previous sibling exists and is not collapsed
                                             if (pos.distX > 0) {
                                                 //get node visible
-                                                var _visible = scope.visible(_target.node);
-
-                                                if (_visible != null && _target.pos != -1 && _visible.__level__ >= dragInfo.level) {
+                                                var _visible = scope.visible(_target);
+                                                if (_visible != null && _visible.__level__ >= dragInfo.level) {
                                                     dragInfo.level++;
                                                     $helper.replaceIndent(placeElm, dragInfo.level);
                                                 }
@@ -1311,15 +1310,35 @@
                             node:          scope.node(),
                             scope:         scope,
                             level:         scope.node().__level__,
-                            target:        {
-                                node: scope.prev(),
-                                pos:  1,
-                            },
+                            target:        scope.prev(),
                             isDirty:       function (index) {
                                 return this.node.__index_real__ <= index && index <= this.node.__index_real__ + this.node.__dept__ - 1;
                             },
                             isTargetEmpty: function () {
-                                return !this.target.node.__expanded__ || (this.target.node.__index_real__ == this.node.__parent__ && this.target.node.__children__.length == 1);
+                                if (this.level == 1) {
+                                    return false;
+                                }
+
+                                var _target = this.target;
+                                var _node = this.node;
+                                while (_target) {
+                                    if (_target.__level__ < this.level) {
+                                        if (_target.__expanded__) {
+                                            if (_target.__children__.length == 0) {
+                                                return true;
+                                            } else if ((_target.__index_real__ == this.target.__parent__ && _target.__children__.length - 1 == this.target.__index__) || (_target.__index_real__ == _node.__parent__ && _target.__children__.length - 1 == _node.__index__)) {
+                                                return true;
+                                            }
+                                            return false;
+                                        }
+                                        return true;
+                                    } else if (_target.__parent__ == null) {
+                                        return false;
+                                    } else {
+                                        _target = this.scope.tree_rows[_target.__parent__];
+                                    }
+                                }
+                                return false;
                             },
                             next:          function () {
                                 if (this.node.__index_real__ < this.source.length - 1) {
@@ -1332,10 +1351,6 @@
                                     return this.source[this.node.__index_real__ - 1];
                                 }
                                 return null;
-                            },
-                            attach:        function (node, pos) {
-                                this.target.node = node;
-                                this.target.pos = pos;
                             }
                         };
                     },
