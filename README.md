@@ -205,3 +205,7 @@ $scope.tree_data = $TreeTableConvert.tree2tree(data, 'children');
 ]
 ```
 
+## v1.0.3
+* Add attribute 'primaryKey' to filter & reload data in repeate best (instead of default __uid__ = now())
+* Fix any error when drag.
+* Add demo new.
