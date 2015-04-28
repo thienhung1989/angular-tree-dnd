@@ -1090,8 +1090,7 @@
                                             if (targetBefore) {
                                                 // Insert Element before Target
                                                 if (dragInfo.isDirty(targetNode.node().__index_real__ - 1)) {
-                                                    //dragInfo.target = scope.getPrev(dragInfo.node.__index_real__);
-                                                    dragInfo.target = scope.prev();
+                                                    dragInfo.target = scope.getPrev(dragInfo.node.__index_real__);
                                                 } else {
                                                     dragInfo.target = targetNode.prev();
                                                 }
