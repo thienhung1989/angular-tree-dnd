@@ -74,7 +74,7 @@
 						}">
 							<tbody>
 								<tr tree-table-node
-									ng-repeat="row in tree_rows track by (row.__index_real__ + '_' + row.__index__ + '_' +  row[primaryKey])"
+									ng-repeat="row in tree_rows track by hashedTree(row)"
 									ng-show="row.__visible__" ng-class="(row.__selected__ ? ' active':'')"
 									class="ng-animate ">
 									<td ng-if="!expandingProperty.template"
@@ -119,6 +119,7 @@
 			</div>
 		</div>
 	</div>
+	
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.js"></script>
     <!-- for local development -->
     <!--
