@@ -1,16 +1,39 @@
 # angular-tree-table
 [Angular 1.x] Display tree table &amp; event DrapnDrop, field 'td' by tree (other normal) - without jQuery.
-# Demo: http://thienhung1989.github.io/angular-tree-table
+## Demo: 
+- http://thienhung1989.github.io/angular-tree-table
+- http://plnkr.co/edit/6zQNvW?p=preview
 
 This product is the combination and optimization of 2: https://github.com/angular-ui-tree/angular-ui-tree (Drag2Drop) và https://github.com/khan4019/tree-grid-directive (Display Tree2Table).
 
-Đây là sản phẩm kết hợp và tối ưu từ 2: https://github.com/angular-ui-tree/angular-ui-tree (Drag2Drop) và https://github.com/khan4019/tree-grid-directive (Display Tree2Table).
-* Install bower:
+## Install bower:
 ```js
 bower angular-tree-table install
 ```
 
 * Function 'filter' & 'group by' not add in ng-repeate (it's slow & incompatible with $id($$hash) )
+* Able add function to tree-table by:
+	* Example: *(See on Demo 2)*
+```js
+	$scope.my_tree.addFunction = function(b){
+	  console.log(b);
+	  alert('Function added in Controller "App.js"');
+	}
+```
+		* Call function: *(tree.remove_branch extended see below with function other)*
+```js
+              $scope.col_defs = [
+                    {
+                        field: "Description"
+                    }, {
+                        displayName:  'Function',
+                        cellTemplate: '<button ng-click="tree.addFunction(row)" class="btn btn-default btn-sm">Added Controller!</button>'
+                    }, {
+                        displayName:  'Remove',
+                        cellTemplate: '<button ng-click="tree.remove_branch(row)" class="btn btn-default btn-sm">Remove</button>'
+                    }];
+```
+
 * Functions extended in callback (able change by attribute):
 ```js
 $scope.$callbacks = {
@@ -87,45 +110,43 @@ $scope.$callbacks = {
 ```html
 <script type="text/ng-template" id="tree-table-template.html">
 	<div class="tree-table">
-		<table class="table">
-			<thead>
-			<tr>
-				<th ng-class="expandingProperty.titleClass" ng-style="expandingProperty.titleStyle">
-					{{expandingProperty.displayName || expandingProperty.field || expandingProperty}}
-				</th>
-				<th ng-repeat="col in colDefinitions" ng-class="col.titleClass" ng-style="col.titleStyle">
-					{{col.displayName || col.field}}
-				</th>
-			</tr>
-			</thead>
-			<tbody>
-			<tr tree-table-node ng-repeat="row in tree_rows track by $id(row.__uid__ + '_' + row.__index__ + '_' + row.__index_real__ )" ng-show="row.__visible__"
-				ng-class="(row.__selected__ ? ' active':'')" class="ng-animate ">
-				<td ng-if="!expandingProperty.template" tree-table-node-handle
-					ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}"
-					ng-click="user_clicks_branch(row)" ng-class="expandingProperty.cellClass"
-					compile="expandingProperty.cellTemplate">
-						<label class="i-checks checkbox-inline tree-label" ng-click="on_user_click(row)"
-							   data-nodrag>
-							<i></i>
-							{{row[expandingProperty.field] || row[expandingProperty]}}
-						</label>
-						<a data-nodrag>
-							<i ng-class="row.__tree_icon__" ng-click="row.__expanded__ = !row.__expanded__"
-							   class="tree-icon"></i>
-						</a>
-				</td>
-				<td ng-if="expandingProperty.template" compile="expandingProperty.template"></td>
-				<td ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
-					compile="col.cellTemplate">
-					{{row[col.field]}}
-				</td>
-			</tr>
-			</tbody>
-		</table>
-		<pre>{{ treeData | json }}</pre>
-		<pre>{{ tree_rows | json }}</pre>
-	</div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th ng-class="expandingProperty.titleClass" ng-style="expandingProperty.titleStyle">
+                            {{expandingProperty.displayName || expandingProperty.field || expandingProperty}}
+                        </th>
+                        <th ng-repeat="col in colDefinitions" ng-class="col.titleClass"
+                            ng-style="col.titleStyle">
+                            {{col.displayName || col.field}}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr tree-table-node ng-repeat="row in tree_rows track by hashedTree(row)"
+                        ng-show="row.__visible__" ng-class="(row.__selected__ ? ' active':'')"
+                        class="ng-animate ">
+                        <td ng-if="!expandingProperty.template"
+                            ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}"
+                            ng-click="user_clicks_branch(row)" ng-class="expandingProperty.cellClass"
+                            compile="expandingProperty.cellTemplate">
+                        <span tree-table-node-handle>
+                            <i class="fa fa-sort text-muted m-r-sm"></i>
+                        </span> {{row[expandingProperty.field] || row[expandingProperty]}} <a> <i
+                                ng-class="row.__tree_icon__" ng-click="row.__expanded__ = !row.__expanded__"
+                                class="tree-icon"></i> </a>
+                        </td>
+                        <td ng-if="expandingProperty.template" compile="expandingProperty.template"></td>
+                        <td ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
+                            compile="col.cellTemplate">
+                            {{row[col.field]}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+	<pre>{{ treeData | json }}</pre>
+	<pre>{{ tree_rows | json }}</pre>
 </script>
 ```
 
