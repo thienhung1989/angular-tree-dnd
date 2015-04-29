@@ -4,7 +4,7 @@
 - 1.0.3
 
 ## Demo: 
-- http://thienhung1989.github.io/angular-tree-table
+- http://thienhung1989.github.io/angular-tree-table/demo
 - http://plnkr.co/edit/6zQNvW?p=preview
 
 This product is the combination and optimization of 2: https://github.com/angular-ui-tree/angular-ui-tree (Drag2Drop) và https://github.com/khan4019/tree-grid-directive (Display Tree2Table).
