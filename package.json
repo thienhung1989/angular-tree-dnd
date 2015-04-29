@@ -1,0 +1,24 @@
+{
+  "autoupdate": {
+    "source": "git",
+    "target": "git://github.com/thienhung1989/angular-tree-table.git",
+    "basePath": "src/",
+    "files": [
+      "ng-tree-table.js",
+      "ng-tree-table.css"
+    ]
+  },
+  "author": "https://github.com/thienhung1989/angular-tree-table/graphs/contributors",
+  "name": "angular-tree-table",
+  "version": "1.0.3",
+  "homepage": "http://thienhung1989.github.io/angular-tree-table/",
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/thienhung1989/angular-tree-table.git"
+  },
+  "devDependencies": {
+    "angular": ">=1.2.*",
+  },
+  "license": "MIT"
+}
