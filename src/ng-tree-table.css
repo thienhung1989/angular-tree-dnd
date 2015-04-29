@@ -57,9 +57,8 @@
     cursor: pointer;
 }
 
-table.tree-table {
-    max-height: 500px;
-    overflow-y: scroll;
+.tree-table .table>thead>tr> td,.table>tbody>tr> td,.table>tfoot>tr> td{
+    vertical-align: middle !important;
 }
 
 .tree-table-empty {
