@@ -4,7 +4,7 @@
             '$templateCache', function ($templateCache) {
             $templateCache.put(
                 'template/treeTable/treeTable.html',
-                "" + "<table class=\"tree-table table\">\n" + "	<thead>\n" + "	<tr>\n" + "		<th ng-class=\"expandingProperty.titleClass\" ng-style=\"expandingProperty.titleStyle\">\n" + "			{{expandingProperty.displayName || expandingProperty.field || expandingProperty}}\n" + "		</th>\n" + "		<th ng-repeat=\"col in colDefinitions\" ng-class=\"col.titleClass\" ng-style=\"col.titleStyle\">\n" + "			{{col.displayName || col.field}}\n" + "		</th>\n" + "	</tr>\n" + "	</thead>\n" + "	<tbody>\n" + "	<tr tree-table-node ng-repeat=\"row in tree_rows track by hashedTree(row) \" ng-show=\"row.__visible__\"\n" + "		ng-class=\"(row.__selected__ ? ' active':'')\" class=\"ng-animate \">\n" + "		<td ng-if=\"!expandingProperty.template\" tree-table-node-handle\n" + "			ng-style=\"expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}\"\n" + "			ng-click=\"user_clicks_branch(row)\" ng-class=\"expandingProperty.cellClass\"\n" + "			compile=\"expandingProperty.cellTemplate\">\n" + "				<a data-nodrag>\n" + "					<i ng-class=\"row.__tree_icon__\" ng-click=\"row.__expanded__ = !row.__expanded__\"\n" + "					   class=\"tree-icon\"></i>\n" + "				</a>\n" + "				{{row[expandingProperty.field] || row[expandingProperty]}}\n" + "		</td>\n" + "		<td ng-if=\"expandingProperty.template\" compile=\"expandingProperty.template\"></td>\n" + "		<td ng-repeat=\"col in colDefinitions\" ng-class=\"col.cellClass\" ng-style=\"col.cellStyle\"\n" + "			compile=\"col.cellTemplate\">\n" + "			{{row[col.field]}}\n" + "		</td>\n" + "	</tr>\n" + "	</tbody>\n" + "</table>"
+                "" + "<table ng-class=\"tree_class\">\n" + "	<thead>\n" + "	<tr>\n" + "		<th ng-class=\"expandingProperty.titleClass\" ng-style=\"expandingProperty.titleStyle\">\n" + "			{{expandingProperty.displayName || expandingProperty.field || expandingProperty}}\n" + "		</th>\n" + "		<th ng-repeat=\"col in colDefinitions\" ng-class=\"col.titleClass\" ng-style=\"col.titleStyle\">\n" + "			{{col.displayName || col.field}}\n" + "		</th>\n" + "	</tr>\n" + "	</thead>\n" + "	<tbody>\n" + "	<tr tree-table-node ng-repeat=\"row in tree_rows track by hashedTree(row) \" ng-show=\"row.__visible__\"\n" + "		ng-class=\"(row.__selected__ ? ' active':'')\" class=\"ng-animate \">\n" + "		<td ng-if=\"!expandingProperty.template\" tree-table-node-handle\n" + "			ng-style=\"expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}\"\n" + "			ng-click=\"user_clicks_branch(row)\" ng-class=\"expandingProperty.cellClass\"\n" + "			compile=\"expandingProperty.cellTemplate\">\n" + "				<a data-nodrag>\n" + "					<i ng-class=\"row.__tree_icon__\" ng-click=\"row.__expanded__ = !row.__expanded__\"\n" + "					   class=\"tree-icon\"></i>\n" + "				</a>\n" + "				{{row[expandingProperty.field] || row[expandingProperty]}}\n" + "		</td>\n" + "		<td ng-if=\"expandingProperty.template\" compile=\"expandingProperty.template\"></td>\n" + "		<td ng-repeat=\"col in colDefinitions\" ng-class=\"col.cellClass\" ng-style=\"col.cellStyle\"\n" + "			compile=\"col.cellTemplate\">\n" + "			{{row[col.field]}}\n" + "		</td>\n" + "	</tr>\n" + "	</tbody>\n" + "</table>"
             );
         }]
     );
@@ -69,7 +69,7 @@
                             $scope.indent_plus = 15;
                             $scope.indent_unit = 'px';
                             $scope.tree_rows = [];
-
+                            $scope.tree_class = 'table';
                             $scope.primary_key = '__uid__';
                             $scope.$callbacks = {
                                 accept:      function (scopeDrag, scopeTarget, align) {
@@ -191,7 +191,7 @@
                                 return null;
                             }
 
-                            $scope.hashedTree = function(node) {
+                            $scope.hashedTree = function (node) {
                                 if ($scope.primary_key == '__uid__') {
                                     return node.__index_real__ + '#' + node.__index__ + '#' + node.__uid__
                                 } else {
@@ -226,8 +226,12 @@
                             }, true
                         );
 
-                        if (angular.isString(attrs.indentUnit)) {
-                            scope.indent_unit = attrs.indentUnit;
+                        if (angular.isString(attrs['class'])) {
+                            scope.tree_class = attrs['class'];
+                        }
+
+                        if (angular.isString(attrs['indentUnit'])) {
+                            scope.indent_unit = attrs['indentUnit'];
                         }
 
                         scope.$watch(
@@ -452,7 +456,6 @@
                                     if (branch.__uid__ == null) {
                                         branch.__uid__ = "" + Math.random();
                                     }
-
 
                                     _tree_rows.push(
                                         branch

@@ -1,4 +1,12 @@
+## v1.0.4
+* Add class for tree-table *(auto render to `tree_class` add to <table ng-class="tree_table">)*
+```html
+    <tree-table
+        class="tree-table table table-hover b-b b-light"
+        tree-data="tree_data" tree-control="my_tree">
+    </tree-table>
 ## v1.0.3
+
 * Add attribute 'primaryKey' to filter & reload data in repeat best (instead of default __uid__ = now())
 * Add function `hashedTree` to `track by` on ng-repeat
 * Fix any error when drag.

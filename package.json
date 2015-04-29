@@ -5,12 +5,14 @@
     "basePath": "src/",
     "files": [
       "ng-tree-table.js",
-      "ng-tree-table.css"
+      "ng-tree-table.css",
+      "src/ng-tree-table.min.css",
+      "src/ng-tree-table.min.js"
     ]
   },
   "author": "https://github.com/thienhung1989/angular-tree-table/graphs/contributors",
   "name": "angular-tree-table",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "homepage": "http://thienhung1989.github.io/angular-tree-table/",
   "dependencies": {},
   "repository": {

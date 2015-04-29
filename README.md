@@ -1,7 +1,7 @@
 # angular-tree-table
 [Angular 1.x] Display tree table &amp; event DrapnDrop, field 'td' by tree (other normal) - without jQuery.
 ## Current Version
-- 1.0.3
+- 1.0.4
 
 ## Demo: 
 - http://thienhung1989.github.io/angular-tree-table/demo
@@ -102,11 +102,24 @@ $scope.$callbacks = {
 * Example
 **init:
 ```html
- <tree-table tree-data="tree_data" tree-control="my_tree" callbacks="callbacks" drag-enabled="true"
-        icon-leaf="none" icon-expand="fa fa-fw fa-angle-right" icon-collapse="fa fa-fw fa-angle-down"
-        template-url="tree-table-template.html" column-defs="col_defs" expand-on="expanding_property"
-        on-select="my_tree_handler(branch)" on-click="my_tree_handler(branch)" data-indent="30"
-        data-indent-unit="px" data-indent-plus="15">
+ <tree-table
+        class="table"
+        tree-data="tree_data"
+        tree-control="my_tree"
+        callbacks="callbacks"
+        drag-enabled="true"
+        icon-leaf="none"
+        icon-expand="fa fa-fw fa-angle-right"
+        icon-collapse="fa fa-fw fa-angle-down"
+        template-url="tree-table-template.html"
+        column-defs="col_defs"
+        expand-on="expanding_property"
+        on-select="my_tree_handler(branch)"
+        on-click="my_tree_handler(branch)"
+        data-indent="30"
+        data-indent-unit="px"
+        data-indent-plus="15"
+   >
 </tree-table>
 ```
 ** Template Extened:
