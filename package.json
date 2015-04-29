@@ -18,7 +18,7 @@
     "url": "git://github.com/thienhung1989/angular-tree-table.git"
   },
   "devDependencies": {
-    "angular": "~1.2.*",
+    "angular": ">=1.2.*",
   },
   "license": "MIT"
 }
