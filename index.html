@@ -1,45 +1,89 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>Angular-tree-table by thienhung1989</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">Angular-tree-table</h1>
-      <h2 class="project-tagline">[Angular 1.x] Display tree table &amp; event DrapnDrop, field &#39;td&#39; by tree (other normal), Hiển thị cột &#39;td&#39; được chọn theo dạng cây, những cột khác bình thường</h2>
-      
-      <a href="http://thienhung1989.github.io/angular-tree-table/demo" class="btn">Demo</a>
-      <a href="https://github.com/thienhung1989/angular-tree-table" class="btn">View on GitHub</a>
-      <a href="https://github.com/thienhung1989/angular-tree-table/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/thienhung1989/angular-tree-table/tarball/master" class="btn">Download .tar.gz</a>
-      
-    </section>
+<html>
 
-    <section class="main-content">
-      <h1>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="angular-tree-table : [Angular 1.x (no need jQuery)] Display tree table &amp; event DrapnDrop, field &#39;td&#39; by tree (other normal)">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>angular-tree-table</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/thienhung1989/angular-tree-table">View on GitHub</a>
+
+          <h1 id="project_title">angular-tree-table</h1>
+          <h2 id="project_tagline">[Angular 1.x (no need jQuery)] Display tree table &amp; event DrapnDrop, field &#39;td&#39; by tree (other normal)</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/thienhung1989/angular-tree-table/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/thienhung1989/angular-tree-table/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
 <a id="angular-tree-table" class="anchor" href="#angular-tree-table" aria-hidden="true"><span class="octicon octicon-link"></span></a>angular-tree-table</h1>
 
-<p>[Angular 1.x] Display tree table &amp; event DrapnDrop, field 'td' by tree (other normal), Hiển thị cột 'td' được chọn theo dạng cây, những cột khác bình thường.</p>
+<p>[Angular 1.x] Display tree table &amp; event DrapnDrop, field 'td' by tree (other normal) - without jQuery.</p>
 
-<h1>
-<a id="demo" class="anchor" href="#demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demo</h1>
+<h2>
+<a id="current-version" class="anchor" href="#current-version" aria-hidden="true"><span class="octicon octicon-link"></span></a>Current Version</h2>
 
-<p><a href="http://thienhung1989.github.io/angular-tree-table">http://thienhung1989.github.io/angular-tree-table</a></p>
+<ul>
+<li>1.0.3
+## Demo: </li>
+<li><a href="http://thienhung1989.github.io/angular-tree-table">http://thienhung1989.github.io/angular-tree-table</a></li>
+<li><a href="http://plnkr.co/edit/6zQNvW?p=preview">http://plnkr.co/edit/6zQNvW?p=preview</a></li>
+</ul>
 
 <p>This product is the combination and optimization of 2: <a href="https://github.com/angular-ui-tree/angular-ui-tree">https://github.com/angular-ui-tree/angular-ui-tree</a> (Drag2Drop) và <a href="https://github.com/khan4019/tree-grid-directive">https://github.com/khan4019/tree-grid-directive</a> (Display Tree2Table).</p>
-Demo:
-<ul>
-  <li><a href="http://thienhung1989.github.io/angular-tree-table">http://thienhung1989.github.io/angular-tree-table</a></li>
-  <li><a href="http://plnkr.co/edit/6zQNvW?p=preview">http://plnkr.co/edit/6zQNvW?p=preview</a></li>
-</ul>
+
+<h2>
+<a id="install-bower" class="anchor" href="#install-bower" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install bower:</h2>
+
+<div class="highlight highlight-js"><pre>bower angular<span class="pl-k">-</span>tree<span class="pl-k">-</span>table install</pre></div>
+
 <ul>
 <li>Function 'filter' &amp; 'group by' not add in ng-repeate (it's slow &amp; incompatible with $id($$hash) )</li>
+<li>Able add function to tree-table by:
+
+<ul>
+<li>Example: <em>(See on Demo 2)</em>
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="highlight highlight-js"><pre>    <span class="pl-c1">$scope.my_tree</span>.<span class="pl-en">addFunction</span> <span class="pl-k">=</span> <span class="pl-k">function</span>(<span class="pl-smi">b</span>){
+      <span class="pl-en">console</span><span class="pl-c1">.log</span>(b);
+      <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">'</span>Function added in Controller "App.js"<span class="pl-pds">'</span></span>);
+    }</pre></div>
+
+<pre><code>    * Call function: *(tree.remove_branch extended see below with function other)*
+</code></pre>
+
+<div class="highlight highlight-js"><pre>              $scope.col_defs <span class="pl-k">=</span> [
+                    {
+                        field<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Description<span class="pl-pds">"</span></span>
+                    }, {
+                        displayName<span class="pl-k">:</span>  <span class="pl-s"><span class="pl-pds">'</span>Function<span class="pl-pds">'</span></span>,
+                        cellTemplate<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>&lt;button ng-click="tree.addFunction(row)" class="btn btn-default btn-sm"&gt;Added Controller!&lt;/button&gt;<span class="pl-pds">'</span></span>
+                    }, {
+                        displayName<span class="pl-k">:</span>  <span class="pl-s"><span class="pl-pds">'</span>Remove<span class="pl-pds">'</span></span>,
+                        cellTemplate<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>&lt;button ng-click="tree.remove_branch(row)" class="btn btn-default btn-sm"&gt;Remove&lt;/button&gt;<span class="pl-pds">'</span></span>
+                    }];</pre></div>
+
+<ul>
 <li>Functions extended in callback (able change by attribute):</li>
 </ul>
 
@@ -120,56 +164,56 @@ Demo:
 
 <div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text/ng-template<span class="pl-pds">"</span></span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>tree-table-template.html<span class="pl-pds">"</span></span>&gt;
     &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>tree-table<span class="pl-pds">"</span></span>&gt;
-        &lt;<span class="pl-ent">table</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>table<span class="pl-pds">"</span></span>&gt;
-            &lt;<span class="pl-ent">thead</span>&gt;
-            &lt;<span class="pl-ent">tr</span>&gt;
-                &lt;<span class="pl-ent">th</span> <span class="pl-e">ng-class</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.titleClass<span class="pl-pds">"</span></span> <span class="pl-e">ng-style</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.titleStyle<span class="pl-pds">"</span></span>&gt;
-                    {{expandingProperty.displayName || expandingProperty.field || expandingProperty}}
-                &lt;/<span class="pl-ent">th</span>&gt;
-                &lt;<span class="pl-ent">th</span> <span class="pl-e">ng-repeat</span>=<span class="pl-s"><span class="pl-pds">"</span>col in colDefinitions<span class="pl-pds">"</span></span> <span class="pl-e">ng-class</span>=<span class="pl-s"><span class="pl-pds">"</span>col.titleClass<span class="pl-pds">"</span></span> <span class="pl-e">ng-style</span>=<span class="pl-s"><span class="pl-pds">"</span>col.titleStyle<span class="pl-pds">"</span></span>&gt;
-                    {{col.displayName || col.field}}
-                &lt;/<span class="pl-ent">th</span>&gt;
-            &lt;/<span class="pl-ent">tr</span>&gt;
-            &lt;/<span class="pl-ent">thead</span>&gt;
-            &lt;<span class="pl-ent">tbody</span>&gt;
-            &lt;<span class="pl-ent">tr</span> <span class="pl-e">tree-table-node</span> <span class="pl-e">ng-repeat</span>=<span class="pl-s"><span class="pl-pds">"</span>row in tree_rows track by $id(row.__uid__ + '_' + row.__index__ + '_' + row.__index_real__ )<span class="pl-pds">"</span></span> <span class="pl-e">ng-show</span>=<span class="pl-s"><span class="pl-pds">"</span>row.__visible__<span class="pl-pds">"</span></span>
-                <span class="pl-e">ng-class</span>=<span class="pl-s"><span class="pl-pds">"</span>(row.__selected__ ? ' active':'')<span class="pl-pds">"</span></span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>ng-animate <span class="pl-pds">"</span></span>&gt;
-                &lt;<span class="pl-ent">td</span> <span class="pl-e">ng-if</span>=<span class="pl-s"><span class="pl-pds">"</span>!expandingProperty.template<span class="pl-pds">"</span></span> <span class="pl-e">tree-table-node-handle</span>
-                    <span class="pl-e">ng-style</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}<span class="pl-pds">"</span></span>
-                    <span class="pl-e">ng-click</span>=<span class="pl-s"><span class="pl-pds">"</span>user_clicks_branch(row)<span class="pl-pds">"</span></span> <span class="pl-e">ng-class</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.cellClass<span class="pl-pds">"</span></span>
-                    <span class="pl-e">compile</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.cellTemplate<span class="pl-pds">"</span></span>&gt;
-                        &lt;<span class="pl-ent">label</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>i-checks checkbox-inline tree-label<span class="pl-pds">"</span></span> <span class="pl-e">ng-click</span>=<span class="pl-s"><span class="pl-pds">"</span>on_user_click(row)<span class="pl-pds">"</span></span>
-                               <span class="pl-e">data-nodrag</span>&gt;
-                            &lt;<span class="pl-ent">i</span>&gt;&lt;/<span class="pl-ent">i</span>&gt;
-                            {{row[expandingProperty.field] || row[expandingProperty]}}
-                        &lt;/<span class="pl-ent">label</span>&gt;
-                        &lt;<span class="pl-ent">a</span> <span class="pl-e">data-nodrag</span>&gt;
-                            &lt;<span class="pl-ent">i</span> <span class="pl-e">ng-class</span>=<span class="pl-s"><span class="pl-pds">"</span>row.__tree_icon__<span class="pl-pds">"</span></span> <span class="pl-e">ng-click</span>=<span class="pl-s"><span class="pl-pds">"</span>row.__expanded__ = !row.__expanded__<span class="pl-pds">"</span></span>
-                               <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>tree-icon<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">i</span>&gt;
-                        &lt;/<span class="pl-ent">a</span>&gt;
-                &lt;/<span class="pl-ent">td</span>&gt;
-                &lt;<span class="pl-ent">td</span> <span class="pl-e">ng-if</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.template<span class="pl-pds">"</span></span> <span class="pl-e">compile</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.template<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">td</span>&gt;
-                &lt;<span class="pl-ent">td</span> <span class="pl-e">ng-repeat</span>=<span class="pl-s"><span class="pl-pds">"</span>col in colDefinitions<span class="pl-pds">"</span></span> <span class="pl-e">ng-class</span>=<span class="pl-s"><span class="pl-pds">"</span>col.cellClass<span class="pl-pds">"</span></span> <span class="pl-e">ng-style</span>=<span class="pl-s"><span class="pl-pds">"</span>col.cellStyle<span class="pl-pds">"</span></span>
-                    <span class="pl-e">compile</span>=<span class="pl-s"><span class="pl-pds">"</span>col.cellTemplate<span class="pl-pds">"</span></span>&gt;
-                    {{row[col.field]}}
-                &lt;/<span class="pl-ent">td</span>&gt;
-            &lt;/<span class="pl-ent">tr</span>&gt;
-            &lt;/<span class="pl-ent">tbody</span>&gt;
-        &lt;/<span class="pl-ent">table</span>&gt;
-        &lt;<span class="pl-ent">pre</span>&gt;{{ treeData | json }}&lt;/<span class="pl-ent">pre</span>&gt;
-        &lt;<span class="pl-ent">pre</span>&gt;{{ tree_rows | json }}&lt;/<span class="pl-ent">pre</span>&gt;
-    &lt;/<span class="pl-ent">div</span>&gt;
+            &lt;<span class="pl-ent">table</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>table<span class="pl-pds">"</span></span>&gt;
+                &lt;<span class="pl-ent">thead</span>&gt;
+                    &lt;<span class="pl-ent">tr</span>&gt;
+                        &lt;<span class="pl-ent">th</span> <span class="pl-e">ng-class</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.titleClass<span class="pl-pds">"</span></span> <span class="pl-e">ng-style</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.titleStyle<span class="pl-pds">"</span></span>&gt;
+                            {{expandingProperty.displayName || expandingProperty.field || expandingProperty}}
+                        &lt;/<span class="pl-ent">th</span>&gt;
+                        &lt;<span class="pl-ent">th</span> <span class="pl-e">ng-repeat</span>=<span class="pl-s"><span class="pl-pds">"</span>col in colDefinitions<span class="pl-pds">"</span></span> <span class="pl-e">ng-class</span>=<span class="pl-s"><span class="pl-pds">"</span>col.titleClass<span class="pl-pds">"</span></span>
+                            <span class="pl-e">ng-style</span>=<span class="pl-s"><span class="pl-pds">"</span>col.titleStyle<span class="pl-pds">"</span></span>&gt;
+                            {{col.displayName || col.field}}
+                        &lt;/<span class="pl-ent">th</span>&gt;
+                    &lt;/<span class="pl-ent">tr</span>&gt;
+                &lt;/<span class="pl-ent">thead</span>&gt;
+                &lt;<span class="pl-ent">tbody</span>&gt;
+                    &lt;<span class="pl-ent">tr</span> <span class="pl-e">tree-table-node</span> <span class="pl-e">ng-repeat</span>=<span class="pl-s"><span class="pl-pds">"</span>row in tree_rows track by hashedTree(row)<span class="pl-pds">"</span></span>
+                        <span class="pl-e">ng-show</span>=<span class="pl-s"><span class="pl-pds">"</span>row.__visible__<span class="pl-pds">"</span></span> <span class="pl-e">ng-class</span>=<span class="pl-s"><span class="pl-pds">"</span>(row.__selected__ ? ' active':'')<span class="pl-pds">"</span></span>
+                        <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>ng-animate <span class="pl-pds">"</span></span>&gt;
+                        &lt;<span class="pl-ent">td</span> <span class="pl-e">ng-if</span>=<span class="pl-s"><span class="pl-pds">"</span>!expandingProperty.template<span class="pl-pds">"</span></span>
+                            <span class="pl-e">ng-style</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}<span class="pl-pds">"</span></span>
+                            <span class="pl-e">ng-click</span>=<span class="pl-s"><span class="pl-pds">"</span>user_clicks_branch(row)<span class="pl-pds">"</span></span> <span class="pl-e">ng-class</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.cellClass<span class="pl-pds">"</span></span>
+                            <span class="pl-e">compile</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.cellTemplate<span class="pl-pds">"</span></span>&gt;
+                        &lt;<span class="pl-ent">span</span> <span class="pl-e">tree-table-node-handle</span>&gt;
+                            &lt;<span class="pl-ent">i</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>fa fa-sort text-muted m-r-sm<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">i</span>&gt;
+                        &lt;/<span class="pl-ent">span</span>&gt; {{row[expandingProperty.field] || row[expandingProperty]}} &lt;<span class="pl-ent">a</span>&gt; &lt;<span class="pl-ent">i</span>
+                                <span class="pl-e">ng-class</span>=<span class="pl-s"><span class="pl-pds">"</span>row.__tree_icon__<span class="pl-pds">"</span></span> <span class="pl-e">ng-click</span>=<span class="pl-s"><span class="pl-pds">"</span>row.__expanded__ = !row.__expanded__<span class="pl-pds">"</span></span>
+                                <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>tree-icon<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">i</span>&gt; &lt;/<span class="pl-ent">a</span>&gt;
+                        &lt;/<span class="pl-ent">td</span>&gt;
+                        &lt;<span class="pl-ent">td</span> <span class="pl-e">ng-if</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.template<span class="pl-pds">"</span></span> <span class="pl-e">compile</span>=<span class="pl-s"><span class="pl-pds">"</span>expandingProperty.template<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">td</span>&gt;
+                        &lt;<span class="pl-ent">td</span> <span class="pl-e">ng-repeat</span>=<span class="pl-s"><span class="pl-pds">"</span>col in colDefinitions<span class="pl-pds">"</span></span> <span class="pl-e">ng-class</span>=<span class="pl-s"><span class="pl-pds">"</span>col.cellClass<span class="pl-pds">"</span></span> <span class="pl-e">ng-style</span>=<span class="pl-s"><span class="pl-pds">"</span>col.cellStyle<span class="pl-pds">"</span></span>
+                            <span class="pl-e">compile</span>=<span class="pl-s"><span class="pl-pds">"</span>col.cellTemplate<span class="pl-pds">"</span></span>&gt;
+                            {{row[col.field]}}
+                        &lt;/<span class="pl-ent">td</span>&gt;
+                    &lt;/<span class="pl-ent">tr</span>&gt;
+                &lt;/<span class="pl-ent">tbody</span>&gt;
+            &lt;/<span class="pl-ent">table</span>&gt;
+        &lt;/<span class="pl-ent">div</span>&gt;
+    &lt;<span class="pl-ent">pre</span>&gt;{{ treeData | json }}&lt;/<span class="pl-ent">pre</span>&gt;
+    &lt;<span class="pl-ent">pre</span>&gt;{{ tree_rows | json }}&lt;/<span class="pl-ent">pre</span>&gt;
 &lt;/<span class="pl-ent">script</span>&gt;</pre></div>
+      </section>
+    </div>
 
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/thienhung1989/angular-tree-table">Angular-tree-table</a> is maintained by <a href="https://github.com/thienhung1989">thienhung1989</a>.</span>
-
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">angular-tree-table maintained by <a href="https://github.com/thienhung1989">thienhung1989</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
+    </div>
 
-    </section>
+    
 
-  
   </body>
 </html>
-
