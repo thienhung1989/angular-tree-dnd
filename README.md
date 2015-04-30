@@ -1,7 +1,7 @@
 # angular-tree-table
 [Angular 1.x] Display tree table &amp; event DrapnDrop, field 'td' by tree (other normal) - without jQuery.
 ## Current Version
-- 1.0.4
+- 1.1.0
 
 ## Demo: 
 - http://thienhung1989.github.io/angular-tree-table/demo
