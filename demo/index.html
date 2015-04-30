@@ -83,7 +83,7 @@
 							'border-spacing': '2px'
 						}">
                         <tbody>
-                            <tr tree-table-node ng-repeat="row in tree_rows track by hashedTree(row)"
+                            <tr tree-table-node data="row" ng-repeat="row in tree_rows track by hashedTree(row)"
                                 ng-show="row.__visible__" ng-class="(row.__selected__ ? ' active':'')"
                                 class="ng-animate ">
                                 <td ng-if="!expandingProperty.template" ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {
