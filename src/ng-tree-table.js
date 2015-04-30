@@ -60,7 +60,6 @@
                     },
                     controller:  [
                         '$scope', '$element', '$attrs', 'tgConfig', function ($scope, $element, $attrs, tgConfig) {
-                            $scope.$type = 'TreeTable';
                             $scope.dragEnabled = true;
                             $scope.dragDelay = 0;
                             $scope.indent = 20;
@@ -79,29 +78,34 @@
                                 dropped:     function (info, accepted) {
                                     if (accepted) {
                                         var _node = info.node, _target = info.target;
-                                        var _parent_remove = null;
-                                        var new_index = 0;
-
+                                        var _parentRemove = null;
+                                        var _parentMoveTo = null;
+                                        var _newIndex = 0;
                                         if (_node.__parent__ === null) {
-                                            _parent_remove = $scope.treeData;
+                                            _parentRemove = $scope.treeData;
+                                            _parentMoveTo = null;
                                         } else {
-                                            _parent_remove = $scope.tree_rows[_node.__parent__].__children__;
+                                            _parentMoveTo = $scope.tree_rows[_node.__parent__];
+                                            _parentRemove = _parentMoveTo.__children__;
                                         }
-                                        var _parent = _parent_remove;
+                                        var _parent = _parentRemove;
+
                                         if (_target !== null) {
                                             if (_target.__level__ == info.level) {
                                                 if (_node.__parent__ !== _target.__parent__) { // optimal code
                                                     if (_target.__parent__ === null) {
                                                         _parent = $scope.treeData;
+                                                        _parentMoveTo = null;
                                                     } else {
-                                                        _parent = $scope.tree_rows[_target.__parent__].__children__;
+                                                        _parentMoveTo = $scope.tree_rows[_target.__parent__];
+                                                        _parent = _parentMoveTo.__children__;
                                                     }
                                                 }
-
-                                                new_index = _target.__index__ + 1;
+                                                _newIndex = _target.__index__ + 1;
                                             } else {
                                                 if (_target.__level__ < info.level) {
                                                     _parent = _target.__children__;
+                                                    _parentMoveTo = _target;
                                                 } else {
                                                     while (_target.__level__ > info.level) {
                                                         if (_target.__parent__ !== null) {
@@ -110,23 +114,34 @@
                                                             break;
                                                         }
                                                     }
-
                                                     if (_target.__parent__ === null) {
                                                         _parent = $scope.treeData;
+                                                        _parentMoveTo = null;
                                                     } else {
-                                                        _parent = $scope.tree_rows[_target.__parent__].__children__;
+                                                        _parentMoveTo = $scope.tree_rows[_target.__parent__];
+                                                        _parent = _parentMoveTo.__children__;
                                                     }
-                                                    new_index = _target.__index__ + 1;
+                                                    _newIndex = _target.__index__ + 1;
                                                 }
                                             }
                                         } else {
                                             _parent = $scope.treeData;
+                                            _parentMoveTo = null;
                                         }
+                                        if (_parent != _parentRemove || _node.__index__ != _newIndex) {
+                                            if (_parent === _parentRemove) {
+                                                if (_newIndex > _node.__index__) {
+                                                    _newIndex--;
+                                                }
+                                            }
 
-                                        if (_parent != _parent_remove || _node.__index__ != new_index) {
+                                            var _nodeRemoved = _parentRemove.splice(_node.__index__, 1)[0];
+                                            _parent.splice(_newIndex, 0, _nodeRemoved);
 
-                                            var _node_removed = _parent_remove.splice(_node.__index__, 1)[0];
-                                            _parent.splice(new_index, 0, _node_removed);
+                                            info.move = {
+                                                parent: _parentMoveTo,
+                                                pos: _newIndex
+                                            }
                                             return true;
                                         }
                                     }
@@ -185,13 +200,14 @@
                             }
                             $scope.hashedTree = function (node) {
                                 if ($scope.primary_key == '__uid__') {
-                                    return node.__index_real__ + '#' + node.__index__ + '#' + node.__uid__
+                                    return node.__index_real__ + '#' + node.__index__ + '#' + node.__uid__;
                                 } else {
                                     return node.__index_real__ + '#' + node.__index__ + '#' + node[$scope.primary_key];
                                 }
                             }
                         }],
                     link:        function (scope, element, attrs) {
+                        scope.$type = 'TreeTable';
                         $helper.calsIndent = scope.$callbacks.calsIndent;
                         scope.$watch(
                             attrs.primaryKey, function (value) {
@@ -249,8 +265,15 @@
                             }
                         );
                         // End watch
+                        //
                         scope.config = {};
                         angular.extend(scope.config, tgConfig);
+                        scope.$watch(
+                            attrs.config, function (val) {
+                                angular.extend(scope.config, val);
+                            }, true
+                        );
+
                         var expandingProperty, expand_level, n, tree;
                         attrs.iconExpand = attrs.iconExpand ? attrs.iconExpand : 'icon-plus  glyphicon glyphicon-plus  fa fa-plus';
                         attrs.iconCollapse = attrs.iconCollapse ? attrs.iconCollapse : 'icon-minus glyphicon glyphicon-minus fa fa-minus';
@@ -423,11 +446,7 @@
                                     if (branch.__uid__ == null) {
                                         branch.__uid__ = "" + Math.random();
                                     }
-
-                                    _tree_rows.push(
-                                        branch
-                                    );
-
+                                    _tree_rows.push(branch);
                                     // Check brach children
                                     var _dept = 1;
                                     if (_len > 0) {
@@ -732,8 +751,6 @@
                     replace:    true,
                     controller: [
                         '$scope', '$element', '$attrs', 'tgConfig', function ($scope, $element, $attrs, tgConfig) {
-                            $scope.$element = $element;
-                            $scope.$type = 'TreeTableNode';
                             $scope.$modelValue = null;
                             $scope.$nodeScope = $scope;
                             // $scope.config = $scope.$parent.config;
@@ -759,6 +776,11 @@
                                     this.$apply(fn);
                                 }
                             };
+                            $scope.expand = function (row) {
+                                if (row.__children__.length > 0) {
+                                    row.__expanded__ = !row.__expanded__;
+                                }
+                            }
                             $scope.prev = function () {
                                 return $scope.$parent.prev($scope.$modelValue.__index_real__);
                             }
@@ -785,17 +807,17 @@
                             }
                         }],
                     link:       function (scope, element, attrs) {
+                        scope.$element = element;
+                        scope.$type = 'TreeTableNode';
                         if (scope.config.nodeClass) {
                             element.addClass(scope.config.nodeClass);
                         }
                         scope.$watch(
-                            attrs['data'], function (newValue, oldValue, scope) {
+                            attrs.treeTableNode, function (newValue, oldValue, scope) {
                                 scope.$modelValue = newValue;
-
                             }, true
                         );
                         scope.init();
-
                         var hasTouch = 'ontouchstart' in window;
                         // todo startPos is unused
                         var startPos, firstMoving, dragInfo, pos;
@@ -846,42 +868,63 @@
                             var eventObj = $helper.eventObj(e);
                             firstMoving = true;
                             dragInfo = $helper.dragInfo(scope);
-                            placeElm = angular.element($window.document.createElement('tr'));
-                            var _len_down = scope.colDefinitions.length, _i;
-                            placeElm.append(
-                                angular.element($window.document.createElement('td')).addClass(scope.config.emptyTreeClass).addClass('indented').addClass(scope.config.placeHolderClass)
-                            );
-                            while (_len_down-- > 0) {
+                            var tagName = scope.$element.prop('tagName').toLowerCase();
+                            if (tagName.toLowerCase() === 'tr') {
+                                placeElm = angular.element($window.document.createElement('tr'));
+                                var _len_down = scope.colDefinitions.length, _i;
                                 placeElm.append(
-                                    angular.element($window.document.createElement('td')).addClass(scope.config.emptyTreeClass).addClass(scope.config.placeHolderClass)
+                                    angular.element($window.document.createElement('td')).addClass(scope.config.emptyTreeClass).addClass('indented').addClass(scope.config.placeHolderClass)
                                 );
+                                while (_len_down-- > 0) {
+                                    placeElm.append(
+                                        angular.element($window.document.createElement('td')).addClass(scope.config.emptyTreeClass).addClass(scope.config.placeHolderClass)
+                                    );
+                                }
+                            } else {
+                                placeElm = angular.element($window.document.createElement('li')).addClass(scope.config.emptyTreeClass).addClass(scope.config.placeHolderClass);
                             }
                             pos = $helper.positionStarted(eventObj, scope.$element);
                             placeElm.css('width', $helper.width(scope.$element) + 'px');
                             $helper.replaceIndent(placeElm, dragInfo.level);
-                            dragElm = angular.element($window.document.createElement('table')).addClass('table tree-table').addClass(scope.config.dragClass);
+
+                            if (tagName === 'tr') {
+                                dragElm = angular.element($window.document.createElement('table')).addClass(scope.tree_class).addClass(scope.config.dragClass);
+                            } else {
+                                dragElm = angular.element($window.document.createElement('ul')).addClass(scope.tree_class).addClass(scope.config.dragClass);
+                            }
+
                             dragElm.css('width', ($helper.width(scope.$element) + 10) + 'px');
                             dragElm.css('z-index', 9999);
-                            var _tbody = angular.element($window.document.createElement('tbody'));
-                            // moving item with descendant
-                            scope.$element[0].parentNode.insertBefore(placeElm[0], scope.$element[0]);
+
                             var height = 0;
-                            var drag_descendant = function (element, len) {
-                                var _i;
-                                for (_i = 0; _i < len; _i++) {
-                                    height = height + $helper.height(element);
-                                    _tbody.append(element.clone());
-                                    if (scope.config.hiddenClass) {
-                                        element.addClass(scope.config.hiddenClass);
+                            if (tagName === 'tr') {
+                                var _tbody = angular.element($window.document.createElement('tbody'));
+                                var drag_descendant = function (element, len) {
+                                    var _i;
+                                    for (_i = 0; _i < len; _i++) {
+                                        height = height + $helper.height(element);
+                                        _tbody.append(element.clone());
+                                        if (scope.config.hiddenClass) {
+                                            element.addClass(scope.config.hiddenClass);
+                                        }
+                                        element = element.next();
                                     }
-                                    element = element.next();
+                                }
+                                drag_descendant(
+                                    scope.$element, scope.node().__dept__
+                                );
+                                dragElm.append(_tbody);
+                            } else {
+                                height = height + $helper.height(scope.$element);
+                                dragElm.append(scope.$element.clone());
+                                if (scope.config.hiddenClass) {
+                                    scope.$element.addClass(scope.config.hiddenClass);
                                 }
                             }
-                            drag_descendant(
-                                scope.$element, scope.node().__dept__
-                            );
-                            dragElm.append(_tbody);
+
                             placeElm.css('height', height + 'px');
+                            // moving item with descendant
+                            scope.$element[0].parentNode.insertBefore(placeElm[0], scope.$element[0]);
                             $document.find('body').append(dragElm);
                             dragElm.css(
                                 {
@@ -903,11 +946,7 @@
                                 html.offsetHeight
                             );
                             document_width = Math.max(
-                                body.scrollWidth,
-                                body.offsetWidth,
-                                html.clientWidth,
-                                html.scrollWidth,
-                                html.offsetWidth
+                                body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth
                             );
                         };
                         var dragMove = function (e) {
@@ -994,11 +1033,14 @@
                                 } else {
                                     dragElm[0].style.display = displayElm;
                                 }
+
                                 // move vertical
                                 if (!pos.dirAx) {
+
                                     var targetBefore, targetNode;
                                     // check it's new position
                                     targetNode = targetElm.scope();
+
                                     if (!targetNode) {
                                         return;
                                     }
@@ -1013,6 +1055,7 @@
                                     }
                                     if (targetNode.$callbacks.dragEnabled()) {
                                         targetElm = targetNode.$element; // Get the element of tree-table-node
+
                                         var targetOffset = $helper.offset(targetElm);
                                         targetBefore = targetNode.horizontal ? eventObj.pageX < (targetOffset.left + $helper.width(targetElm) / 2) : eventObj.pageY < (targetOffset.top + $helper.height(targetElm) / 2);
                                         if (targetNode.accept(scope, targetNode, targetBefore)) {
@@ -1103,6 +1146,7 @@
                                 } else {
                                     bindDrag();
                                 }
+
                                 scope.$apply(
                                     function () {
                                         scope.$callbacks.dragStop(dragInfo, _status);
@@ -1170,29 +1214,62 @@
                 };
             }]
     ).directive(
-        'treeTableNodeHandle', [
-            '$window', function ($window) {
-                return {
-                    restrict:   'A',
-                    scope:      true,
-                    controller: [
-                        '$scope', '$element', '$attrs', 'tgConfig', function ($scope, $element, $attrs, tgConfig) {
-                            $scope.$element = $element;
-                            $scope.$type = 'TreeTableNodeHandle';
-                            $scope.$nodeScope = null;
-                        }],
-                    link:       function (scope, element, attrs) {
-                        if (scope.$parent.$type == 'TreeTableNode') {
-                            scope.$nodeScope = scope.$parent
-                        } else {
-                            scope.$nodeScope = scope;
-                        }
-                        if (scope.config.handleClass) {
-                            element.addClass(scope.config.handleClass);
-                        }
+        'treeTableNodes', function () {
+            return {
+                restrict:   'A',
+                replace:    true,
+                controller: [
+                    '$scope', '$element', '$attrs', 'tgConfig', function ($scope, $element, $attrs, tgConfig) {
+                        $scope.$nodeScope = null;
+                        $scope.datas = [];
+                    }],
+                link:       function (scope, element, attrs) {
+
+                    scope.$type = 'TreeTableNodes';
+                    scope.$element = element;
+
+                    scope.$watch(
+                        attrs.treeTableNodes, function (newValue, oldValue, scope) {
+                            scope.datas = newValue;
+                        }, true
+                    );
+                    // if (scope.config.handleClass) {
+                    element.addClass('angular-ui-tree-nodes');
+                    // }
+                    if (scope.$parent.$type == 'TreeTableNode') {
+                        scope.$nodeScope = scope.$parent
+                    } else {
+                        scope.$nodeScope = scope;
                     }
-                };
-            }]
+                    scope.$element = element;
+                }
+            };
+        }
+    ).directive(
+        'treeTableNodeHandle', function () {
+            return {
+                restrict:   'A',
+                scope:      true,
+                controller: [
+                    '$scope', '$element', '$attrs', 'tgConfig', function ($scope, $element, $attrs, tgConfig) {
+                        $scope.$nodeScope = null;
+                    }],
+                link:       function (scope, element, attrs) {
+
+                    scope.$element = element;
+                    scope.$type = 'TreeTableNodeHandle';
+
+                    if (scope.$parent.$type == 'TreeTableNode') {
+                        scope.$nodeScope = scope.$parent
+                    } else {
+                        scope.$nodeScope = scope;
+                    }
+                    if (scope.config.handleClass) {
+                        element.addClass(scope.config.handleClass);
+                    }
+                }
+            };
+        }
     ).provider(
         'treeTableTemplate', function () {
             var templatePath = 'template/treeTable/treeTable.html';
@@ -1230,6 +1307,10 @@
                             scope:         scope,
                             level:         scope.node().__level__,
                             target:        scope.prev(),
+                            move:          {
+                                parent: -1,
+                                pos:    -1
+                            },
                             isDirty:       function (index) {
                                 return this.node.__index_real__ <= index && index <= this.node.__index_real__ + this.node.__dept__ - 1;
                             },
@@ -1358,7 +1439,6 @@
                     if (!data || data.length == 0 || !primaryKey || !parentKey) {
                         return [];
                     }
-
                     var tree = [], rootIds = [], item = data[0], _primary = item[primaryKey], treeObjs = {}, parentId, parent, len = data.length, i = 0;
                     while (i < len) {
                         item = data[i++];
