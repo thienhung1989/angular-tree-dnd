@@ -165,3 +165,25 @@ $scope.$callbacks = {
 	<pre>{{ tree_rows | json }}</pre>
 </script>
 ```
+## dragStop:
+```js
+    scope.$callbacks.dragStop(dragInfo, _status);
+```
+    * _status: Status changed pos of node, Drag succeed!
+    * dragInfo:
+        * node:          scope.node(), // Data node dragged
+        * scope:         scope, // Scope node
+        * level:         scope.node().__level__, // Level indent
+        * target:        scope.prev(), // Node prev
+        * move:
+            * parent: -1, // -1: Dragged failed, null: node root, > 0: node normal
+            * pos:    -1 // Position new Note moveTo
+
+
+* Add 'data' to TreeTableNode  `tree-table-node=data` in template;
+```html
+<tr tree-table-node="row" ng-repeat="row in tree_rows track by hashedTree(row)"
+                            ng-show="row.__visible__" ng-class="(row.__selected__ ? ' active':'')" class="ng-animate ">
+    ....
+</tr>
+```
