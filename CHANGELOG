@@ -7,6 +7,7 @@
 ```js
     scope.$callbacks.dragStop(dragInfo, _status);
 ```
+
     * _status: Status changed pos of node, Drag succeed!
     * dragInfo:
         * node:          scope.node(), // Data node dragged
