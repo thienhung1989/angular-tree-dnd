@@ -1,3 +1,5 @@
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/thienhung1989/angular-tree-table/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
 # angular-tree-table
 [Angular 1.x] Display tree table &amp; event DrapnDrop, field 'td' by tree (other normal) - without jQuery.
 ## Current Version
