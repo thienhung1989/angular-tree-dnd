@@ -187,3 +187,6 @@ $scope.$callbacks = {
     ....
 </tr>
 ```
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/thienhung1989/angular-tree-table/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
