@@ -31,6 +31,7 @@
     opacity: 1;
 }
 
+
 .tree-table-animate-leave.tree-table-animate-leave-active,
 .tree-table-row.ng-leave-active {
     height: 0;
@@ -70,6 +71,10 @@
 
 .tree-table-placeholder {
     position: relative;
+    margin: 0px;
+    padding: 0px;
+    min-height: 20px;
+    line-height: 20px;
 }
 
 .tree-table-handle {
@@ -79,6 +84,8 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    min-height: 20px;
+    line-height: 20px;
 }
 
 .tree-table-drag {
@@ -88,4 +95,23 @@
     opacity: .7;
     background-color: #cdffdc;
     border: 2px dashed #385736;
+}
+
+
+.tree-table-rows {
+    position: relative;
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+.tree-table-rows .tree-table-rows {
+    padding-left: 20px;
+}
+
+.tree-table-row, .tree-table-placeholder {
+    /*margin: 0px;*/
+    /*padding: 0px;*/
+    min-height: 20px;
+    line-height: 20px;
 }

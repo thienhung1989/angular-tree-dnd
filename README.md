@@ -187,3 +187,34 @@ $scope.$callbacks = {
     ....
 </tr>
 ```
+
+# Display ListTree (UL, OL)
+
+* Combinding with list-tree.
+
+```html
+<script type="text/ng-template" id="tree-table-template-render.html">
+    <ul tree-table-nodes="tree_data" class="tree-table-rows">
+        <li tree-table-node="row" ng-repeat="row in datas track by row.__hashKey__" ng-show="row.__visible__"
+            ng-class="(row.__selected__ ? ' active':'')"
+            ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {}" ng-click="user_clicks_branch(row)"
+            ng-class="expandingProperty.cellClass" compile="expandingProperty.cellTemplate"
+            ng-include="'tree-table-template-fetch.html'"></li>
+    </ul>
+</script>
+<script type="text/ng-template" id="tree-table-template-fetch.html">
+    <a tree-table-node-handle class="btn btn-default"> - </a>{{row[expandingProperty.field] || row[expandingProperty]}}
+    <a ng-if="row.__expanded__ != null" class="btn btn-default"
+       ng-click="expand(row)"> {{ (row.__expanded__) ? '-' : '+' }} </a>
+    <ul tree-table-nodes="row.__children__" class="tree-table-rows">
+        <li tree-table-node="row" ng-repeat="row in datas track by row.__hashKey__" ng-show="row.__visible__"
+            ng-class="(row.__selected__ ? ' active':'')"
+            ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {}" ng-click="user_clicks_branch(row)"
+            ng-class="[expandingProperty.cellClass]" compile="expandingProperty.cellTemplate"
+            ng-include="'tree-table-template-fetch.html'"></li>
+    </ul>
+</script>
+<tree-table tree-data="tree_data" tree-control="my_tree" drag-enabled="true" column-defs="[]"
+            expand-on="expanding_property" on-select="my_tree_handler(branch)" on-click="my_tree_handler(branch)"
+            template-url="tree-table-template-render.html"></tree-table>
+```
