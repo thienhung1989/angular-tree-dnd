@@ -75,38 +75,32 @@
                         data-indent-plus="15"></tree-table>
         </div>
         <div ng-show="ShowTreeTable == 2">
-            <script type="text/ng-template" id="tree-table-template.html">
-                <div>
-                    <table ng-class="tree_class" ng-style="{
-							'width': 'auto',
-							'border-collapse': 'separate',
-							'border-spacing': '2px'
-						}">
-                        <tbody>
-                            <tr tree-table-node data="row" ng-repeat="row in tree_rows track by hashedTree(row)"
-                                ng-show="row.__visible__" ng-class="(row.__selected__ ? ' active':'')"
-                                class="ng-animate ">
-                                <td ng-if="!expandingProperty.template" ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {
-											'left': $callbacks.calsIndent(row.__level__),
-											'border': '2px dashed red',
-											}" ng-click="user_clicks_branch(row)" ng-class="expandingProperty.cellClass"
-                                    compile="expandingProperty.cellTemplate" ng-style="border: 1px;">
-                                    <a class="btn btn-sm btn-default btn-icon" tree-table-node-handle> <i
-                                            class="fa fa-sort text-muted m-r-sm"></i> =
-                                    </a> {{row[expandingProperty.field] || row[expandingProperty]}} <a> <i
-                                        ng-class="row.__tree_icon__" ng-click="row.__expanded__ = !row.__expanded__"
-                                        class="tree-icon"></i> </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <script type="text/ng-template" id="tree-table-template-render.html">
+                <ul tree-table-nodes="tree_data" class="tree-table-rows">
+                    <li tree-table-node="row" ng-repeat="row in datas track by row.__hashKey__"
+                        ng-show="row.__visible__" ng-class="(row.__selected__ ? ' active':'')"
+                        ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {}"
+                        ng-click="user_clicks_branch(row)" ng-class="expandingProperty.cellClass"
+                        compile="expandingProperty.cellTemplate" ng-include="'tree-table-template-fetch.html'"></li>
+                </ul>
+            </script>
+            <script type="text/ng-template" id="tree-table-template-fetch.html">
+                <a tree-table-node-handle
+                   class="btn btn-default"> - </a>{{row[expandingProperty.field] || row[expandingProperty]}}<a
+                        ng-if="row.__expanded__ != null" class="btn btn-default"
+                        ng-click="expand(row)"> {{ (row.__expanded__) ? '-' : '+' }} </a>
+                <ul tree-table-nodes="row.__children__" class="tree-table-rows">
+                    <li tree-table-node="row" ng-repeat="row in datas track by row.__hashKey__"
+                        ng-show="row.__visible__" ng-class="(row.__selected__ ? ' active':'')"
+                        ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {}"
+                        ng-click="user_clicks_branch(row)" ng-class="[expandingProperty.cellClass]"
+                        compile="expandingProperty.cellTemplate" ng-include="'tree-table-template-fetch.html'"></li>
+                </ul>
             </script>
             <tree-table tree-data="tree_data" tree-control="my_tree" drag-enabled="true" column-defs="[]"
                         expand-on="expanding_property" on-select="my_tree_handler(branch)"
-                        on-click="my_tree_handler(branch)" template-url="tree-table-template.html" icon-leaf="none"
-                        icon-expand="fa fa-fw fa-angle-right" icon-collapse="fa fa-fw fa-angle-down" data-indent="30"
-                        data-indent-unit="px" data-indent-plus="15"></tree-table>
+                        on-click="my_tree_handler(branch)" template-url="tree-table-template-render.html"></tree-table>
+
         </div>
     </div>
 </div>

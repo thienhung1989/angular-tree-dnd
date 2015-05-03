@@ -4,7 +4,37 @@
             '$templateCache', function ($templateCache) {
             $templateCache.put(
                 'template/treeTable/treeTable.html',
-                "" + "<table ng-class=\"tree_class\">\n" + "    <thead>\n" + "  <tr>\n" + "     <th ng-class=\"expandingProperty.titleClass\" ng-style=\"expandingProperty.titleStyle\">\n" + "         {{expandingProperty.displayName || expandingProperty.field || expandingProperty}}\n" + "        </th>\n" + "        <th ng-repeat=\"col in colDefinitions\" ng-class=\"col.titleClass\" ng-style=\"col.titleStyle\">\n" + "         {{col.displayName || col.field}}\n" + "     </th>\n" + "    </tr>\n" + "    </thead>\n" + " <tbody>\n" + "  <tr tree-table-node=\"row\" ng-repeat=\"row in tree_rows track by hashedTree(row) \" ng-show=\"row.__visible__\"\n" + "     ng-class=\"(row.__selected__ ? ' active':'')\">\n" + "        <td ng-if=\"!expandingProperty.template\" tree-table-node-handle\n" + "         ng-style=\"expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}\"\n" + "          ng-click=\"user_clicks_branch(row)\" ng-class=\"expandingProperty.cellClass\"\n" + "            compile=\"expandingProperty.cellTemplate\">\n" + "              <a data-nodrag>\n" + "                  <i ng-class=\"row.__tree_icon__\" ng-click=\"row.__expanded__ = !row.__expanded__\"\n" + "                     class=\"tree-icon\"></i>\n" + "              </a>\n" + "             {{row[expandingProperty.field] || row[expandingProperty]}}\n" + "       </td>\n" + "        <td ng-if=\"expandingProperty.template\" compile=\"expandingProperty.template\"></td>\n" + "        <td ng-repeat=\"col in colDefinitions\" ng-class=\"col.cellClass\" ng-style=\"col.cellStyle\"\n" + "            compile=\"col.cellTemplate\">\n" + "            {{row[col.field]}}\n" + "       </td>\n" + "    </tr>\n" + "    </tbody>\n" + "</table>"
+                "" + "<table ng-class=\"tree_class\">\n"
+                + "    <thead>\n" + "  <tr>\n"
+                + "     <th ng-class=\"expandingProperty.titleClass\" ng-style=\"expandingProperty.titleStyle\">\n"
+                + "         {{expandingProperty.displayName || expandingProperty.field || expandingProperty}}\n"
+                + "        </th>\n"
+                + "        <th ng-repeat=\"col in colDefinitions\" ng-class=\"col.titleClass\" ng-style=\"col.titleStyle\">\n"
+                + "         {{col.displayName || col.field}}\n"
+                + "     </th>\n"
+                + "    </tr>\n"
+                + "    </thead>\n"
+                + " <tbody>\n"
+                + "  <tr tree-table-node=\"row\" ng-repeat=\"row in tree_rows track by row.__hashhKey__ \" ng-show=\"row.__visible__\"\n"
+                + "     ng-class=\"(row.__selected__ ? ' active':'')\">\n"
+                + "        <td ng-if=\"!expandingProperty.template\" tree-table-node-handle\n"
+                + "         ng-style=\"expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}\"\n"
+                + "          ng-click=\"user_clicks_branch(row)\" ng-class=\"expandingProperty.cellClass\"\n"
+                + "            compile=\"expandingProperty.cellTemplate\">\n"
+                + "              <a data-nodrag>\n"
+                + "                  <i ng-class=\"row.__tree_icon__\" ng-click=\"row.__expanded__ = !row.__expanded__\"\n"
+                + "                     class=\"tree-icon\"></i>\n"
+                + "              </a>\n"
+                + "             {{row[expandingProperty.field] || row[expandingProperty]}}\n"
+                + "       </td>\n"
+                + "        <td ng-if=\"expandingProperty.template\" compile=\"expandingProperty.template\"></td>\n"
+                + "        <td ng-repeat=\"col in colDefinitions\" ng-class=\"col.cellClass\" ng-style=\"col.cellStyle\"\n"
+                + "            compile=\"col.cellTemplate\">\n"
+                + "            {{row[col.field]}}\n"
+                + "       </td>\n"
+                + "    </tr>\n"
+                + "    </tbody>\n"
+                + "</table>"
             );
         }]
     );
@@ -64,7 +94,7 @@
                             $scope.indent = 20;
                             $scope.indent_plus = 15;
                             $scope.indent_unit = 'px';
-                            // $scope.tree_rows = [];
+
                             $scope.tree_class = 'table';
                             $scope.primary_key = '__uid__';
                             $scope.$callbacks = {
@@ -97,6 +127,7 @@
                                     return $scope.dragEnabled;
                                 }
                             };
+
                             $scope.dropped = function (info, accepted) {
                                 if (accepted) {
                                     var _node = info.node, _target = info.target;
@@ -962,7 +993,7 @@
                             placeElm.css('width', $TreeTableHelper.width(scope.$element) + 'px');
 
                             if (tagName === 'tr') {
-                                dragElm = angular.element($window.document.createElement('table')).addClass(scope.config.tree_class + ' table ' +scope.config.dragClass);
+                                dragElm = angular.element($window.document.createElement('table')).addClass(scope.config.tree_class + ' table ' + scope.config.dragClass);
                             } else {
                                 dragElm = angular.element($window.document.createElement('ul')).addClass(scope.config.dragClass + ' tree-table-rows');
                             }
@@ -1357,7 +1388,7 @@
                             scope.datas = newValue;
                         }, true
                     );
-//                    element.addClass(scope.config.nodeClass);
+                    //                    element.addClass(scope.config.nodeClass);
                     scope.$nodeScope = scope;
                     scope.$element = element;
                 }

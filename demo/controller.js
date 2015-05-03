@@ -1,6 +1,4 @@
-/**
- * Created by Nguyen on 4/29/2015.
- */
+
 /**
  * Created by Nguyen on 4/29/2015.
  */
