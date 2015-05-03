@@ -15,7 +15,7 @@
                 + "    </tr>\n"
                 + "    </thead>\n"
                 + " <tbody>\n"
-                + "  <tr tree-table-node=\"row\" ng-repeat=\"row in tree_rows track by row.__hashhKey__ \" ng-show=\"row.__visible__\"\n"
+                + "  <tr tree-table-node=\"row\" ng-repeat=\"row in tree_rows track by row.__hashKey__ \" ng-show=\"row.__visible__\"\n"
                 + "     ng-class=\"(row.__selected__ ? ' active':'')\">\n"
                 + "        <td ng-if=\"!expandingProperty.template\" tree-table-node-handle\n"
                 + "         ng-style=\"expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}\"\n"
