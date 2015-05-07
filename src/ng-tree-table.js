@@ -532,9 +532,9 @@
 
                                     var _hashKey;
                                     if (scope.primary_key == '__uid__') {
-                                        _hashKey = parent + '#' + index + '#' + branch.__uid__ + '#' + _len;
+                                        _hashKey = parent + '#' + index + '#' + branch.__uid__;
                                     } else {
-                                        _hashKey = parent + '#' + index + '#' + branch[scope.primary_key] + '#' + _len;
+                                        _hashKey = parent + '#' + index + '#' + branch[scope.primary_key];
                                     }
 
                                     if (branch.__hashKey__ == null || branch.__hashKey__ != _hashKey) {
@@ -1001,33 +1001,38 @@
                             dragElm.css('width', ($TreeTableHelper.width(scope.$element) + 10) + 'px');
                             dragElm.css('z-index', 9999);
 
-                            var height = 0;
+                            var _height = 0;
                             if (tagName == 'tr') {
                                 var _tbody = angular.element($window.document.createElement('tbody'));
-                                var drag_descendant = function (element, len) {
-                                    var _i;
-                                    for (_i = 0; _i < len; _i++) {
-                                        height = height + $TreeTableHelper.height(element);
-                                        _tbody.append(element.clone());
-                                        if (scope.config.hiddenClass) {
-                                            element.addClass(scope.config.hiddenClass);
-                                        }
-                                        element = element.next();
+                                var drag_descendant = function (node) {
+                                    var _scope, _element, _i, _len, _nodes;
+
+                                    _scope = scope.getScope(node);
+                                    _element = _scope.$element;
+                                    _height += $TreeTableHelper.height(_element);
+                                    _tbody.append(_element.clone());
+                                    if (scope.config.hiddenClass) {
+                                        _element.addClass(scope.config.hiddenClass);
+                                    }
+                                    _nodes = node.__children__;
+                                    _len = _nodes.length;
+                                    for (_i = 0; _i < _len; _i++) {
+                                        drag_descendant(_nodes[_i]);
                                     }
                                 }
-                                drag_descendant(
-                                    scope.$element, scope.node().__dept__
-                                );
+
+                                drag_descendant(scope.node());
+
                                 dragElm.append(_tbody);
                             } else {
-                                height = $TreeTableHelper.height(scope.$element);
+                                _height = $TreeTableHelper.height(scope.$element);
                                 dragElm.append(scope.$element.clone());
                                 if (scope.config.hiddenClass) {
                                     scope.$element.addClass(scope.config.hiddenClass);
                                 }
                             }
 
-                            placeElm.css('height', height + 'px');
+                            placeElm.css('height', _height + 'px');
                             // moving item with descendant
                             scope.$element[0].parentNode.insertBefore(placeElm[0], scope.$element[0]);
                             $document.find('body').append(dragElm);
@@ -1269,18 +1274,21 @@
 
                                 var tagName = scope.$element.prop('tagName').toLowerCase();
                                 if (tagName == 'tr') {
-                                    var rollback_descendant = function (element, len) {
-                                        var _i;
-                                        for (_i = 0; _i < len; _i++) {
-                                            if (scope.config.hiddenClass) {
-                                                element.removeClass(scope.config.hiddenClass);
-                                            }
-                                            element = element.next();
+                                    var rollback_descendant = function (node) {
+                                        var _scope, _element, _i, _len, _nodes;
+                                        _scope = scope.getScope(node);
+                                        _element = _scope.$element;
+                                        if (scope.config.hiddenClass) {
+                                            _element.removeClass(scope.config.hiddenClass);
+                                        }
+                                        _nodes = node.__children__;
+                                        _len = _nodes.length;
+
+                                        for (_i = 0; _i < _len; _i++) {
+                                            rollback_descendant(_nodes[_i]);
                                         }
                                     }
-                                    rollback_descendant(
-                                        scope.$element, scope.node().__dept__
-                                    );
+                                    rollback_descendant(scope.node());
                                 } else {
                                     if (scope.config.hiddenClass) {
                                         scope.$element.removeClass(scope.config.hiddenClass);
