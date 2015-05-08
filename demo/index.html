@@ -72,7 +72,12 @@
             <tree-table tree-data="tree_data" tree-control="my_tree" drag-enabled="true" column-defs="col_defs"
                         expand-on="expanding_property" on-select="my_tree_handler(branch)"
                         on-click="my_tree_handler(branch)" data-indent="30" data-indent-unit="px"
-                        data-indent-plus="15"></tree-table>
+                        data-indent-plus="15"
+                        enable-hotkey="true"
+                        enable-drag="true"
+                        enable-status="true"
+                        enable-move="true"
+                    ></tree-table>
         </div>
         <div ng-show="ShowTreeTable == 2">
             <script type="text/ng-template" id="tree-table-template-render.html">
