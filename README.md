@@ -1,7 +1,7 @@
 # angular-tree-table
 [Angular 1.x] Display tree table &amp; event DrapnDrop, field 'td' by tree (other normal) - without jQuery.
 ## Current Version
-- 1.1.0
+- 2.0.1
 
 ## Demo: 
 - http://thienhung1989.github.io/angular-tree-table/demo
@@ -217,4 +217,39 @@ $scope.$callbacks = {
 <tree-table tree-data="tree_data" tree-control="my_tree" drag-enabled="true" column-defs="[]"
             expand-on="expanding_property" on-select="my_tree_handler(branch)" on-click="my_tree_handler(branch)"
             template-url="tree-table-template-render.html"></tree-table>
+```
+
+
+## Add attributes
+    * enable-move: `true`: To move node, `false`: to copy node *(default `true`)*
+    * enable-hotkey: `true`: press 'shift' to move node, unpress 'shift' to copy node. *(default `false`)*
+    * enable-drag: to Enable-drag *(default `true`)*
+    * enable-status: to show status moving, copying *(default `false`)*
+    * template-copy: to add url template of `Status Copy` *(can bypass string or variable in controller, but just only get $templateCache, if not exist will get default)*;
+    * template-move: to add url template of `Status Move` *(can bypass string or variable in controller, but just only get $templateCache, if not exist will get default)*;
+    * Example:
+```html
+<tree-table class="tree-table table table-hover b-b b-light" tree-data="tree_data" tree-control="my_tree"
+    primary-key="primaryKey" 
+    callbacks="callbacks" 
+    
+    enable-drag="true"
+    enable-status="true" 
+    enable-move="true" 
+    icon-leaf="none" 
+    icon-expand="fa fa-fw fa-angle-right"
+    icon-collapse="fa fa-fw fa-angle-down" 
+    
+    column-defs="col_defs" 
+    expand-on="expanding_property"
+    
+    template-url="tree-table-template.html" 
+    template-move="'tree-table-template.html'"
+    template-copy="tree-table-template.html"
+
+    data-indent="30"
+    data-indent-unit="px"
+    data-indent-plus="15"
+></tree-table>
+
 ```

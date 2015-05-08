@@ -97,9 +97,15 @@
     border: 2px dashed #385736;
 }
 
+.tree-table-status {
+    position: absolute;
+    background-color: #ffffff;
+    border: 1px solid #92e5d3;
+    padding: 1px 4px;
+    opacity: .85;
+}
 
 .tree-table-rows {
-    position: relative;
     margin: 0px;
     padding: 0px;
     list-style: none;
