@@ -78,22 +78,21 @@
             }]
     ).directive(
         'treeTable', [
-            '$timeout', '$window', 'treeTableTemplate', 'tgConfig', '$TreeTableHelper', '$templateCache',
-            function ($timeout, $window, treeTableTemplate, tgConfig, $TreeTableHelper, $templateCache) {
+            '$timeout', '$window', '$document', 'treeTableTemplate', 'tgConfig', '$TreeTableHelper', '$templateCache',
+            function ($timeout, $window, $document, treeTableTemplate, tgConfig, $TreeTableHelper, $templateCache) {
                 return {
                     restrict:    'E',
                     replace:     true,
                     scope:       {
-                        treeData:    '=',
-                        columnDefs:  '=',
-                        expandOn:    '=',
-                        onSelect:    '&',
-                        onClick:     '&',
-                        treeControl: '=',
-                        tree:        '=treeControl',
-                        tree_data:   '=treeData',
-                        callbacks:   '=',
-                        primaryKey:  '='
+                        treeData:   '=',
+                        onSelect:   '&',
+                        onClick:    '&',
+                        tree:       '=treeControl',
+                        tree_data:  '=treeData',
+                        expandOn:   '=',
+                        columnDefs: '=',
+                        callbacks:  '=',
+                        primaryKey: '='
                     },
                     templateUrl: function (tElement, tAttrs) {
                         return tAttrs.templateUrl || treeTableTemplate.getPath();
@@ -114,7 +113,9 @@
                             $scope.enabledHotkey = false;
 
                             $scope.$globals = {};
-                            $scope.$dragging = null;
+
+                            $scope.statusElm = null;
+                            $scope.placeElm = null;
 
                             $scope.$callbacks = {
                                 accept:      function (dragInfo, before) {
@@ -130,29 +131,20 @@
                                     return true;
                                 },
                                 calsIndent:  function (level, skipUnit, skipEdge) {
-                                    var _unit = $scope.indent_unit ? $scope.indent_unit : 'px';
-                                    var _edge = (skipEdge) ? 0 : $scope.indent_plus;
+                                    var unit = 0,
+                                        edge = (skipEdge) ? 0 : $scope.indent_plus;
                                     if (!skipUnit) {
-                                        _unit = $scope.indent_unit ? $scope.indent_unit : 'px';
-                                    } else {
-                                        _unit = 0;
+                                        unit = $scope.indent_unit ? $scope.indent_unit : 'px';
                                     }
+
                                     if (level - 1 < 1) {
-                                        return _edge + _unit;
+                                        return edge + unit;
                                     } else {
-                                        return ($scope.indent * (level - 1)) + _edge + _unit;
+                                        return $scope.indent * (level - 1) + edge + unit;
                                     }
                                 },
                                 dragEnabled: function () {
                                     return $scope.dragEnabled;
-                                }
-                            };
-
-                            $scope.setDragging = function (_scope) {
-                                if (_scope) {
-                                    $scope.$dragging = _scope;
-                                } else {
-                                    $scope.$dragging = null;
                                 }
                             }
 
@@ -208,6 +200,7 @@
                                     _parent = $scope.treeData;
                                     _parentMoveTo = null;
                                 }
+
                                 if (_parent != _parentRemove || _node.__index__ != _newIndex) {
                                     if (_parent === _parentRemove) {
                                         if (_newIndex > _node.__index__) {
@@ -234,39 +227,32 @@
                             $scope.accept = function (info, before) {
                                 return $scope.$callbacks.accept(info, before);
                             };
+
                             $scope.beforeDrag = function (sourceNode) {
                                 return $scope.$callbacks.beforeDrag(sourceNode);
                             };
-                            $scope.safeApply = function (fn) {
-                                var phase = this.$root.$$phase;
-                                if (phase == '$apply' || phase == '$digest') {
-                                    if (fn && (typeof (fn) === 'function')) {
-                                        fn();
-                                    }
-                                } else {
-                                    this.$apply(fn);
-                                }
-                            };
+
                             $scope.getPrevGlobal = function (index) {
                                 if (index > 0) {
                                     return $scope.tree_rows[index - 1];
                                 }
                                 return null;
-                            }
+                            };
+
                             $scope.getNextGlobal = function (index) {
                                 if (index > 0) {
                                     return $scope.tree_rows[index - 1];
                                 }
                                 return null;
-                            }
+                            };
 
                             $scope.getHash = function (node) {
                                 if ($scope.primary_key == '__uid__') {
-                                    return node.__parent__ + '#' + node.__index__ + '#' + node.__uid__ + '#' + node.__children__.length;
+                                    return '#' + node.__parent_real__ + '#' + node.__index__ + '#' + node.__uid__;
                                 } else {
-                                    return node.__parent__ + '#' + node.__index__ + '#' + node[$scope.primary_key] + '#' + node.__children__.length;
+                                    return '#' + node.__parent_real__ + '#' + node.__index__ + '#' + node[$scope.primary_key];
                                 }
-                            }
+                            };
 
                             $scope.setScope = function (node, scope) {
                                 var _hash = $scope.getHash(node);
@@ -279,7 +265,7 @@
                                 return $scope.$globals[$scope.getHash(node)];
                             }
 
-                            $scope.getScopeTree = function(){
+                            $scope.getScopeTree = function () {
                                 return $scope;
                             }
 
@@ -291,10 +277,98 @@
                                 }
                             }
 
+                            $scope.setPositionStatus = function (e) {
+                                if ($scope.statusElm) {
+                                    $scope.statusElm.css(
+                                        {
+                                            'left':    e.pageX + 10 + 'px',
+                                            'top':     e.pageY + 15 + 'px',
+                                            'z-index': 9999
+                                        }
+                                    );
+                                    $scope.statusElm.addClass($scope.config.statusClass);
+                                }
+                            }
+
+                            $scope.hideStatus = function () {
+                                if ($scope.statusElm) {
+                                    $scope.statusElm.addClass($scope.config.hiddenClass);
+                                }
+                            }
+
+                            $scope.refreshStatus = function () {
+                                if ($scope.enabledStatus) {
+                                    var statusElmOld = $scope.statusElm;
+                                    if ($scope.enabledMove) {
+                                        $scope.statusElm = angular.element(treeTableTemplate.getMove());
+                                    } else {
+                                        $scope.statusElm = angular.element(treeTableTemplate.getCopy());
+                                    }
+                                    if (statusElmOld) {
+                                        $scope.statusElm.attr('class', statusElmOld.attr('class'));
+                                        $scope.statusElm.attr('style', statusElmOld.attr('style'));
+                                        statusElmOld.remove();
+                                    }
+                                    $scope.statusElm.removeClass($scope.config.hiddenClass);
+                                    $document.find('body').append($scope.statusElm);
+                                }
+                            };
+
+                            $scope.initPlace = function (element, level, dragElm) {
+                                var tagName = element.prop('tagName').toLowerCase();
+                                if (!$scope.placeElm) {
+
+                                    if (tagName.toLowerCase() == 'tr') {
+                                        $scope.placeElm = angular.element($window.document.createElement('tr'));
+                                        var _len_down = $scope.colDefinitions.length;
+                                        $scope.placeElm.append(
+                                            angular.element($window.document.createElement('td'))
+                                                .addClass($scope.config.emptyTreeClass)
+                                                .addClass('indented')
+                                                .addClass($scope.config.placeHolderClass)
+                                        );
+                                        while (_len_down-- > 0) {
+                                            $scope.placeElm.append(
+                                                angular.element($window.document.createElement('td'))
+                                                    .addClass($scope.config.emptyTreeClass)
+                                                    .addClass($scope.config.placeHolderClass)
+                                            );
+                                        }
+                                    } else {
+                                        $scope.placeElm = angular.element($window.document.createElement('li'))
+                                            .addClass($scope.config.emptyTreeClass)
+                                            .addClass($scope.config.placeHolderClass);
+                                    }
+
+                                } else {
+                                    $scope.placeElm.removeClass($scope.config.hiddenClass);
+                                }
+
+                                if (tagName.toLowerCase() == 'tr') {
+                                    $TreeTableHelper.replaceIndent($scope, $scope.placeElm, level);
+                                }
+
+                                element[0].parentNode.insertBefore($scope.placeElm[0], element[0]);
+                                $scope.placeElm.css('height', $TreeTableHelper.height(dragElm) + 'px');
+
+                                return $scope.placeElm;
+                            }
+
+                            $scope.hidePlace = function () {
+                                if ($scope.placeElm) {
+                                    $scope.placeElm.addClass($scope.config.hiddenClass);
+                                }
+                            }
+
+                            $scope.showPlace = function () {
+                                if ($scope.placeElm) {
+                                    $scope.placeElm.removeClass($scope.config.hiddenClass);
+                                }
+                            }
                         }],
                     link:        function (scope, element, attrs) {
-                        scope.$type = 'TreeTable'
-                        scope.$typeTree = 'table';
+                        scope.$type = 'TreeTable';
+                        scope.colDefinitions = [];
 
                         scope.$watch(
                             attrs['enableStatus'], function (val) {
@@ -359,23 +433,19 @@
                             }, true
                         );
 
-                        $TreeTableHelper.calsIndent = scope.$callbacks.calsIndent;
-
-                        scope.$watch(
-                            attrs.primaryKey, function (value) {
-                                if (typeof value === "string") {
-                                    scope.primary_key = value;
-                                }
-                            }, true
-                        );
-
-                        scope.$watch(
-                            attrs.typeTree, function (value) {
-                                if (typeof value === "string") {
-                                    scope.$typeTree = value;
-                                }
-                            }, true
-                        );
+                        if (!attrs.primaryKey) {
+                            scope.primary_key == '__uid__';
+                        } else {
+                            scope.$watch(
+                                attrs.primaryKey, function (value) {
+                                    if (typeof value === "string") {
+                                        scope.primary_key = value;
+                                    } else {
+                                        scope.primary_key = attrs.primaryKey;
+                                    }
+                                }, true
+                            );
+                        }
 
                         scope.$watch(
                             attrs.callbacks, function (optCallbacks) {
@@ -388,7 +458,6 @@
                                         }
                                     }
                                 );
-                                $TreeTableHelper.calsIndent = scope.$callbacks.calsIndent;
                             }, true
                         );
 
@@ -399,6 +468,7 @@
                         if ((typeof attrs['indentUnit']) === 'string') {
                             scope.indent_unit = attrs['indentUnit'];
                         }
+
                         scope.$watch(
                             attrs['enableHotkey'], function (val) {
                                 if ((typeof val) === "boolean") {
@@ -416,7 +486,6 @@
 
                         scope.$watch(
                             attrs['enableDrag'], function (val) {
-
                                 if ((typeof val) === "boolean") {
                                     scope.dragEnabled = val;
                                 }
@@ -465,97 +534,58 @@
                         if (!scope.treeData) {
                             scope.treeData = [];
                         }
-                        if (attrs.expandOn) {
-                            expandingProperty = scope.expandOn;
-                            scope.expandingProperty = scope.expandOn;
-                        } else {
-                            if (scope.treeData.length) {
-                                var _firstRow = scope.treeData[0], _keys = Object.keys(_firstRow);
-                                for (var i = 0, len = _keys.length; i < len; i++) {
-                                    if (typeof (_firstRow[_keys[i]]) === 'string') {
-                                        expandingProperty = _keys[i];
-                                        break;
+
+                        var getExpandOn = function () {
+                                if (scope.treeData.length) {
+                                    var _firstRow = scope.treeData[0], _keys = Object.keys(_firstRow),
+                                        regex = new RegExp("^__([a-zA-Z0-9_\-]*)__$");
+                                    // Auto get first field with type is string;
+                                    for (var i = 0, len = _keys.length; i < len; i++) {
+                                        if (typeof (_firstRow[_keys[i]]) === 'string' && !regex.test(_keys[i])) {
+                                            expandingProperty = _keys[i];
+                                            break;
+                                        }
                                     }
-                                }
-                                if (!expandingProperty) {
-                                    expandingProperty = _keys[0];
-                                }
-                                scope.expandingProperty = expandingProperty;
-                            }
-                        }
-                        //                        // Auto get Defs except attribute __level__ ....
-                        //                        if (!attrs.columnDefs || !(attrs.columnDefs && angular.isArray(scope.columnDefs) && scope.columnDefs.length > 0)) {
-                        //                            if (scope.treeData.length) {
-                        //                                var _col_defs = [], _firstRow = scope.treeData[0];
-                        //                                var regex = new RegExp("(__([a-zA-Z0-9_\-]*)__|^" + expandingProperty + "$)");
-                        //                                for (var idx in _firstRow) {
-                        //                                    if (!regex.test(idx)) {
-                        //                                        _col_defs.push(
-                        //                                            {
-                        //                                                field: idx
-                        //                                            }
-                        //                                        );
-                        //                                    }
-                        //                                }
-                        //                                scope.colDefinitions = _col_defs;
-                        //                            }
-                        //                        } else {
-                        scope.colDefinitions = scope.columnDefs || [];
-                        //                        }
-                        var for_each_branch = function (f) {
-                            var do_f, _i, _len, _ref;
-                            do_f = function (branch, level) {
-                                f(branch, level);
-                                if (branch.__children__ != null) {
-                                    var _i, _len, _ref;
-                                    _ref = branch.__children__;
-                                    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                                        do_f(_ref[_i], level + 1);
+
+                                    // Auto get first
+                                    if (!expandingProperty) {
+                                        expandingProperty = _keys[0];
                                     }
+
+                                    scope.expandingProperty = expandingProperty;
+                                }
+                            },
+                            getColDefs = function () {
+                                // Auto get Defs except attribute __level__ ....
+                                if (scope.treeData.length) {
+                                    var _col_defs = [], _firstRow = scope.treeData[0];
+                                    var regex = new RegExp("(^__([a-zA-Z0-9_\-]*)__$|^" + expandingProperty + "$)");
+                                    for (var idx in _firstRow) {
+                                        if (!regex.test(idx)) {
+                                            _col_defs.push(
+                                                {
+                                                    field: idx
+                                                }
+                                            );
+                                        }
+                                    }
+                                    scope.colDefinitions = _col_defs;
                                 }
                             };
-                            _ref = scope.treeData;
-                            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                                do_f(_ref[_i], 1);
+
+                        if (attrs.expandOn) {
+                            expandingProperty = scope.expandOn || [];
+                            scope.expandingProperty = scope.expandOn || [];
+                        }
+
+                        if (attrs.columnDefs) {
+                            if (!(angular.isArray(scope.columnDefs) && scope.columnDefs.length > 0)) {
+                                getColDefs();
+                            } else {
+                                scope.colDefinitions = scope.columnDefs;
                             }
-                        };
-                        var selected_branch = null;
-                        var select_branch = function (branch) {
-                            if (!branch) {
-                                if (selected_branch != null) {
-                                    selected_branch.__selected__ = false;
-                                }
-                                selected_branch = null;
-                                return;
-                            }
-                            if (branch !== selected_branch) {
-                                if (selected_branch != null) {
-                                    selected_branch.__selected__ = false;
-                                }
-                                branch.__selected__ = true;
-                                selected_branch = branch;
-                                expand_all_parents(branch);
-                                if (branch.onSelect != null) {
-                                    return $timeout(
-                                        function () {
-                                            return branch.onSelect(branch);
-                                        }
-                                    );
-                                } else {
-                                    if (scope.onSelect != null) {
-                                        return $timeout(
-                                            function () {
-                                                return scope.onSelect(
-                                                    {
-                                                        branch: branch
-                                                    }
-                                                );
-                                            }
-                                        );
-                                    }
-                                }
-                            }
-                        };
+                        }
+
                         scope.on_user_click = function (branch) {
                             if (scope.onClick) {
                                 scope.onClick(
@@ -565,133 +595,233 @@
                                 );
                             }
                         };
+
                         scope.user_clicks_branch = function (branch) {
                             if (branch !== selected_branch) {
                                 return select_branch(branch);
                             }
                         };
-                        var get_parent = function (node) {
-                            if (node.__parent_real__ !== null && node.__parent_real__ > -1 && node.__parent_real__ < scope.tree_rows.length) {
-                                return scope.tree_rows[node.__parent_real__];
-                            }
-                            return null;
-                        };
-                        var for_all_ancestors = function (child, fn) {
-                            var parent;
-                            parent = get_parent(child);
-                            if (parent != null) {
-                                fn(parent);
-                                return for_all_ancestors(parent, fn);
-                            }
-                        };
-                        var expand_all_parents = function (child) {
-                            return for_all_ancestors(
-                                child, function (b) {
-                                    return b.__expanded__ = true;
-                                }
-                            );
-                        };
+
                         scope.tree_rows = [];
 
-                        var on_treeData_change = function () {
-                            var _len, _data;
-                            _data = scope.treeData;
-                            _len = _data.length;
-                            var _tree_rows = [];
-
-                            if (_len > 0) {
-                                var _i, do_f;
-                                do_f = function (branch, parent, parent_real, level, visible, index) {
-                                    var _i, _len, _tree_icon;
-                                    if (!angular.isArray(branch.__children__)) {
-                                        branch.__children__ = []
-                                    }
-
-                                    branch.__parent_real__ = parent_real;
-                                    branch.__parent__ = parent;
-                                    _len = branch.__children__.length;
-                                    if (branch.__expanded__ == null && _len > 0) {
-                                        branch.__expanded__ = level < expand_level;
-                                    }
-                                    if (_len === 0) {
-                                        _tree_icon = attrs.iconLeaf;
-                                    } else {
-                                        if (branch.__expanded__) {
-                                            _tree_icon = attrs.iconCollapse;
-                                        } else {
-                                            _tree_icon = attrs.iconExpand;
+                        var selected_branch = null,
+                            for_each_branch = function (f) {
+                                var do_f, _i, _len, _ref;
+                                do_f = function (branch, level) {
+                                    f(branch, level);
+                                    if (branch.__children__ != null) {
+                                        var _i, _len, _ref;
+                                        _ref = branch.__children__;
+                                        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                                            do_f(_ref[_i], level + 1);
                                         }
                                     }
-                                    // Insert item vertically
-                                    var _index_real = _tree_rows.length;
-                                    branch.__index__ = index;
-                                    branch.__index_real__ = _index_real;
-                                    branch.__level__ = level;
-                                    branch.__tree_icon__ = _tree_icon;
-                                    branch.__visible__ = visible;
-                                    if (branch.__uid__ == null) {
-                                        branch.__uid__ = "" + Math.random();
+                                };
+                                _ref = scope.treeData;
+                                for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                                    do_f(_ref[_i], 1);
+                                }
+                            },
+                            select_branch = function (branch) {
+                                if (!branch) {
+                                    if (selected_branch != null) {
+                                        selected_branch.__selected__ = false;
                                     }
-
-                                    _tree_rows.push(branch);
-
-                                    // Check brach children
-                                    var _dept = 1;
-                                    if (_len > 0) {
-                                        for (_i = 0; _i < _len; _i++) {
-                                            _dept += do_f(
-                                                branch.__children__[_i],
-                                                (scope.primary_key == '__uid__') ? branch.__uid__ : branch[scope.primary_key],
-                                                _index_real,
-                                                level + 1,
-                                                visible && branch.__expanded__,
-                                                _i
+                                    selected_branch = null;
+                                    return;
+                                }
+                                if (branch !== selected_branch) {
+                                    if (selected_branch != null) {
+                                        selected_branch.__selected__ = false;
+                                    }
+                                    branch.__selected__ = true;
+                                    selected_branch = branch;
+                                    expand_all_parents(branch);
+                                    if (branch.onSelect != null) {
+                                        return $timeout(
+                                            function () {
+                                                return branch.onSelect(branch);
+                                            }
+                                        );
+                                    } else {
+                                        if (scope.onSelect != null) {
+                                            return $timeout(
+                                                function () {
+                                                    return scope.onSelect(
+                                                        {
+                                                            branch: branch
+                                                        }
+                                                    );
+                                                }
                                             );
                                         }
                                     }
-
-                                    var _hashKey;
-                                    if (scope.primary_key == '__uid__') {
-                                        _hashKey = parent + '#' + index + '#' + branch.__uid__;
-                                    } else {
-                                        _hashKey = parent + '#' + index + '#' + branch[scope.primary_key];
+                                }
+                            },
+                            get_parent = function (node) {
+                                if (node.__parent_real__ !== null && node.__parent_real__ > -1 && node.__parent_real__ < scope.tree_rows.length) {
+                                    return scope.tree_rows[node.__parent_real__];
+                                }
+                                return null;
+                            },
+                            for_all_ancestors = function (child, fn) {
+                                var parent;
+                                parent = get_parent(child);
+                                if (parent != null) {
+                                    fn(parent);
+                                    return for_all_ancestors(parent, fn);
+                                }
+                            },
+                            expand_all_parents = function (child) {
+                                return for_all_ancestors(
+                                    child, function (b) {
+                                        return b.__expanded__ = true;
                                     }
-
-                                    if (branch.__hashKey__ == null || branch.__hashKey__ != _hashKey) {
-                                        branch.__hashKey__ = _hashKey;
-                                        scope.$globals[_hashKey] = null;
-                                    }
-
-                                    branch.__dept__ = _dept;
-
-                                    return _dept;
-                                };
-                                var _deptTotal = 0;
-                                for (_i = 0; _i < _len; _i++) {
-                                    _deptTotal += do_f(_data[_i], null, null, 1, true, _i);
+                                );
+                            },
+                            on_treeData_change = function () {
+                                if (!attrs.expandOn) {
+                                    getExpandOn();
                                 }
 
-                                // clear Element Empty
-                                _len = scope.$globals;
-                                var _offset, _max, _keys = Object.keys(scope.$globals);
-                                _offset = len - _deptTotal;
-                                if (_offset != 0) {
-                                    _max = len - _offset;
-                                    _min = _max - Math.abs(_offset);
-                                    for (_i = _min; _i < _max; _i++) {
-                                        delete(scope.$globals[_keys[_i]]);
+                                if (!attrs.columnDefs) {
+                                    getColDefs();
+                                }
+                                var _len, _data;
+                                _data = scope.treeData;
+                                _len = _data.length;
+                                var _tree_rows = [];
+                                if (_len > 0) {
+                                    var _i, do_f;
+                                    do_f = function (branch, parent, parent_real, level, visible, index) {
+                                        var _i, _len, _tree_icon;
+                                        if (!angular.isArray(branch.__children__)) {
+                                            branch.__children__ = [];
+                                        }
+
+                                        branch.__parent_real__ = parent_real;
+                                        branch.__parent__ = parent;
+                                        _len = branch.__children__.length;
+                                        if (branch.__expanded__ == null && _len > 0) {
+                                            branch.__expanded__ = level < expand_level;
+                                        }
+                                        if (_len === 0) {
+                                            _tree_icon = attrs.iconLeaf;
+                                        } else {
+                                            if (branch.__expanded__) {
+                                                _tree_icon = attrs.iconCollapse;
+                                            } else {
+                                                _tree_icon = attrs.iconExpand;
+                                            }
+                                        }
+                                        // Insert item vertically
+                                        var _index_real = _tree_rows.length;
+                                        branch.__index__ = index;
+                                        branch.__index_real__ = _index_real;
+                                        branch.__level__ = level;
+                                        branch.__tree_icon__ = _tree_icon;
+                                        branch.__visible__ = visible;
+
+                                        if (branch.__uid__ == null) {
+                                            branch.__uid__ = "" + Math.random();
+                                        }
+
+                                        _tree_rows.push(branch);
+
+                                        // Check brach children
+                                        var _dept = 1;
+                                        if (_len > 0) {
+                                            for (_i = 0; _i < _len; _i++) {
+                                                _dept += do_f(
+                                                    branch.__children__[_i],
+                                                    (scope.primary_key == '__uid__') ? branch.__uid__ : branch[scope.primary_key],
+                                                    _index_real,
+                                                    level + 1,
+                                                    visible && branch.__expanded__,
+                                                    _i
+                                                );
+                                            }
+                                        }
+
+                                        var _hashKey;
+                                        if (scope.primary_key == '__uid__') {
+                                            _hashKey = '#' + parent + '#' + index + '#' + branch.__uid__;
+                                        } else {
+                                            _hashKey = '#' + parent + '#' + index + '#' + branch[scope.primary_key];
+                                        }
+
+                                        if (branch.__hashKey__ == null || branch.__hashKey__ != _hashKey) {
+                                            branch.__hashKey__ = _hashKey;
+                                            scope.$globals[_hashKey] = null;
+                                        }
+
+                                        branch.__dept__ = _dept;
+
+                                        return _dept;
+                                    };
+                                    var _deptTotal = 0;
+                                    for (_i = 0; _i < _len; _i++) {
+                                        _deptTotal += do_f(_data[_i], null, null, 1, true, _i);
+                                    }
+
+                                    // clear Element Empty
+                                    var _offset, _max, _keys = Object.keys(scope.$globals), len = scope.$globals.length;
+                                    _offset = len - _deptTotal;
+                                    if (_offset != 0) {
+                                        _max = len - _offset;
+                                        _min = _max - Math.abs(_offset);
+                                        for (_i = _min; _i < _max; _i++) {
+                                            delete(scope.$globals[_keys[_i]]);
+                                        }
+                                    }
+
+                                }
+                                scope.tree_rows = _tree_rows;
+                                return scope.tree_rows;
+                            },
+                            keydownHandler = function (e) {
+                                if (e.keyCode == 27) {
+                                    scope.hideStatus();
+                                    scope.$$apply = false;
+                                    scope.dragEnd(e);
+                                } else {
+                                    if (scope.enabledHotkey && e.shiftKey) {
+                                        scope.enableMove(true);
+                                        scope.refreshStatus();
                                     }
                                 }
 
-                            }
-                            scope.tree_rows = _tree_rows;
-                            return scope.tree_rows;
-                        };
+                            },
+                            keyupHandler = function (e) {
+                                if (scope.enabledHotkey && !e.shiftKey) {
+                                    scope.enableMove(false);
+                                    scope.refreshStatus();
+                                }
+                            };
+
                         scope.$watch('treeData', on_treeData_change, true);
                         on_treeData_change();
-                        if (scope.treeControl != null) {
-                            if (angular.isObject(scope.treeControl)) {
-                                tree = scope.treeControl;
+
+                        angular.element($window.document.body).bind("keydown", keydownHandler);
+                        angular.element($window.document.body).bind("keyup", keyupHandler);
+                        //unbind handler that retains scope
+                        scope.$on(
+                            '$destroy', function () {
+                                angular.element($window.document.body).unbind("keydown", keydownHandler);
+                                angular.element($window.document.body).unbind("keyup", keyupHandler);
+                                if (scope.statusElm) {
+                                    scope.statusElm.remove();
+                                }
+
+                                if (scope.placeElm) {
+                                    scope.placeElm.remove();
+                                }
+                            }
+                        );
+
+                        if (scope.tree != null) {
+                            if (angular.isObject(scope.tree)) {
+                                tree = scope.tree;
                                 tree.expand_all = function () {
                                     for_each_branch(
                                         function (b, level) {
@@ -789,6 +919,7 @@
                                         return b;
                                     }
                                 };
+
                                 tree.collapse_branch = function (b) {
                                     if (b == null) {
                                         b = selected_branch;
@@ -959,38 +1090,523 @@
                             }
                         }
 
-                        var keydownHandler = function (e) {
-                            if (scope.$dragging) {
-                                if (e.keyCode == 27) {
-                                    scope.$dragging.$$apply = false;
-                                    scope.$dragging.dragEnd(e);
-                                }
+                        angular.element(element).ready(
+                            function () {
+                                var hasTouch = 'ontouchstart' in window,
+                                    startPos, firstMoving, dragInfo, pos,
+                                    placeElm, dragElm,
+                                    dragDelaying = true, dragStarted = false, dragTimer = null,
+                                    body = document.body, html = document.documentElement,
+                                    document_height, document_width,
+                                    offsetEdge,
 
-                                if (scope.enabledHotkey) {
-                                    scope.enableMove(e.shiftKey);
-                                    scope.$dragging.refreshStatus();
-                                }
-                            }
-                        };
+                                    dragStart = function (e) {
+                                        if (!hasTouch && (e.button == 2 || e.which == 3)) {
+                                            // disable right click
+                                            return;
+                                        }
+                                        if (e.uiTreeDragging || (e.originalEvent && e.originalEvent.uiTreeDragging)) { // event has already fired in other scope.
+                                            return;
+                                        }
+                                        // the element which is clicked.
 
-                        var keyupHandler = function (e) {
-                            if (scope.$dragging && scope.enabledHotkey) {
-                                scope.enableMove(e.shiftKey);
-                                scope.$dragging.refreshStatus();
-                            }
-                        };
+                                        var eventElm = angular.element(e.target);
+                                        var eventScope = eventElm.scope();
+                                        if (!eventScope || !eventScope.$type) {
+                                            return;
+                                        }
+                                        if (eventScope.$type != 'TreeTableNode' && eventScope.$type != 'TreeTableNodeHandle') { // Check if it is a node or a handle
+                                            return;
+                                        }
+                                        if (eventScope.$type != 'TreeTableNodeHandle') { // If the node has a handle, then it should be clicked by the handle
+                                            return;
+                                        }
 
-                        angular.element($window.document.body).bind("keydown", keydownHandler);
-                        angular.element($window.document.body).bind("keyup", keyupHandler);
-                        //unbind handler that retains scope
-                        scope.$on(
-                            '$destroy', function () {
-                                angular.element($window.document.body).unbind("keydown", keydownHandler);
-                                angular.element($window.document.body).unbind("keyup", keyupHandler);
+                                        var eventElmTagName = eventElm.prop('tagName').toLowerCase(),
+                                            dragScope = null;
+                                        if (eventElmTagName == 'input' || eventElmTagName == 'textarea' || eventElmTagName == 'button' || eventElmTagName == 'select') { // if it's a input or button, ignore it
+                                            return;
+                                        }
+                                        // check if it or it's parents has a 'data-nodrag' attribute
+                                        while (eventElm && eventElm[0] && eventElm[0] != element) {
+                                            if ($TreeTableHelper.nodrag(eventElm)) { // if the node mark as `nodrag`, DONOT drag it.
+                                                return;
+                                            }
+                                            eventElm = eventElm.parent();
+                                        }
+
+                                        dragScope = eventScope.getScopeNode();
+                                        if (!scope.beforeDrag(dragScope)) {
+                                            return;
+                                        }
+
+                                        e.uiTreeDragging = true; // stop event bubbling
+                                        if (e.originalEvent) {
+                                            e.originalEvent.uiTreeDragging = true;
+                                        }
+                                        e.preventDefault();
+
+                                        var eventObj = $TreeTableHelper.eventObj(e);
+                                        firstMoving = true;
+                                        dragInfo = $TreeTableHelper.dragInfo(dragScope);
+
+                                        var tagName = dragScope.$element.prop('tagName').toLowerCase();
+
+                                        pos = $TreeTableHelper.positionStarted(eventObj, dragScope.$element);
+
+                                        if (tagName === 'tr') {
+                                            dragElm = angular.element($window.document.createElement('table'))
+                                                .addClass(scope.config.treeClass)
+                                                .addClass(scope.config.dragClass)
+                                                .addClass(scope.tree_class);
+                                        } else {
+                                            dragElm = angular.element($window.document.createElement('ul'))
+                                                .addClass(scope.config.dragClass)
+                                                .addClass('tree-table-rows')
+                                                .addClass(scope.tree_class);
+                                        }
+
+                                        dragElm.css(
+                                            {
+                                                'width':   $TreeTableHelper.width(dragScope.$element) + 'px',
+                                                'z-index': 9995
+                                            }
+                                        );
+
+                                        scope.refreshStatus();
+                                        scope.setPositionStatus(e);
+
+                                        offsetEdge = 0;
+                                        var _width = $TreeTableHelper.width(dragScope.$element);
+                                        if (tagName == 'tr') {
+                                            var _tbody = angular.element($window.document.createElement('tbody'));
+                                            offsetEdge = dragScope.node().__level__ - 1;
+                                            var drag_descendant = function (node) {
+                                                var _scope, _element, _i, _len, _nodes, _clone;
+
+                                                _scope = scope.getScope(node);
+                                                _element = _scope.$element;
+
+                                                _clone = _element.clone();
+                                                $TreeTableHelper.replaceIndent(
+                                                    _scope,
+                                                    _clone,
+                                                    node.__level__ - offsetEdge,
+                                                    'padding-left'
+                                                );
+                                                _tbody.append(_clone);
+
+                                                if (scope.config.hiddenClass) {
+                                                    _element.addClass(scope.config.hiddenClass);
+                                                }
+
+                                                _nodes = node.__children__;
+                                                _len = _nodes.length;
+                                                for (_i = 0; _i < _len; _i++) {
+                                                    drag_descendant(_nodes[_i]);
+                                                }
+                                            }
+
+                                            drag_descendant(dragScope.node());
+
+                                            dragElm.append(_tbody);
+                                        } else {
+                                            dragElm.append(dragScope.$element.clone());
+                                            if (scope.config.hiddenClass) {
+                                                dragScope.$element.addClass(scope.config.hiddenClass);
+                                            }
+                                        }
+
+                                        dragElm.css(
+                                            {
+                                                'left': eventObj.pageX - pos.offsetX + scope.$callbacks.calsIndent(
+                                                    offsetEdge + 1,
+                                                    true,
+                                                    true
+                                                )       + 'px',
+                                                'top':  eventObj.pageY - pos.offsetY + 'px'
+                                            }
+                                        );
+                                        // moving item with descendant
+                                        $document.find('body').append(dragElm);
+
+                                        placeElm = scope.initPlace(dragScope.$element, dragInfo.level, dragElm);
+                                        placeElm.css('width', _width);
+
+                                        angular.element($document).bind('touchend', dragEndEvent);
+                                        angular.element($document).bind('touchcancel', dragEndEvent);
+                                        angular.element($document).bind('touchmove', dragMoveEvent);
+                                        angular.element($document).bind('mouseup', dragEndEvent);
+                                        angular.element($document).bind('mousemove', dragMoveEvent);
+                                        angular.element($document).bind('mouseleave', dragCancelEvent);
+                                        document_height = Math.max(
+                                            body.scrollHeight,
+                                            body.offsetHeight,
+                                            html.clientHeight,
+                                            html.scrollHeight,
+                                            html.offsetHeight
+                                        );
+                                        document_width = Math.max(
+                                            body.scrollWidth,
+                                            body.offsetWidth,
+                                            html.clientWidth,
+                                            html.scrollWidth,
+                                            html.offsetWidth
+                                        );
+                                    },
+                                    dragMove = function (e) {
+                                        if (!dragStarted) {
+                                            if (!dragDelaying) {
+                                                dragStarted = true;
+                                                scope.$apply(
+                                                    function () {
+                                                        scope.$callbacks.dragStart(dragInfo);
+                                                    }
+                                                );
+                                            }
+                                            return;
+                                        }
+                                        var eventObj = $TreeTableHelper.eventObj(e);
+                                        var prev, leftElmPos, topElmPos;
+                                        if (dragElm) {
+                                            e.preventDefault();
+                                            if ($window.getSelection) {
+                                                $window.getSelection().removeAllRanges();
+                                            } else if ($window.document.selection) {
+                                                $window.document.selection.empty();
+                                            }
+                                            leftElmPos = eventObj.pageX - pos.offsetX;
+                                            topElmPos = eventObj.pageY - pos.offsetY;
+                                            //dragElm can't leave the screen on the left
+                                            if (leftElmPos < 0) {
+                                                leftElmPos = 0;
+                                            }
+                                            //dragElm can't leave the screen on the top
+                                            if (topElmPos < 0) {
+                                                topElmPos = 0;
+                                            }
+                                            //dragElm can't leave the screen on the bottom
+                                            if ((topElmPos + 10) > document_height) {
+                                                topElmPos = document_height - 10;
+                                            }
+                                            //dragElm can't leave the screen on the right
+                                            if ((leftElmPos + 10) > document_width) {
+                                                leftElmPos = document_width - 10;
+                                            }
+                                            dragElm.css(
+                                                {
+                                                    'left': leftElmPos + scope.$callbacks.calsIndent(
+                                                        offsetEdge + 1,
+                                                        true,
+                                                        true
+                                                    )       + 'px',
+                                                    'top':  topElmPos + 'px'
+                                                }
+                                            );
+                                            scope.setPositionStatus(e);
+
+                                            var top_scroll = window.pageYOffset || $window.document.documentElement.scrollTop;
+                                            var bottom_scroll = top_scroll + (window.innerHeight || $window.document.clientHeight || $window.document.clientHeight);
+                                            // to scroll down if cursor y-position is greater than the bottom position the vertical scroll
+                                            if (bottom_scroll < eventObj.pageY && bottom_scroll <= document_height) {
+                                                window.scrollBy(0, 10);
+                                            }
+                                            // to scroll top if cursor y-position is less than the top position the vertical scroll
+                                            if (top_scroll > eventObj.pageY) {
+                                                window.scrollBy(0, -10);
+                                            }
+                                            $TreeTableHelper.positionMoved(e, pos, firstMoving);
+                                            if (firstMoving) {
+                                                firstMoving = false;
+                                                return;
+                                            }
+                                            // check if add it as a child node first
+
+                                            var targetX = eventObj.pageX - $window.document.body.scrollLeft;
+                                            var targetY = eventObj.pageY - (window.pageYOffset || $window.document.documentElement.scrollTop);
+
+                                            // when using elementFromPoint() inside an iframe, you have to call
+                                            // elementFromPoint() twice to make sure IE8 returns the correct value
+                                            // $window.document.elementFromPoint(targetX, targetY);
+                                            var targetElm = angular.element(
+                                                    $window.document.elementFromPoint(
+                                                        targetX,
+                                                        targetY
+                                                    )
+                                                ),
+                                                targetScope = targetElm.scope(),
+                                                tagName = null,
+                                                treeScope,
+                                                isTreeDiff = false;
+
+                                            if (targetScope && angular.isFunction(targetScope.getScopeNode)) {
+
+                                                targetScope = targetScope.getScopeNode();
+                                                treeScope = targetScope.getScopeTree();
+
+                                                tagName = targetScope.$element.prop('tagName').toLowerCase();
+                                                if (dragInfo.tree !== treeScope) {
+                                                    // Hide place holder old
+                                                    dragInfo.tree.hidePlace();
+                                                    // Replace by place-holder new
+                                                    dragInfo.tree = treeScope;
+                                                    dragInfo.tree.showPlace();
+                                                    isTreeDiff = true;
+                                                }
+                                            }
+
+                                            // move vertical
+                                            if (!pos.dirAx || isTreeDiff) {
+
+                                                // skip Target
+                                                if (!targetScope) {
+                                                    return;
+                                                }
+
+                                                targetElm = targetScope.$element; // Get the element of tree-table-node
+
+                                                var targetBefore, targetOffset = $TreeTableHelper.offset(targetElm);
+
+                                                if (tagName == 'tr') {
+                                                    targetBefore = eventObj.pageY < (targetOffset.top + $TreeTableHelper.height(targetElm) / 2);
+                                                } else {
+                                                    var _height = $TreeTableHelper.height(targetElm) - $TreeTableHelper.height(targetScope.elementChilds);
+                                                    if (eventObj.pageY > targetOffset.top + _height) {
+                                                        return;
+                                                    }
+
+                                                    targetBefore = eventObj.pageY < (targetOffset.top + _height / 2);
+                                                }
+
+                                                placeElm = targetScope.initPlace(
+                                                    targetElm,
+                                                    dragInfo.level,
+                                                    dragElm
+                                                );
+                                                placeElm.css('width', $TreeTableHelper.width(targetElm));
+
+                                                if (targetScope.$callbacks.dragEnabled()) {
+                                                    if (targetScope.accept(dragInfo, targetBefore)) {
+                                                        dragInfo.level = targetScope.node().__level__;
+                                                        if (targetBefore) {
+                                                            // Insert Element before Target
+                                                            var _target;
+                                                            if (dragInfo.isDirty(
+                                                                    targetScope.getScopeTree(),
+                                                                    targetScope.node().__index_real__ - 1
+                                                                )) {
+                                                                _target = targetScope.getPrevGlobal(dragInfo.node.__index_real__);
+                                                            } else {
+                                                                _target = targetScope.prev();
+                                                            }
+
+                                                            dragInfo.target = _target;
+                                                            dragInfo.scope = targetScope.getScope(_target);
+
+                                                            if (tagName == 'tr') {
+                                                                $TreeTableHelper.replaceIndent(
+                                                                    targetScope,
+                                                                    placeElm,
+                                                                    dragInfo.level
+                                                                );
+                                                            }
+
+                                                            // Insert Element before Target
+
+                                                            targetElm[0].parentNode.insertBefore(
+                                                                placeElm[0],
+                                                                targetElm[0]
+                                                            );
+                                                            //placeElm.insertBefore(targetElm);
+                                                        } else {
+                                                            dragInfo.target = targetScope.node();
+                                                            dragInfo.scope = targetScope;
+                                                            var _level = dragInfo.level;
+                                                            if (targetScope.data().__expanded__) {
+                                                                dragInfo.level = ++_level;
+                                                                if (tagName == 'tr') {
+                                                                    $TreeTableHelper.replaceIndent(
+                                                                        targetScope,
+                                                                        placeElm,
+                                                                        _level
+                                                                    );
+                                                                    targetElm.after(placeElm);
+                                                                } else {
+                                                                    targetScope.elementChilds.prepend(placeElm);
+                                                                }
+                                                            } else {
+                                                                if (tagName == 'tr') {
+                                                                    $TreeTableHelper.replaceIndent(
+                                                                        targetScope,
+                                                                        placeElm,
+                                                                        _level
+                                                                    );
+                                                                }
+                                                                targetElm.after(placeElm);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            } else {
+                                                targetScope = dragInfo.scope;
+
+                                                tagName = targetScope.$element.prop('tagName').toLowerCase();
+                                                // move horizontal
+                                                if (pos.dirAx && pos.distAxX >= targetScope.config.levelThreshold) {
+                                                    pos.distAxX = 0;
+                                                    var _target = dragInfo.target;
+                                                    if (_target) {
+                                                        // increase horizontal level if previous sibling exists and is not collapsed
+                                                        if (pos.distX > 0) {
+                                                            //get node visible
+                                                            var _visible = targetScope.visible(_target);
+                                                            if (_visible != null && _visible.__level__ >= dragInfo.level) {
+                                                                dragInfo.level++;
+                                                                if (tagName == 'tr') {
+                                                                    $TreeTableHelper.replaceIndent(
+                                                                        targetScope,
+                                                                        placeElm,
+                                                                        dragInfo.level
+                                                                    );
+                                                                } else {
+                                                                    var _scope = targetScope.getScope(_visible);
+                                                                    _scope.elementChilds.append(placeElm);
+                                                                }
+                                                            }
+                                                        } else if (pos.distX < 0) {
+                                                            var _parent = dragInfo.canIndent();
+                                                            if (_parent == null || _parent) {
+                                                                dragInfo.level = dragInfo.level - 1;
+                                                                if (tagName == 'tr') {
+                                                                    $TreeTableHelper.replaceIndent(
+                                                                        targetScope,
+                                                                        placeElm,
+                                                                        dragInfo.level
+                                                                    );
+                                                                } else {
+                                                                    var _scope = targetScope.getScope(_parent);
+                                                                    _scope.$element.after(placeElm);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            scope.$apply(
+                                                function () {
+                                                    scope.$callbacks.dragMove(dragInfo);
+                                                }
+                                            );
+                                        }
+                                    },
+                                    dragEnd = function (e) {
+                                        e.preventDefault();
+                                        if (dragElm) {
+                                            var _passed = false;
+                                            scope.$apply(
+                                                function () {
+                                                    _passed = scope.$callbacks.beforeDrop(dragInfo);
+                                                }
+                                            );
+
+                                            var tagName = dragInfo.drag.$element.prop('tagName').toLowerCase();
+                                            if (tagName == 'tr') {
+                                                var rollback_descendant = function (node) {
+                                                    var _scope, _element, _i, _len, _nodes;
+                                                    _scope = scope.getScope(node);
+                                                    _element = _scope.$element;
+                                                    if (scope.config.hiddenClass) {
+                                                        _element.removeClass(scope.config.hiddenClass);
+                                                    }
+                                                    _nodes = node.__children__;
+                                                    _len = _nodes.length;
+
+                                                    for (_i = 0; _i < _len; _i++) {
+                                                        rollback_descendant(_nodes[_i]);
+                                                    }
+                                                }
+                                                rollback_descendant(dragInfo.drag.node());
+                                            } else {
+                                                if (scope.config.hiddenClass) {
+                                                    dragInfo.drag.$element.removeClass(scope.config.hiddenClass);
+                                                }
+                                            }
+
+                                            dragElm.remove();
+                                            dragElm = null;
+
+                                            dragInfo.tree.hidePlace();
+                                            scope.hideStatus();
+
+                                            var _status = false;
+                                            if (scope.$$apply) {
+                                                scope.$apply(
+                                                    function () {
+                                                        _status = scope.dropped(dragInfo, _passed);
+                                                    }
+                                                );
+                                            } else {
+                                                bindDrag();
+                                            }
+
+                                            scope.$apply(
+                                                function () {
+                                                    scope.$callbacks.dragStop(dragInfo, _status);
+                                                }
+                                            );
+                                            scope.$$apply = false;
+                                            dragInfo = null;
+                                        }
+                                        angular.element($document).unbind('touchend', dragEndEvent); // Mobile
+                                        angular.element($document).unbind('touchcancel', dragEndEvent); // Mobile
+                                        angular.element($document).unbind('touchmove', dragMoveEvent); // Mobile
+                                        angular.element($document).unbind('mouseup', dragEndEvent);
+                                        angular.element($document).unbind('mousemove', dragMoveEvent);
+                                        angular.element($window.document.body).unbind('mouseleave', dragCancelEvent);
+                                    },
+                                    dragStartEvent = function (e) {
+                                        if (scope.$callbacks.dragEnabled()) {
+                                            dragStart(e);
+                                        }
+                                    },
+                                    dragMoveEvent = function (e) {
+                                        dragMove(e);
+                                    },
+                                    dragEndEvent = function (e) {
+                                        scope.$$apply = true;
+                                        scope.dragEnd(e);
+                                    },
+                                    dragCancelEvent = function (e) {
+                                        scope.dragEnd(e);
+                                    },
+                                    bindDrag = function () {
+                                        element.bind(
+                                            'touchstart mousedown', function (e) {
+                                                dragDelaying = true;
+                                                dragStarted = false;
+                                                dragStartEvent(e);
+                                                dragTimer = $timeout(
+                                                    function () {
+                                                        dragDelaying = false;
+                                                    }, scope.dragDelay
+                                                );
+                                            }
+                                        );
+                                        element.bind(
+                                            'touchend touchcancel mouseup', function () {
+                                                $timeout.cancel(dragTimer);
+                                            }
+                                        );
+                                    };
+
+                                scope.dragEnd = function (e) {
+                                    dragEnd(e);
+                                };
+
+                                bindDrag();
                             }
                         );
                     }
-
                 };
             }]
     ).directive(
@@ -1003,8 +1619,9 @@
                     controller: [
                         '$scope', '$element', '$attrs', 'tgConfig', function ($scope, $element, $attrs, tgConfig) {
                             $scope.$modelValue = null;
-                            $scope.$nodeScope = $scope;
                             $scope.$scopeChildren = null;
+                            $scope.elementChilds = null;
+
                             $scope.childNodesCount = function () {
                                 return $scope.childNodes().length;
                             };
@@ -1012,21 +1629,12 @@
                                 return $scope.$modelValue.__children__;
                             };
 
-                            $scope.safeApply = function (fn) {
-                                var phase = this.$root.$$phase;
-                                if (phase == '$apply' || phase == '$digest') {
-                                    if (fn && (typeof (fn) === 'function')) {
-                                        fn();
-                                    }
-                                } else {
-                                    this.$apply(fn);
-                                }
-                            };
                             $scope.expand = function (row) {
                                 if (row.__children__.length > 0) {
                                     row.__expanded__ = !row.__expanded__;
                                 }
                             }
+
                             $scope.prev = function () {
                                 return $scope.getPrevGlobal($scope.$modelValue.__index_real__);
                             }
@@ -1038,18 +1646,24 @@
                             $scope.node = function () {
                                 return $scope.$modelValue;
                             }
+
                             $scope.data = function () {
                                 return $scope.$modelValue;
                             }
+
                             $scope.visible = function (node) {
                                 if (node != null) {
                                     return node.__visible__ ? node : $scope.visible($scope.tree_rows[node.__parent_real__]);
                                 }
                                 return null;
                             }
-                            $scope.elementChilds = null;
+
                             $scope.setElementChilds = function (_elements) {
                                 $scope.elementChilds = _elements;
+                            }
+
+                            $scope.getScopeNode = function () {
+                                return $scope;
                             }
 
                         }],
@@ -1061,519 +1675,12 @@
                         }
 
                         scope.$watch(
-                            attrs['treeTableNode'], function (newValue, oldValue, scope) {
+                            attrs['treeTableNode'], function (newValue) {
                                 scope.setScope(newValue, scope);
                                 scope.$modelValue = newValue;
                             }, true
                         );
 
-                        var hasTouch = 'ontouchstart' in window,
-                            startPos, firstMoving, dragInfo, pos,
-                            placeElm, dragElm, statusElm,
-                            dragDelaying = true, dragStarted = false, dragTimer = null,
-                            body = document.body, html = document.documentElement,
-                            document_height, document_width,
-                            offsetEdge;
-
-                        var dragStart = function (e) {
-                            if (!hasTouch && (e.button == 2 || e.which == 3)) {
-                                // disable right click
-                                return;
-                            }
-                            if (e.uiTreeDragging || (e.originalEvent && e.originalEvent.uiTreeDragging)) { // event has already fired in other scope.
-                                return;
-                            }
-                            // the element which is clicked.
-                            var eventElm = angular.element(e.target);
-                            var eventScope = eventElm.scope();
-                            if (!eventScope || !eventScope.$type) {
-                                return;
-                            }
-                            if (eventScope.$type != 'TreeTableNode' && eventScope.$type != 'TreeTableNodeHandle') { // Check if it is a node or a handle
-                                return;
-                            }
-                            if (eventScope.$type != 'TreeTableNodeHandle') { // If the node has a handle, then it should be clicked by the handle
-                                return;
-                            }
-                            var eventElmTagName = eventElm.prop('tagName').toLowerCase();
-                            if (eventElmTagName == 'input' || eventElmTagName == 'textarea' || eventElmTagName == 'button' || eventElmTagName == 'select') { // if it's a input or button, ignore it
-                                return;
-                            }
-                            // check if it or it's parents has a 'data-nodrag' attribute
-                            while (eventElm && eventElm[0] && eventElm[0] != element) {
-                                if ($TreeTableHelper.nodrag(eventElm)) { // if the node mark as `nodrag`, DONOT drag it.
-                                    return;
-                                }
-                                eventElm = eventElm.parent();
-                            }
-                            if (!scope.beforeDrag(scope)) {
-                                return;
-                            }
-
-                            e.uiTreeDragging = true; // stop event bubbling
-                            if (e.originalEvent) {
-                                e.originalEvent.uiTreeDragging = true;
-                            }
-
-                            e.preventDefault();
-                            scope.setDragging(scope);
-                            var eventObj = $TreeTableHelper.eventObj(e);
-                            firstMoving = true;
-                            dragInfo = $TreeTableHelper.dragInfo(scope);
-
-                            var tagName = scope.$element.prop('tagName').toLowerCase();
-                            if (tagName.toLowerCase() == 'tr') {
-                                placeElm = angular.element($window.document.createElement('tr'));
-                                var _len_down = scope.colDefinitions.length;
-                                placeElm.append(
-                                    angular.element($window.document.createElement('td'))
-                                        .addClass(scope.config.emptyTreeClass)
-                                        .addClass('indented')
-                                        .addClass(scope.config.placeHolderClass)
-                                );
-                                while (_len_down-- > 0) {
-                                    placeElm.append(
-                                        angular.element($window.document.createElement('td'))
-                                            .addClass(scope.config.emptyTreeClass)
-                                            .addClass(scope.config.placeHolderClass)
-                                    );
-                                }
-                                $TreeTableHelper.replaceIndent(placeElm, dragInfo.level);
-                            } else {
-                                placeElm = angular.element($window.document.createElement('li'))
-                                    .addClass(scope.config.emptyTreeClass)
-                                    .addClass(scope.config.placeHolderClass);
-                            }
-                            pos = $TreeTableHelper.positionStarted(eventObj, scope.$element);
-                            placeElm.css('width', $TreeTableHelper.width(scope.$element) + 'px');
-
-                            if (tagName === 'tr') {
-                                dragElm = angular.element($window.document.createElement('table'))
-                                    .addClass(scope.config.treeClass)
-                                    .addClass(scope.config.dragClass)
-                                    .addClass(scope.tree_class);
-                            } else {
-                                dragElm = angular.element($window.document.createElement('ul'))
-                                    .addClass(scope.config.dragClass)
-                                    .addClass('tree-table-rows')
-                                    .addClass(scope.tree_class);
-                            }
-
-                            dragElm.css(
-                                {
-                                    'width':   $TreeTableHelper.width(scope.$element) + 'px',
-                                    'z-index': 9995
-                                }
-                            );
-                            scope.refreshStatus();
-                            if (statusElm) {
-                                statusElm.css(
-                                    {
-                                        'left':    e.pageX + 10 + 'px',
-                                        'top':     e.pageY + 15 + 'px',
-                                        'z-index': 9999
-                                    }
-                                );
-                                statusElm.addClass(scope.config.statusClass);
-                            }
-
-                            var _height = 0;
-                            offsetEdge = 0;
-                            if (tagName == 'tr') {
-                                var _tbody = angular.element($window.document.createElement('tbody'));
-                                offsetEdge = scope.node().__level__ - 1;
-                                var drag_descendant = function (node) {
-                                    var _scope, _element, _i, _len, _nodes, _clone;
-
-                                    _scope = scope.getScope(node);
-                                    _element = _scope.$element;
-
-                                    _height += $TreeTableHelper.height(_element);
-                                    _clone = _element.clone();
-                                    $TreeTableHelper.replaceIndent(_clone, node.__level__ - offsetEdge, 'padding-left');
-                                    _tbody.append(_clone);
-
-                                    if (scope.config.hiddenClass) {
-                                        _element.addClass(scope.config.hiddenClass);
-                                    }
-
-                                    _nodes = node.__children__;
-                                    _len = _nodes.length;
-                                    for (_i = 0; _i < _len; _i++) {
-                                        drag_descendant(_nodes[_i]);
-                                    }
-                                }
-
-                                drag_descendant(scope.node());
-
-                                dragElm.append(_tbody);
-                            } else {
-                                _height = $TreeTableHelper.height(scope.$element);
-                                dragElm.append(scope.$element.clone());
-                                if (scope.config.hiddenClass) {
-                                    scope.$element.addClass(scope.config.hiddenClass);
-                                }
-                            }
-
-                            placeElm.css('height', _height + 'px');
-
-                            dragElm.css(
-                                {
-                                    'left': eventObj.pageX - pos.offsetX + $TreeTableHelper.calsIndent(
-                                        offsetEdge + 1,
-                                        true,
-                                        true
-                                    )       + 'px',
-                                    'top':  eventObj.pageY - pos.offsetY + 'px'
-                                }
-                            );
-                            // moving item with descendant
-                            scope.$element[0].parentNode.insertBefore(placeElm[0], scope.$element[0]);
-                            $document.find('body').append(dragElm);
-
-                            angular.element($document).bind('touchend', dragEndEvent);
-                            angular.element($document).bind('touchcancel', dragEndEvent);
-                            angular.element($document).bind('touchmove', dragMoveEvent);
-                            angular.element($document).bind('mouseup', dragEndEvent);
-                            angular.element($document).bind('mousemove', dragMoveEvent);
-                            angular.element($document).bind('mouseleave', dragCancelEvent);
-                            document_height = Math.max(
-                                body.scrollHeight,
-                                body.offsetHeight,
-                                html.clientHeight,
-                                html.scrollHeight,
-                                html.offsetHeight
-                            );
-                            document_width = Math.max(
-                                body.scrollWidth,
-                                body.offsetWidth,
-                                html.clientWidth,
-                                html.scrollWidth,
-                                html.offsetWidth
-                            );
-                        };
-                        var dragMove = function (e) {
-                            if (!dragStarted) {
-                                if (!dragDelaying) {
-                                    dragStarted = true;
-                                    scope.$apply(
-                                        function () {
-                                            scope.$callbacks.dragStart(dragInfo);
-                                        }
-                                    );
-                                }
-                                return;
-                            }
-                            var eventObj = $TreeTableHelper.eventObj(e);
-                            var prev, leftElmPos, topElmPos;
-                            if (dragElm) {
-                                e.preventDefault();
-                                if ($window.getSelection) {
-                                    $window.getSelection().removeAllRanges();
-                                } else if ($window.document.selection) {
-                                    $window.document.selection.empty();
-                                }
-                                leftElmPos = eventObj.pageX - pos.offsetX;
-                                topElmPos = eventObj.pageY - pos.offsetY;
-                                //dragElm can't leave the screen on the left
-                                if (leftElmPos < 0) {
-                                    leftElmPos = 0;
-                                }
-                                //dragElm can't leave the screen on the top
-                                if (topElmPos < 0) {
-                                    topElmPos = 0;
-                                }
-                                //dragElm can't leave the screen on the bottom
-                                if ((topElmPos + 10) > document_height) {
-                                    topElmPos = document_height - 10;
-                                }
-                                //dragElm can't leave the screen on the right
-                                if ((leftElmPos + 10) > document_width) {
-                                    leftElmPos = document_width - 10;
-                                }
-                                dragElm.css(
-                                    {
-                                        'left': leftElmPos + $TreeTableHelper.calsIndent(
-                                            offsetEdge + 1,
-                                            true,
-                                            true
-                                        )       + 'px',
-                                        'top':  topElmPos + 'px'
-                                    }
-                                );
-                                if (statusElm) {
-                                    statusElm.css(
-                                        {
-                                            'left': e.pageX + 10 + 'px',
-                                            'top':  e.pageY + 15 + 'px'
-                                        }
-                                    );
-                                }
-                                var top_scroll = window.pageYOffset || $window.document.documentElement.scrollTop;
-                                var bottom_scroll = top_scroll + (window.innerHeight || $window.document.clientHeight || $window.document.clientHeight);
-                                // to scroll down if cursor y-position is greater than the bottom position the vertical scroll
-                                if (bottom_scroll < eventObj.pageY && bottom_scroll <= document_height) {
-                                    window.scrollBy(0, 10);
-                                }
-                                // to scroll top if cursor y-position is less than the top position the vertical scroll
-                                if (top_scroll > eventObj.pageY) {
-                                    window.scrollBy(0, -10);
-                                }
-                                $TreeTableHelper.positionMoved(e, pos, firstMoving);
-                                if (firstMoving) {
-                                    firstMoving = false;
-                                    return;
-                                }
-                                // check if add it as a child node first
-                                // todo decrease is unused
-                                var decrease = ($TreeTableHelper.offset(dragElm).left - $TreeTableHelper.offset(placeElm).left) >= scope.config.levelThreshold;
-                                var targetX = eventObj.pageX - $window.document.body.scrollLeft;
-                                var targetY = eventObj.pageY - (window.pageYOffset || $window.document.documentElement.scrollTop);
-
-                                // when using elementFromPoint() inside an iframe, you have to call
-                                // elementFromPoint() twice to make sure IE8 returns the correct value
-                                $window.document.elementFromPoint(targetX, targetY);
-                                var targetElm = angular.element($window.document.elementFromPoint(targetX, targetY));
-                                var tagName = scope.$element.prop('tagName').toLowerCase();
-                                // move vertical
-                                if (!pos.dirAx) {
-
-                                    var targetBefore, targetScope;
-                                    // check it's new position
-                                    targetScope = targetElm.scope();
-
-                                    if (!targetScope) {
-                                        return;
-                                    }
-                                    if (targetScope.$type == 'TreeTable' && targetScope.$callbacks.dragEnabled()) {
-                                        return;
-                                    }
-                                    if (targetScope.$type == 'TreeTableNodeHandle') { // Check if it is a TreeTableNode or it's an empty tree
-                                        targetScope = targetElm.scope().$nodeScope;
-                                    }
-                                    if (targetScope.$type != 'TreeTableNode') {
-                                        return;
-                                    }
-                                    targetElm = targetScope.$element; // Get the element of tree-table-node
-                                    var targetOffset = $TreeTableHelper.offset(targetElm);
-
-                                    if (tagName == 'tr') {
-                                        targetBefore = eventObj.pageY < (targetOffset.top + $TreeTableHelper.height(targetElm) / 2);
-                                    } else {
-                                        var _height = $TreeTableHelper.height(targetElm) - $TreeTableHelper.height(targetScope.elementChilds);
-                                        if (eventObj.pageY > targetOffset.top + _height) {
-                                            return;
-                                        }
-
-                                        targetBefore = eventObj.pageY < (targetOffset.top + _height / 2);
-                                    }
-
-                                    if (targetScope.$callbacks.dragEnabled()) {
-                                        if (targetScope.accept(dragInfo, targetBefore)) {
-                                            dragInfo.level = targetScope.node().__level__;
-                                            if (targetBefore) {
-                                                // Insert Element before Target
-                                                if (dragInfo.isDirty(
-                                                        targetScope.node().__index_real__ - 1
-                                                    )) {
-                                                    dragInfo.target = targetScope.getPrevGlobal(dragInfo.node.__index_real__);
-                                                } else {
-                                                    dragInfo.target = targetScope.prev();
-                                                }
-
-                                                if (tagName == 'tr') {
-                                                    $TreeTableHelper.replaceIndent(placeElm, dragInfo.level);
-                                                }
-                                                targetElm[0].parentNode.insertBefore(placeElm[0], targetElm[0]);
-                                                //placeElm.insertBefore(targetElm);
-                                            } else {
-                                                dragInfo.target = targetScope.node();
-                                                dragInfo.targetScope = targetScope;
-                                                var _level = dragInfo.level;
-                                                if (targetScope.data().__expanded__) {
-
-                                                    _level++;
-                                                    dragInfo.level = _level;
-                                                    if (tagName == 'tr') {
-                                                        $TreeTableHelper.replaceIndent(placeElm, _level);
-                                                        targetElm.after(placeElm);
-                                                    } else {
-                                                        targetScope.elementChilds.prepend(placeElm);
-                                                    }
-                                                } else {
-                                                    if (tagName == 'tr') {
-                                                        $TreeTableHelper.replaceIndent(placeElm, _level);
-                                                    }
-                                                    targetElm.after(placeElm);
-                                                }
-                                            }
-
-                                            dragInfo.scope = targetScope;
-                                        }
-                                    }
-                                } else {
-                                    var targetScope = dragInfo.scope;
-                                    // move horizontal
-                                    if (pos.dirAx && pos.distAxX >= targetScope.config.levelThreshold) {
-                                        pos.distAxX = 0;
-                                        var _target = dragInfo.target;
-                                        if (_target) {
-                                            // increase horizontal level if previous sibling exists and is not collapsed
-                                            if (pos.distX > 0) {
-                                                //get node visible
-                                                var _visible = targetScope.visible(_target);
-                                                if (_visible != null && _visible.__level__ >= dragInfo.level) {
-                                                    dragInfo.level++;
-                                                    if (tagName == 'tr') {
-                                                        $TreeTableHelper.replaceIndent(placeElm, dragInfo.level);
-                                                    } else {
-                                                        var _scope = targetScope.getScope(_visible);
-                                                        _scope.elementChilds.append(placeElm);
-                                                    }
-                                                }
-                                            } else if (pos.distX < 0) {
-                                                var _parent = dragInfo.canIndent();
-                                                if (_parent == null || _parent) {
-                                                    dragInfo.level = dragInfo.level - 1;
-                                                    if (tagName == 'tr') {
-                                                        $TreeTableHelper.replaceIndent(placeElm, dragInfo.level);
-                                                    } else {
-                                                        var _scope = targetScope.getScope(_parent);
-                                                        _scope.$element.after(placeElm);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                scope.$apply(
-                                    function () {
-                                        scope.$callbacks.dragMove(dragInfo);
-                                    }
-                                );
-                            }
-                        };
-                        scope.dragEnd = function (e) {
-                            e.preventDefault();
-                            if (dragElm) {
-                                scope.setDragging();
-                                var _passed = false;
-                                scope.$apply(
-                                    function () {
-                                        _passed = scope.$callbacks.beforeDrop(dragInfo);
-                                    }
-                                );
-
-                                var tagName = scope.$element.prop('tagName').toLowerCase();
-                                if (tagName == 'tr') {
-                                    var rollback_descendant = function (node) {
-                                        var _scope, _element, _i, _len, _nodes;
-                                        _scope = scope.getScope(node);
-                                        _element = _scope.$element;
-                                        if (scope.config.hiddenClass) {
-                                            _element.removeClass(scope.config.hiddenClass);
-                                        }
-                                        _nodes = node.__children__;
-                                        _len = _nodes.length;
-
-                                        for (_i = 0; _i < _len; _i++) {
-                                            rollback_descendant(_nodes[_i]);
-                                        }
-                                    }
-                                    rollback_descendant(scope.node());
-                                } else {
-                                    if (scope.config.hiddenClass) {
-                                        scope.$element.removeClass(scope.config.hiddenClass);
-                                    }
-                                }
-
-                                placeElm.remove();
-                                dragElm.remove();
-                                if (statusElm) {
-                                    statusElm.remove();
-                                }
-                                dragElm = null;
-                                statusElm = null;
-                                var _status = false;
-                                if (scope.$$apply) {
-                                    scope.$apply(
-                                        function () {
-                                            _status = scope.dropped(dragInfo, _passed);
-                                        }
-                                    );
-                                } else {
-                                    bindDrag();
-                                }
-
-                                scope.$apply(
-                                    function () {
-                                        scope.$callbacks.dragStop(dragInfo, _status);
-                                    }
-                                );
-                                scope.$$apply = false;
-                                dragInfo = null;
-                            }
-                            angular.element($document).unbind('touchend', dragEndEvent); // Mobile
-                            angular.element($document).unbind('touchcancel', dragEndEvent); // Mobile
-                            angular.element($document).unbind('touchmove', dragMoveEvent); // Mobile
-                            angular.element($document).unbind('mouseup', dragEndEvent);
-                            angular.element($document).unbind('mousemove', dragMoveEvent);
-                            angular.element($window.document.body).unbind('mouseleave', dragCancelEvent);
-                        };
-                        var dragStartEvent = function (e) {
-                            if (scope.$callbacks.dragEnabled()) {
-                                dragStart(e);
-                            }
-                        };
-                        var dragMoveEvent = function (e) {
-                            dragMove(e);
-                        };
-                        var dragEndEvent = function (e) {
-                            scope.$$apply = true;
-                            scope.dragEnd(e);
-                        };
-                        var dragCancelEvent = function (e) {
-                            scope.dragEnd(e);
-                        };
-                        var bindDrag = function () {
-                            element.bind(
-                                'touchstart mousedown', function (e) {
-                                    dragDelaying = true;
-                                    dragStarted = false;
-                                    dragStartEvent(e);
-                                    dragTimer = $timeout(
-                                        function () {
-                                            dragDelaying = false;
-                                        }, scope.dragDelay
-                                    );
-                                }
-                            );
-                            element.bind(
-                                'touchend touchcancel mouseup', function () {
-                                    $timeout.cancel(dragTimer);
-                                }
-                            );
-                        };
-
-                        scope.refreshStatus = function () {
-                            if (scope.enabledStatus) {
-                                var statusElmOld = statusElm;
-                                if (scope.enabledMove) {
-                                    statusElm = angular.element(treeTableTemplate.getMove());
-                                } else {
-                                    statusElm = angular.element(treeTableTemplate.getCopy());
-                                }
-                                if (statusElmOld) {
-                                    statusElm.attr('class', statusElmOld.attr('class'));
-                                    statusElm.attr('style', statusElmOld.attr('style'));
-                                    statusElmOld.remove();
-                                }
-
-                                $document.find('body').append(statusElm);
-                            }
-                        };
-
-                        bindDrag();
                     }
                 };
             }]
@@ -1584,7 +1691,7 @@
                 replace:    true,
                 controller: [
                     '$scope', '$element', '$attrs', 'tgConfig', function ($scope, $element, $attrs, tgConfig) {
-                        $scope.$nodeScope = null;
+                        //                        $scope.$nodeScope = null;
                         $scope.datas = [];
                     }],
                 link:       function (scope, element, attrs) {
@@ -1598,8 +1705,7 @@
                             scope.datas = newValue;
                         }, true
                     );
-                    //                    element.addClass(scope.config.nodeClass);
-                    scope.$nodeScope = scope;
+                    // element.addClass(scope.config.nodeClass);
                     scope.$element = element;
                 }
             };
@@ -1611,18 +1717,11 @@
                 scope:      true,
                 controller: [
                     '$scope', '$element', '$attrs', 'tgConfig', function ($scope, $element, $attrs, tgConfig) {
-                        $scope.$nodeScope = null;
+                        //                        $scope.$nodeScope = null;
                     }],
                 link:       function (scope, element, attrs) {
-
                     scope.$element = element;
                     scope.$type = 'TreeTableNodeHandle';
-
-                    if (scope.$parent.$type == 'TreeTableNode') {
-                        scope.$nodeScope = scope.$parent
-                    } else {
-                        scope.$nodeScope = scope;
-                    }
                     if (scope.config.handleClass) {
                         element.addClass(scope.config.handleClass);
                     }
@@ -1685,18 +1784,20 @@
                     },
                     dragInfo:          function (scope) {
                         return {
-                            node:        scope.node(),
-                            level:       scope.node().__level__,
-                            target:      scope.prev(),
-                            scope:       scope,
-                            move:        {
+                            node:      scope.node(),
+                            level:     scope.node().__level__,
+                            target:    scope.prev(),
+                            scope:     scope,
+                            drag:      scope,
+                            tree:      scope.getScopeTree(),
+                            move:      {
                                 parent: -1,
                                 pos:    -1
                             },
-                            isDirty:     function (index) {
-                                return this.node.__index_real__ <= index && index <= this.node.__index_real__ + this.node.__dept__ - 1;
+                            isDirty:   function (scope, index) {
+                                return (this.tree == scope) && this.node.__index_real__ <= index && index <= this.node.__index_real__ + this.node.__dept__ - 1;
                             },
-                            canIndent:   function () {
+                            canIndent: function () {
                                 if (this.level == 1) {
                                     return false;
                                 }
@@ -1722,7 +1823,7 @@
                                 }
                                 return false;
                             },
-                            canInsert:   function (_target) {
+                            canInsert: function (_target) {
                                 if (_target.__children__.length == 0) {
                                     return true;
                                 } else if ((_target.__index_real__ == this.target.__parent_real__ && _target.__children__.length - 1 == this.target.__index__) || (_target.__index_real__ == this.node.__parent_real__ && _target.__children__.length - 1 == this.node.__index__)) {
@@ -1797,17 +1898,9 @@
                         }
                         pos.dirAx = newAx;
                     },
-                    replaceIndent:     function (e, indent, attr) {
+                    replaceIndent:     function (scope, element, indent, attr) {
                         attr = attr ? attr : 'left';
-                        angular.element(e.children()[0]).css(attr, this.calsIndent(indent));
-                    },
-                    hidden:            function (e) {
-                        if (angular.isFunction(e.hide)) {
-                            e.hide();
-                        } else {
-                            displayElm = e[0].style.display;
-                            e[0].style.display = "none";
-                        }
+                        angular.element(element.children()[0]).css(attr, scope.$callbacks.calsIndent(indent));
                     }
                 };
             }]
