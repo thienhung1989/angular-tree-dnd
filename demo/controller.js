@@ -39,8 +39,14 @@
                     return $scope.my_tree.remove_branch();
                 }
 
-                $scope.my_tree_handler = function (branch) {
-                    console.log('you clicked on', branch)
+                $scope.click_handler = function (branch) {
+                    alert('you Clicked on! In debug "console.log" show info');
+                    console.log(branch);
+                }
+
+                $scope.select_handler = function (branch) {
+                    alert('you Selected on! In debug "console.log" show info');
+                    console.log(branch);
                 }
 
                 $scope.expanding_property = {
@@ -69,6 +75,15 @@
                         displayName:  'Remove',
                         cellTemplate: '<button ng-click="tree.remove_branch(row)" class="btn btn-default btn-sm">Remove</button>'
                     }];
+
+                $scope.col_defs_min = [{
+                                           displayName:  'Function',
+                                           cellTemplate: '<button ng-click="tree.addFunction(row)" class="btn btn-default btn-sm">Added Controller!</button>'
+                                       }, {
+                                           displayName:  'Remove',
+                                           cellTemplate: '<button ng-click="tree.remove_branch(row)" class="btn btn-default btn-sm">Remove</button>'
+                                       }];
+
                 $scope.tree_data = $TreeTableConvert.line2tree(DataDemo.getDatas(), 'DemographicId', 'ParentId');
             }]
     ).factory(
