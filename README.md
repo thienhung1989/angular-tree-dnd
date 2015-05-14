@@ -178,7 +178,39 @@ $scope.$callbacks = {
         * move:
             * parent: -1, // -1: Dragged failed, null: node root, > 0: node normal
             * pos:    -1 // Position new Note moveTo
-
+    * 'dropped': re-Add function ` * re-Add function `dropped` in `$callbaks` *(used to copying or remove node old)*:
+       * 
+       ```html
+           dropped:     function (info, pass, isMove);
+       ```
+       * With param:
+           * info: 
+               * drag: Scope of Node dragging.
+               * tree: Scope of Node Target.
+               * node: Node dragging.
+               * parent: Parent containd Node Dragging.
+               * move:
+                   * parent: Node parent to move node dragging to.
+                   * pos: Position insert.
+               * target: Data node Target *(able skip, not important)*
+            * pass: bypass resutl in `$callback.beforeDrop:`.
+            * isMove: status Moving or Copying.` in `$callbaks` *(used to copying or remove node old)*:
+        * 
+        ```html
+            dropped:     function (info, pass, isMove);
+        ```
+        * With param:
+            * info: 
+                * drag: Scope of Node dragging.
+                * tree: Scope of Node Target.
+                * node: Node dragging.
+                * parent: Parent containd Node Dragging.
+                * move:
+                    * parent: Node parent to move node dragging to.
+                    * pos: Position insert.
+                * target: Data node Target *(able skip, not important)*
+             * pass: bypass resutl in `$callback.beforeDrop:`.
+             * isMove: status Moving or Copying.
 
 * Add 'data' to TreeTableNode  `tree-table-node=data` in template;
 ```html
@@ -193,40 +225,85 @@ $scope.$callbacks = {
 * Combinding with list-tree.
 
 ```html
-<script type="text/ng-template" id="tree-table-template-render.html">
-    <ul tree-table-nodes="tree_data" class="tree-table-rows">
-        <li tree-table-node="row" ng-repeat="row in datas track by row.__hashKey__" ng-show="row.__visible__"
-            ng-class="(row.__selected__ ? ' active':'')"
-            ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {}" ng-click="user_clicks_branch(row)"
-            ng-class="expandingProperty.cellClass" compile="expandingProperty.cellTemplate"
-            ng-include="'tree-table-template-fetch.html'"></li>
-    </ul>
-</script>
-<script type="text/ng-template" id="tree-table-template-fetch.html">
-    <a tree-table-node-handle class="btn btn-default"> - </a>{{row[expandingProperty.field] || row[expandingProperty]}}
-    <a ng-if="row.__expanded__ != null" class="btn btn-default"
-       ng-click="expand(row)"> {{ (row.__expanded__) ? '-' : '+' }} </a>
-    <ul tree-table-nodes="row.__children__" class="tree-table-rows">
-        <li tree-table-node="row" ng-repeat="row in datas track by row.__hashKey__" ng-show="row.__visible__"
-            ng-class="(row.__selected__ ? ' active':'')"
-            ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {}" ng-click="user_clicks_branch(row)"
-            ng-class="[expandingProperty.cellClass]" compile="expandingProperty.cellTemplate"
-            ng-include="'tree-table-template-fetch.html'"></li>
-    </ul>
-</script>
-<tree-table tree-data="tree_data" tree-control="my_tree" drag-enabled="true" column-defs="[]"
-            expand-on="expanding_property" on-select="my_tree_handler(branch)" on-click="my_tree_handler(branch)"
-            template-url="tree-table-template-render.html"></tree-table>
+              <script type="text/ng-template" id="tree-table-template-render.html">
+                    <ul tree-table-nodes="tree_data">
+                        <li tree-table-node="row" ng-repeat="row in datas track by row.__hashKey__"
+                            ng-show="row.__visible__" compile="expandingProperty.cellTemplate"
+                            ng-include="'tree-table-template-fetch.html'"></li>
+                    </ul>
+                </script>
+                
+                <script type="text/ng-template" id="tree-table-template-fetch.html">
+                    <div class="list-group-item"
+                         ng-class="(row.__selected__ ? 'list-group-item-success':'')"
+                         ng-click="onClick(row)"
+                         ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {}">
+
+                        <a class="btn btn-default" aria-label="Justify" type="button" tree-table-node-handle>
+                            <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
+                        </a> 
+                        
+                        {{row[expandingProperty.field] || row[expandingProperty]}}
+                        
+                        <span ng-class="$iconClass" ng-click="toggleExpand(row)"></span>
+                        <div class="pull-right">
+                            <span ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
+                                  compile="col.cellTemplate">
+                                {{row[col.field]}}
+                            </span>
+                        </div>
+                    </div>
+                    <ul tree-table-nodes="row.__children__">
+                        <li tree-table-node="row" ng-repeat="row in datas track by row.__hashKey__"
+                            ng-show="row.__visible__" compile="expandingProperty.cellTemplate"
+                            ng-include="'tree-table-template-fetch.html'"></li>
+                    </ul>
+                </script>
+                
+                <tree-table tree-data="tree_data"
+                            tree-control="my_tree"
+                            column-defs="col_defs_min"
+                            expand-on="expanding_property"
+                            on-select="select_handler(branch)"
+                            on-click="click_handler(branch)"
+                            template-url="tree-table-template-render.html"
+                            icon-leaf="none"
+                            icon-expand="glyphicon glyphicon-chevron-down"
+                            icon-collapse="glyphicon glyphicon-chevron-right"
+                        ></tree-table>
 ```
 
 
 ## Add attributes
-    * enable-move: `true`: To move node, `false`: to copy node *(default `true`)*
-    * enable-hotkey: `true`: press 'shift' to move node, unpress 'shift' to copy node. *(default `false`)*
-    * enable-drag: to Enable-drag *(default `true`)*
-    * enable-status: to show status moving, copying *(default `false`)*
-    * template-copy: to add url template of `Status Copy` *(can bypass string or variable in controller, but just only get $templateCache, if not exist will get default)*;
-    * template-move: to add url template of `Status Move` *(can bypass string or variable in controller, but just only get $templateCache, if not exist will get default)*;
+    * `__tree_icon__` : changed to `__icon__` *(-1: leaf, 0: collect, 1: expaned)* - *(in Tree_Data)*
+    * Added `$iconClass` replace for `__tree_icon__` *(avoid conflict when create tree-table use one `tree-data`)*
+    * Add function:
+    * re-Add function `dropped` in `$callbaks` *(used to copying or remove node old)*:
+        * 
+        ```html
+            dropped:     function (info, pass, isMove);
+        ```
+        * With param:
+            * info: 
+                * drag: Scope of Node dragging.
+                * tree: Scope of Node Target.
+                * node: Node dragging.
+                * parent: Parent containd Node Dragging.
+                * move:
+                    * parent: Node parent to move node dragging to.
+                    * pos: Position insert.
+                * target: Data node Target *(able skip, not important)*
+             * pass: bypass resutl in `$callback.beforeDrop:`.
+             * isMove: status Moving or Copying.
+    * 'onSelect': Select and callback function `on-select` *(created in `directive`)*
+    * 'onClick': callback function `on-click`. *(created in `directive`)*
+    * 'column-defs': `null` will auto get colDefinitions *(sample with `empty`)*.
+    * 'enable-move': `true`: To move node, `false`: to copy node *(default `true`)*
+    * 'enable-hotkey': `true`: press 'shift' to move node, unpress 'shift' to copy node. *(default `false`)*
+    * 'enable-drag': to Enable-drag *(default `true`)*
+    * 'enable-status': to show status moving, copying *(default `false`)*
+    * 'template-copy': to add url template of `Status Copy` *(can bypass string or variable in controller, but just only get $templateCache, if not exist will get default)*;
+    * 'template-move': to add url template of `Status Move` *(can bypass string or variable in controller, but just only get $templateCache, if not exist will get default)*;
     * Example:
 ```html
 <tree-table class="tree-table table table-hover b-b b-light" tree-data="tree_data" tree-control="my_tree"
@@ -243,6 +320,10 @@ $scope.$callbacks = {
     column-defs="col_defs" 
     expand-on="expanding_property"
     
+    
+    on-select="select_handler()"
+    on-click="click_handler()"
+    
     template-url="tree-table-template.html" 
     template-move="'tree-table-template.html'"
     template-copy="tree-table-template.html"
@@ -250,6 +331,7 @@ $scope.$callbacks = {
     data-indent="30"
     data-indent-unit="px"
     data-indent-plus="15"
+    
 ></tree-table>
 
 ```

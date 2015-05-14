@@ -1,3 +1,34 @@
+## v2.1.0
+* Fix __hashKey__
+* Able Drag data in tree-table different *(supported)*
+* Removed:
+    * `__tree_icon__` *(in Tree_Data)*: changed to `__icon__` *(-1: leaf, 0: collect, 1: expaned)*
+* Added `$iconClass` replace for `__tree_icon__` *(avoid conflict when create tree-table use one `tree-data`)*
+* Add function:
+    * re-Add function `dropped` in `$callbaks` *(used to copying or remove node old)*:
+        * 
+        ```html
+            dropped:     function (info, pass, isMove);
+        ```
+        * With param:
+            * info: 
+                * drag: Scope of Node dragging.
+                * tree: Scope of Node Target.
+                * node: Node dragging.
+                * parent: Parent containd Node Dragging.
+                * move:
+                    * parent: Node parent to move node dragging to.
+                    * pos: Position insert.
+                * target: Data node Target *(able skip, not important)*
+             * pass: bypass resutl in `$callback.beforeDrop:`.
+             * isMove: status Moving or Copying.
+    * 'onSelect': Select and callback function `on-select` *(created in `directive`)*
+    * 'onClick': callback function `on-click`. *(created in `directive`)*
+    * 'column-defs': `null` will auto get colDefinitions *(sample with `empty`)*.
+    * 'toggleExpand': use toggle Expand;
+* Next Feature:
+    * Allow load Children dynamic with '$http'.
+
 ## v2.0.1
 * Fix remove indent when drag elemnt with level > 1;
 * Fix drag not two tree-table different *(development, not support)*.

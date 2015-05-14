@@ -1,6 +1,6 @@
 {
     "name": "angular-tree-table",
-    "version": "2.0.1",
+    "version": "2.1.0",
     "description":"A Grid That display column tree and display column other to nest in a row by AngularJS, using CSS animation and Bootstrap style",
     "main":[
         "src/ng-tree-table.css",
