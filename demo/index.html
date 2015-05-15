@@ -82,10 +82,23 @@
         <pre ng-show="showlog">{{ log | json }}</pre>
         <div ng-show="!showlog" class="row">
             <div class="col-md-7">
-                <tree-table tree-data="tree_data" tree-control="my_tree" drag-enabled="true"
-                            primary-key="'DemographicId'" column-defs="col_defs" expand-on="expanding_property"
-                            on-select="select_handler()" on-click="click_handler()" indent="30" indent-plus="20"
-                            indent-unit="px" enable-hotkey="true" enable-drag="true" enable-status="true"
+                <tree-table tree-data="tree_data"
+                            tree-control="my_tree"
+
+                            drag-enabled="true"
+                            primary-key="'DemographicId'"
+                            column-defs="col_defs"
+                            expand-on="expanding_property"
+
+                            on-select="select_handler(branch)"
+                            on-click="click_handler(branch)"
+                            indent="30"
+                            indent-plus="20"
+                            indent-unit="px"
+
+                            enable-hotkey="true"
+                            enable-drag="true"
+                            enable-status="true"
                             enable-move="true"></tree-table>
             </div>
             <div class="col-md-5">
