@@ -1,3 +1,8 @@
+## v2.1.1
+* Fix call function 'on-click', 'on-select'
+* Fix `status` dragging.
+* Fix `factory Template`
+
 ## v2.1.0
 * Fix __hashKey__
 * Able Drag data in tree-table different *(supported)*
