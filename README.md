@@ -69,6 +69,7 @@ $scope.$callbacks = {
 };
 ```
 * Functions extended in control (attribute 'tree-control'):
+
 ```html
 	tree.expand_all();
 	tree.collapse_all();
@@ -226,7 +227,7 @@ $scope.$callbacks = {
 ```html
               <script type="text/ng-template" id="tree-dnd-template-render.html">
                     <ul tree-dnd-nodes="tree_data">
-                        <li tree-dnd-node="node" ng-repeat="node in datas track by node.__hashKey__"
+                        <li tree-dnd-node="node" ng-repeat="node in nodes track by node.__hashKey__"
                             ng-show="node.__visible__" compile="expandingProperty.cellTemplate"
                             ng-include="'tree-dnd-template-fetch.html'"></li>
                     </ul>
@@ -253,7 +254,7 @@ $scope.$callbacks = {
                         </div>
                     </div>
                     <ul tree-dnd-nodes="node.__children__">
-                        <li tree-dnd-node="node" ng-repeat="node in datas track by node.__hashKey__"
+                        <li tree-dnd-node="node" ng-repeat="node in nodes track by node.__hashKey__"
                             ng-show="node.__visible__" compile="expandingProperty.cellTemplate"
                             ng-include="'tree-dnd-template-fetch.html'"></li>
                     </ul>
@@ -274,36 +275,37 @@ $scope.$callbacks = {
 
 
 ## Add attributes
-    * `__tree_icon__` : changed to `__icon__` *(-1: leaf, 0: collect, 1: expaned)* - *(in Tree_Data)*
-    * Added `$iconClass` replace for `__tree_icon__` *(avoid conflict when create tree-dnd use one `tree-data`)*
-    * Add function:
-    * re-Add function `dropped` in `$callbaks` *(used to copying or remove node old)*:
-        * 
-        ```html
-            dropped:     function (info, pass, isMove);
-        ```
-        * With param:
-            * info: 
-                * drag: Scope of Node dragging.
-                * tree: Scope of Node Target.
-                * node: Node dragging.
-                * parent: Parent containd Node Dragging.
-                * move:
-                    * parent: Node parent to move node dragging to.
-                    * pos: Position insert.
-                * target: Data node Target *(able skip, not important)*
-             * pass: bypass resutl in `$callback.beforeDrop:`.
-             * isMove: status Moving or Copying.
-    * 'onSelect': Select and callback function `on-select` *(created in `directive`)*
-    * 'onClick': callback function `on-click`. *(created in `directive`)*
-    * 'column-defs': `null` will auto get colDefinitions *(sample with `empty`)*.
-    * 'enable-move': `true`: To move node, `false`: to copy node *(default `true`)*
-    * 'enable-hotkey': `true`: press 'shift' to move node, unpress 'shift' to copy node. *(default `false`)*
-    * 'enable-drag': to Enable-drag *(default `true`)*
-    * 'enable-status': to show status moving, copying *(default `false`)*
-    * 'template-copy': to add url template of `Status Copy` *(can bypass string or variable in controller, but just only get $templateCache, if not exist will get default)*;
-    * 'template-move': to add url template of `Status Move` *(can bypass string or variable in controller, but just only get $templateCache, if not exist will get default)*;
-    * Example:
+
+* `__tree_icon__` : changed to `__icon__` *(-1: leaf, 0: collect, 1: expaned)* - *(in Tree_Data)*
+* Added `$iconClass` replace for `__tree_icon__` *(avoid conflict when create tree-dnd use one `tree-data`)*
+* Add function:
+* re-Add function `dropped` in `$callbaks` *(used to copying or remove node old)*:
+    * 
+    ```html
+        dropped:     function (info, pass, isMove);
+    ```
+    * With param:
+        * info: 
+            * drag: Scope of Node dragging.
+            * tree: Scope of Node Target.
+            * node: Node dragging.
+            * parent: Parent containd Node Dragging.
+            * move:
+                * parent: Node parent to move node dragging to.
+                * pos: Position insert.
+            * target: Data node Target *(able skip, not important)*
+         * pass: bypass resutl in `$callback.beforeDrop:`.
+         * isMove: status Moving or Copying.
+* 'onSelect': Select and callback function `on-select` *(created in `directive`)*
+* 'onClick': callback function `on-click`. *(created in `directive`)*
+* 'column-defs': `null` will auto get colDefinitions *(sample with `empty`)*.
+* 'enable-move': `true`: To move node, `false`: to copy node *(default `true`)*
+* 'enable-hotkey': `true`: press 'shift' to move node, unpress 'shift' to copy node. *(default `false`)*
+* 'enable-drag': to Enable-drag *(default `true`)*
+* 'enable-status': to show status moving, copying *(default `false`)*
+* 'template-copy': to add url template of `Status Copy` *(can bypass string or variable in controller, but just only get $templateCache, if not exist will get default)*;
+* 'template-move': to add url template of `Status Move` *(can bypass string or variable in controller, but just only get $templateCache, if not exist will get default)*;
+* Example:
 ```html
 <tree-dnd class="tree-dnd dnd dnd-hover b-b b-light" tree-data="tree_data" tree-control="my_tree"
     primary-key="primaryKey" 
