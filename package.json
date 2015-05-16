@@ -1,23 +1,23 @@
 {
   "autoupdate": {
     "source": "git",
-    "target": "git://github.com/thienhung1989/angular-tree-table.git",
+    "target": "git://github.com/thienhung1989/angular-tree-dnd.git",
     "basePath": "src/",
     "files": [
-      "ng-tree-table.js",
-      "ng-tree-table.css",
-      "ng-tree-table.min.css",
-      "ng-tree-table.min.js"
+      "ng-tree-dnd.js",
+      "ng-tree-dnd.css",
+      "ng-tree-dnd.min.css",
+      "ng-tree-dnd.min.js"
     ]
   },
-  "author": "https://github.com/thienhung1989/angular-tree-table/graphs/contributors",
-  "name": "angular-tree-table",
-  "version": "2.1.1",
-  "homepage": "http://thienhung1989.github.io/angular-tree-table/",
+  "author": "https://github.com/thienhung1989/angular-tree-dnd/graphs/contributors",
+  "name": "angular-tree-dnd",
+  "version": "3.0.0",
+  "homepage": "http://thienhung1989.github.io/angular-tree-dnd/",
   "dependencies": {},
   "repository": {
     "type": "git",
-    "url": "git://github.com/thienhung1989/angular-tree-table.git"
+    "url": "git://github.com/thienhung1989/angular-tree-dnd.git"
   },
   "devDependencies": {
     "angular": ">=1.2.*",

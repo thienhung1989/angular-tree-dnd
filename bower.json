@@ -1,20 +1,20 @@
 {
-    "name": "angular-tree-table",
-    "version": "2.1.1",
-    "description":"A Grid That display column tree and display column other to nest in a row by AngularJS, using CSS animation and Bootstrap style",
+    "name": "angular-tree-dnd",
+    "version": "3.0.0",
+    "description":"Display tree table (or list) & event DrapnDrop (allow drag multi tree-dnd include all type: table, ol, ul) by AngularJS, using CSS animation and Bootstrap style",
     "main":[
-        "src/ng-tree-table.css",
-        "src/ng-tree-table.js",
-        "src/ng-tree-table.min.css",
-        "src/ng-tree-table.min.js"
+        "src/ng-tree-dnd.css",
+        "src/ng-tree-dnd.js",
+        "src/ng-tree-dnd.min.css",
+        "src/ng-tree-dnd.min.js"
         ],
     "licence":"MIT",
-    "keywords":["angularjs","bootstrap", "tree", "grid","widget", "table"],
+    "keywords":["angularjs","bootstrap", "tree", "grid","widget", "table", "dnd"],
     "authors":["Nguyen Thien Hung"],
-    "homepage"  :"https://github.com/thienhung1989/angular-tree-table",
+    "homepage"  :"https://github.com/thienhung1989/angular-tree-dnd",
     "repository":{
         "type":"git",
-        "url":"git://github.com/thienhung1989/angular-tree-table"
+        "url":"git://github.com/thienhung1989/angular-tree-dnd"
     },
     "ignore": [
         "temp",

@@ -1,151 +1,151 @@
 <!DOCTYPE html>
-<html ng-app="treeTableTest">
+<html ng-app="TreeDnDTest">
 <head>
     <meta charset="utf-8" />
-    <title>AngularJS Angular-Tree-Table</title>
-    <script>document.write('<base href="' + document.location + '" />');</script>
+    <title>AngularJS Angular-Tree-DnD</title>
     <script src="../src/angular.js"></script>
     <script src="controller.js"></script>
-    <script src="../src/ng-tree-table.js"></script>
-    <link rel="stylesheet" href="../src/bootstrap.css">
-    <link rel="stylesheet" href="../src/ng-tree-table.css">
+    <script src="../src/ng-tree-dnd.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="../src/bootstrap.css"> -->
+    <link rel="stylesheet" href="../src/ng-tree-dnd.css">
 </head>
 <body ng-controller="CategoryMenuController" style="margin:20px">
-<div class="row">
-    <h1 class="text-center">angular-tree-table</h1>
-    <h4 class=" text-center text-info">[Angular 1.x] Display Tree Table & Event DrapnDrop</h4>
-    <h4 class=" text-center text-info">A Grid That display data tree by AngularJS, using CSS animation and Bootstrap style</h4>
+<div class="node">
+    <h1 class="text-center">angular-tree-dnd</h1>
+    <h4 class=" text-center text-info">Tree DnD & Event DrapnDrop (allow drag multi tree-table include all type: table, ol, ul)</h4>
+    <h4 class=" text-center text-info">Display data tree by AngularJS, using CSS animation and Bootstrap style</h4>
 
     <div class="btn-group btn-sm">
-        <a class="btn btn-success" href="https://github.com/thienhung1989/angular-tree-table">Code on github</a>
+        <a class="btn btn-success" href="https://github.com/thienhung1989/angular-tree-dnd">Code on github</a>
         <button class="btn btn-success" ng-click="showlog = !showlog"
                 href="">{{ (!showlog) ? 'Show Log' : 'Show Tree'}}
         </button>
         <button class="btn btn-success" ng-show="!showlog"
-                ng-click="ShowTreeTable = (!ShowTreeTable || ShowTreeTable == 1 ? 2 : 1)"
-                href="">{{ (showTreeTable == 1) ? 'Show Tree 1' : 'Show Tree 2'}}
+                ng-click="ShowTreeDnD = (!ShowTreeDnD || ShowTreeDnD == 1 ? 2 : 1)"
+                href="">{{ (showTreeDnD == 1) ? 'Show Tree 1' : 'Show Tree 2'}}
         </button>
         <button class="btn btn-info" ng-click="ShowAction = !ShowAction"
                 href="">{{ ShowAction ? 'Hide Action' : 'Show Action'}}
         </button>
     </div>
 </div>
-<div class="row">
+<div class="node">
     <div ng-if="ShowAction" ng-class="ShowAction ? 'col-xs-2' :''">
         <div class="btn-group-vertical btn-sm">
             <button class="btn btn-success btn-sm" ng-disabled="true"><b>--- Directive ---</b></button>
             <button ng-click="my_tree.expand_all()" class="btn btn-default btn-sm">expand_all</button>
             <button ng-click="my_tree.collapse_all()" class="btn btn-default btn-sm">collapse_all</button>
-            <button ng-click="log=my_tree.select_first_branch()" class="btn btn-default btn-sm">select_first_branch
+            <button ng-click="log=my_tree.select_first_node()" class="btn btn-default btn-sm">select_first_node
             </button>
-            <button ng-click="log=my_tree.select_next_branch(branch)" class="btn btn-default btn-sm">select_next_branch
+            <button ng-click="log=my_tree.select_next_node(node)" class="btn btn-default btn-sm">select_next_node
             </button>
-            <button ng-click="log=my_tree.select_prev_branch(branch)" class="btn btn-default btn-sm">select_prev_branch
+            <button ng-click="log=my_tree.select_prev_node(node)" class="btn btn-default btn-sm">select_prev_node
             </button>
-            <button ng-click="log=my_tree.select_next_sibling(branch)"
+            <button ng-click="log=my_tree.select_next_sibling(node)"
                     class="btn btn-default btn-sm">select_next_sibling
             </button>
-            <button ng-click="log=my_tree.select_prev_sibling(branch)"
+            <button ng-click="log=my_tree.select_prev_sibling(node)"
                     class="btn btn-default btn-sm">select_prev_sibling
             </button>
-            <button ng-click="log=my_tree.select_parent_branch(branch)"
-                    class="btn btn-default btn-sm">select_parent_branch
+            <button ng-click="log=my_tree.select_parent_node(node)"
+                    class="btn btn-default btn-sm">select_parent_node
             </button>
-            <button ng-click="my_tree.expand_branch(branch)" class="btn btn-default btn-sm">expand_branch</button>
-            <button ng-click="my_tree.collapse_branch(branch)" class="btn btn-default btn-sm">collapse_branch</button>
+            <button ng-click="my_tree.expand_node(node)" class="btn btn-default btn-sm">expand_node</button>
+            <button ng-click="my_tree.collapse_node(node)" class="btn btn-default btn-sm">collapse_node</button>
             <button class="btn btn-success btn-sm" ng-disabled="true"><b>--- Event ---</b></button>
-            <button ng-click="log=my_tree.last_descendant(branch)" class="btn btn-default btn-sm">last_descendant
+            <button ng-click="log=my_tree.last_descendant(node)" class="btn btn-default btn-sm">last_descendant
             </button>
-            <button ng-click="branch=my_tree.get_selected_branch()" class="btn btn-default btn-sm">get_selected_branch
+            <button ng-click="node=my_tree.get_selected_node()" class="btn btn-default btn-sm">get_selected_node
             </button>
-            <button ng-click="log=my_tree.get_first_child(branch)" class="btn btn-default btn-sm">get_first_child
+            <button ng-click="log=my_tree.get_first_child(node)" class="btn btn-default btn-sm">get_first_child
             </button>
-            <button ng-click="log=my_tree.get_children(branch)" class="btn btn-default btn-sm">get_children</button>
-            <button ng-click="log=my_tree.get_first_branch()" class="btn btn-default btn-sm">get_first_branch</button>
-            <button ng-click="log=my_tree.get_next_branch(branch)" class="btn btn-default btn-sm">get_next_branch
+            <button ng-click="log=my_tree.get_children(node)" class="btn btn-default btn-sm">get_children</button>
+            <button ng-click="log=my_tree.get_first_node()" class="btn btn-default btn-sm">get_first_node</button>
+            <button ng-click="log=my_tree.get_next_node(node)" class="btn btn-default btn-sm">get_next_node
             </button>
-            <button ng-click="log=my_tree.get_prev_branch(branch)" class="btn btn-default btn-sm">get_prev_branch
+            <button ng-click="log=my_tree.get_prev_node(node)" class="btn btn-default btn-sm">get_prev_node
             </button>
-            <button ng-click="log=my_tree.get_parent_branch(branch)" class="btn btn-default btn-sm">get_parent_branch
+            <button ng-click="log=my_tree.get_parent_node(node)" class="btn btn-default btn-sm">get_parent_node
             </button>
-            <button ng-click="log=my_tree.get_next_sibling(branch)" class="btn btn-default btn-sm">get_next_sibling
+            <button ng-click="log=my_tree.get_next_sibling(node)" class="btn btn-default btn-sm">get_next_sibling
             </button>
-            <button ng-click="log=my_tree.get_prev_sibling(branch)" class="btn btn-default btn-sm">get_prev_sibling
+            <button ng-click="log=my_tree.get_prev_sibling(node)" class="btn btn-default btn-sm">get_prev_sibling
             </button>
-            <button ng-click="log=my_tree.get_siblings(branch)" class="btn btn-default btn-sm">get_siblings</button>
-            <button ng-click="log=my_tree.get_closest_ancestor_next_sibling(branch)"
+            <button ng-click="log=my_tree.get_siblings(node)" class="btn btn-default btn-sm">get_siblings</button>
+            <button ng-click="log=my_tree.get_closest_ancestor_next_sibling(node)"
                     class="btn btn-default btn-sm">get_closest_ancestor_next_sibling
             </button>
         </div>
     </div>
     <div ng-class="ShowAction ? 'col-xs-10' :''">
         <pre ng-show="showlog">{{ log | json }}</pre>
-        <div ng-show="!showlog" class="row">
+        <div ng-show="!showlog" class="node">
             <div class="col-md-7">
-                <tree-table tree-data="tree_data"
-                            tree-control="my_tree"
+                <tree-dnd tree-data="tree_data"
+                          tree-control="my_tree"
 
-                            drag-enabled="true"
-                            primary-key="'DemographicId'"
-                            column-defs="col_defs"
-                            expand-on="expanding_property"
+                          drag-enabled="true"
+                          primary-key="'DemographicId'"
+                          column-defs="col_defs"
+                          expand-on="expanding_property"
 
-                            on-select="select_handler(branch)"
-                            on-click="click_handler(branch)"
-                            indent="30"
-                            indent-plus="20"
-                            indent-unit="px"
+                          on-select="select_handler(node)"
+                          on-click="click_handler(node)"
+                          indent="30"
+                          indent-plus="20"
+                          indent-unit="px"
 
-                            enable-hotkey="true"
-                            enable-drag="true"
-                            enable-status="true"
-                            enable-move="true"></tree-table>
+                          enable-hotkey="true"
+                          enable-drag="true"
+                          enable-status="true"
+                          enable-move="true"></tree-dnd>
             </div>
             <div class="col-md-5">
-                <script type="text/ng-template" id="tree-table-template-render.html">
-                    <ul tree-table-nodes="tree_data">
-                        <li tree-table-node="row" ng-repeat="row in datas track by row.__hashKey__"
-                            ng-show="row.__visible__" compile="expandingProperty.cellTemplate"
-                            ng-include="'tree-table-template-fetch.html'"></li>
+                <script type="text/ng-template" id="tree-dnd-template-render.html">
+                    <ul tree-dnd-nodes="tree_data">
+                        <li tree-dnd-node="node" ng-repeat="node in nodes track by node.__hashKey__"
+                            ng-show="node.__visible__" compile="expandingProperty.cellTemplate"
+                            ng-include="'tree-dnd-template-fetch.html'"></li>
                     </ul>
                 </script>
-                <script type="text/ng-template" id="tree-table-template-fetch.html">
+                <script type="text/ng-template" id="tree-dnd-template-fetch.html">
                     <div class="list-group-item"
-                         ng-class="(row.__selected__ ? 'list-group-item-success':'')"
-                         ng-click="onClick(row)"
+                         ng-class="(node.__selected__ ? 'list-group-item-success':'')"
+                         ng-click="onClick(node)"
                          ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {}">
 
-                        <a class="btn btn-default" aria-label="Justify" type="button" tree-table-node-handle>
+                        <a class="btn btn-default" aria-label="Justify" type="button" tree-dnd-node-handle>
                             <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
                         </a>
 
-                        {{row[expandingProperty.field] || row[expandingProperty]}}
+                        {{node[expandingProperty.field] || node[expandingProperty]}}
 
-                        <span ng-class="$iconClass" ng-click="toggleExpand(row)"></span>
+                        <span ng-class="$iconClass" ng-click="toggleExpand(node)"></span>
                         <div class="pull-right">
                             <span ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
                                   compile="col.cellTemplate">
-                                {{row[col.field]}}
+                                {{node[col.field]}}
                             </span>
                         </div>
                     </div>
-                    <ul tree-table-nodes="row.__children__">
-                        <li tree-table-node="row" ng-repeat="row in datas track by row.__hashKey__"
-                            ng-show="row.__visible__" compile="expandingProperty.cellTemplate"
-                            ng-include="'tree-table-template-fetch.html'"></li>
+                    <ul tree-dnd-nodes="node.__children__">
+                        <li tree-dnd-node="node" ng-repeat="node in nodes track by node.__hashKey__"
+                            ng-show="node.__visible__" compile="expandingProperty.cellTemplate"
+                            ng-include="'tree-dnd-template-fetch.html'"></li>
                     </ul>
                 </script>
-                <tree-table tree-data="tree_data"
-                            tree-control="my_tree"
-                            column-defs="col_defs_min"
-                            expand-on="expanding_property"
-                            on-select="select_handler(branch)"
-                            on-click="click_handler(branch)"
-                            template-url="tree-table-template-render.html"
-                            icon-leaf="none"
-                            icon-expand="glyphicon glyphicon-chevron-down"
-                            icon-collapse="glyphicon glyphicon-chevron-right"
-                        ></tree-table>
+                <tree-dnd tree-data="tree_data"
+                          tree-control="my_tree"
+                          column-defs="col_defs_min"
+                          expand-on="expanding_property"
+                          on-select="select_handler(node)"
+                          on-click="click_handler(node)"
+                          template-url="tree-dnd-template-render.html"
+                          icon-leaf="none"
+                          icon-expand="glyphicon glyphicon-chevron-down"
+                          icon-collapse="glyphicon glyphicon-chevron-right"
+                        ></tree-dnd>
             </div>
         </div>
     </div>

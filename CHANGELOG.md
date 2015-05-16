@@ -1,3 +1,13 @@
+## v3.0.0
+* Renamed 
+    * module `treeTable` to `ntt.TreeDnD`
+    * `angular-tree-table` to `angular-tree-dnd`:
+    * `tree-table` to `tree-dnd`.
+    * `tree-table-node` to `tree-dnd-node`.
+    * `tree-table-nodes` to `tree-dnd-nodes`.
+    * `datas` in `tree-table-nodes` to `nodes`.
+    * `branch` to `node`.
+    
 ## v2.1.1
 * Fix call function 'on-click', 'on-select'
 * Fix `status` dragging.
