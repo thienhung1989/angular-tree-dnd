@@ -1,9 +1,9 @@
 (function () {
-    angular.module('template/treeTable/treeTable.html', []).run(
+    angular.module('template/TreeDnD/TreeDnD.html', []).run(
         [
             '$templateCache', function ($templateCache) {
             $templateCache.put(
-                'template/treeTable/treeTable.html',
+                'template/TreeDnD/TreeDnD.html',
                 "" + "<table ng-class=\"tree_class\">\n"
                 + "    <thead>\n" + "  <tr>\n"
                 + "     <th ng-class=\"expandingProperty.titleClass\" ng-style=\"expandingProperty.titleStyle\">\n"
@@ -15,22 +15,22 @@
                 + "    </tr>\n"
                 + "    </thead>\n"
                 + " <tbody>\n"
-                + "  <tr tree-table-node=\"row\" ng-repeat=\"row in tree_rows track by row.__hashKey__ \" ng-show=\"row.__visible__\"\n"
-                + "     ng-class=\"(row.__selected__ ? ' active':'')\">\n"
-                + "        <td ng-if=\"!expandingProperty.template\" tree-table-node-handle\n"
-                + "         ng-style=\"expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}\"\n"
-                + "          ng-click=\"onSelect(row)\" ng-class=\"expandingProperty.cellClass\"\n"
+                + "  <tr tree-dnd-node=\"node\" ng-repeat=\"node in tree_nodes track by node.__hashKey__ \" ng-show=\"node.__visible__\"\n"
+                + "     ng-class=\"(node.__selected__ ? ' active':'')\">\n"
+                + "        <td ng-if=\"!expandingProperty.template\" tree-dnd-node-handle\n"
+                + "         ng-style=\"expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(node.__level__)}\"\n"
+                + "          ng-click=\"onSelect(node)\" ng-class=\"expandingProperty.cellClass\"\n"
                 + "            compile=\"expandingProperty.cellTemplate\">\n"
                 + "              <a data-nodrag>\n"
-                + "                  <i ng-class=\"$iconClass\" ng-click=\"toggleExpand(row)\"\n"
+                + "                  <i ng-class=\"$iconClass\" ng-click=\"toggleExpand(node)\"\n"
                 + "                     class=\"tree-icon\"></i>\n"
                 + "              </a>\n"
-                + "             {{row[expandingProperty.field] || row[expandingProperty]}}\n"
+                + "             {{node[expandingProperty.field] || node[expandingProperty]}}\n"
                 + "       </td>\n"
                 + "        <td ng-if=\"expandingProperty.template\" compile=\"expandingProperty.template\"></td>\n"
                 + "        <td ng-repeat=\"col in colDefinitions\" ng-class=\"col.cellClass\" ng-style=\"col.cellStyle\"\n"
                 + "            compile=\"col.cellTemplate\">\n"
-                + "            {{row[col.field]}}\n"
+                + "            {{node[col.field]}}\n"
                 + "       </td>\n"
                 + "    </tr>\n"
                 + "    </tbody>\n"
@@ -38,18 +38,18 @@
             );
 
             $templateCache.put(
-                'template/treeTable/treeTableStatusCopy.html',
+                'template/TreeDnD/TreeDnDStatusCopy.html',
                 '<label><i class="fa fa-copy"></i>&nbsp;<b>Copying</b></label>'
             );
 
             $templateCache.put(
-                'template/treeTable/treeTableStatusMove.html',
+                'template/TreeDnD/TreeDnDStatusMove.html',
                 '<label><i class="fa fa-file-text"></i>&nbsp;<b>Moving</b></label>'
             );
         }]
     );
 
-    angular.module('treeTable', ['template/treeTable/treeTable.html']).directive(
+    angular.module('ntt.TreeDnD', ['template/TreeDnD/TreeDnD.html']).directive(
         'compile', [
             '$compile', function ($compile) {
                 return {
@@ -77,10 +77,10 @@
                 };
             }]
     ).directive(
-        'treeTable', [
-            '$timeout', '$http', '$compile', '$window', '$document', 'treeTableTemplate', 'tgConfig',
-            '$TreeTableHelper', '$templateCache',
-            function ($timeout, $http, $compile, $window, $document, treeTableTemplate, tgConfig, $TreeTableHelper, $templateCache) {
+        'treeDnd', [
+            '$timeout', '$http', '$compile', '$window', '$document', '$TreeDnDTemplate', 'tgConfig',
+            '$TreeDnDHelper', '$templateCache',
+            function ($timeout, $http, $compile, $window, $document, $TreeDnDTemplate, tgConfig, $TreeDnDHelper, $templateCache) {
                 return {
                     restrict:   'E',
                     replace:    true,
@@ -120,9 +120,9 @@
                                 $scope.dragging = dragInfo;
                             }
 
-                            $scope.toggleExpand = function (row) {
-                                if (row.__children__.length > 0) {
-                                    row.__expanded__ = !row.__expanded__;
+                            $scope.toggleExpand = function (node) {
+                                if (node.__children__.length > 0) {
+                                    node.__expanded__ = !node.__expanded__;
                                 }
                             }
 
@@ -159,6 +159,7 @@
                                 },
                                 dropped:     function (info, pass, isMove) {
                                     var _node = info.node,
+                                        _nodeMove = null,
                                         _parent = info.parent || info.drag.treeData,
                                         _moveTo = info.move,
                                         _parentMoveTo = _moveTo.parent || info.scope.treeData,
@@ -173,13 +174,13 @@
                                                 _swap = _swap.__children__;
                                             }
 
-                                            _node = _swap.splice(_node.__index__, 1)[0];
+                                            _nodeMove = _swap.splice(_node.__index__, 1)[0];
                                         } else {
-                                            _node = angular.copy(_node);
-                                            _node.__uid__ = null;
+                                            _nodeMove = angular.copy(_node);
+                                            _nodeMove.__uid__ = null;
                                         }
                                         // if node dragging change index in sample node parent
-                                        // and index node increment 
+                                        // and index node increment
                                         if (info.drag == info.scope &&
                                             _parent == _parentMoveTo &&
                                             _moveTo.pos >= info.node.__index__) {
@@ -191,9 +192,9 @@
                                             if (_swap.__children__) {
                                                 _swap = _swap.__children__;
                                             }
-                                            _swap.splice(_moveTo.pos, 0, _node);
+                                            _swap.splice(_moveTo.pos, 0, _nodeMove);
                                         } else {
-                                            // todo If children need load crazy 
+                                            // todo If children need load crazy
                                         }
 
                                         return true;
@@ -213,14 +214,14 @@
 
                             $scope.getPrevGlobal = function (index) {
                                 if (index > 0) {
-                                    return $scope.tree_rows[index - 1];
+                                    return $scope.tree_nodes[index - 1];
                                 }
                                 return null;
                             };
 
                             $scope.getNextGlobal = function (index) {
                                 if (index > 0) {
-                                    return $scope.tree_rows[index - 1];
+                                    return $scope.tree_nodes[index - 1];
                                 }
                                 return null;
                             };
@@ -229,7 +230,7 @@
                                 if (index == null) {
                                     return null;
                                 }
-                                return $scope.tree_rows[index];
+                                return $scope.tree_nodes[index];
                             }
 
                             $scope.getHash = function (node) {
@@ -293,9 +294,9 @@
                                     if ($scope.enabledStatus) {
                                         var statusElmOld = $scope.statusElm;
                                         if ($scope.enabledMove) {
-                                            $scope.statusElm = angular.element(treeTableTemplate.getMove($scope));
+                                            $scope.statusElm = angular.element($TreeDnDTemplate.getMove($scope));
                                         } else {
-                                            $scope.statusElm = angular.element(treeTableTemplate.getCopy($scope));
+                                            $scope.statusElm = angular.element($TreeDnDTemplate.getCopy($scope));
                                         }
                                         if (statusElmOld != $scope.statusElm) {
                                             if (statusElmOld) {
@@ -346,11 +347,11 @@
                                 }
 
                                 if (tagName.toLowerCase() == 'tr') {
-                                    $TreeTableHelper.replaceIndent($scope, $scope.placeElm, level);
+                                    $TreeDnDHelper.replaceIndent($scope, $scope.placeElm, level);
                                 }
 
                                 element[0].parentNode.insertBefore($scope.placeElm[0], element[0]);
-                                $scope.placeElm.css('height', $TreeTableHelper.height(dragElm) + 'px');
+                                $scope.placeElm.css('height', $TreeDnDHelper.height(dragElm) + 'px');
 
                                 return $scope.placeElm;
                             }
@@ -368,7 +369,7 @@
                             }
                         }],
                     link:       function (scope, element, attrs) {
-                        scope.$type = 'TreeTable';
+                        scope.$type = 'TreeDnD';
                         scope.colDefinitions = [];
                         scope.dragging = null;
 
@@ -407,7 +408,7 @@
 
                                     if (_url) {
                                         if ($templateCache.get(_url)) {
-                                            treeTableTemplate.setCopy(_url, scope);
+                                            $TreeDnDTemplate.setCopy(_url, scope);
                                         }
                                     }
                                 }, true
@@ -430,7 +431,7 @@
 
                                     if (_url) {
                                         if ($templateCache.get(_url)) {
-                                            treeTableTemplate.setMove(_url, scope);
+                                            $TreeDnDTemplate.setMove(_url, scope);
                                         }
                                     }
                                 }, true
@@ -559,11 +560,11 @@
 
                         var getExpandOn = function () {
                                 if (scope.treeData.length) {
-                                    var _firstRow = scope.treeData[0], _keys = Object.keys(_firstRow),
+                                    var _firstNode = scope.treeData[0], _keys = Object.keys(_firstNode),
                                         regex = new RegExp("^__([a-zA-Z0-9_\-]*)__$");
                                     // Auto get first field with type is string;
                                     for (var i = 0, len = _keys.length; i < len; i++) {
-                                        if (typeof (_firstRow[_keys[i]]) === 'string' && !regex.test(_keys[i])) {
+                                        if (typeof (_firstNode[_keys[i]]) === 'string' && !regex.test(_keys[i])) {
                                             expandingProperty = _keys[i];
                                             break;
                                         }
@@ -580,9 +581,9 @@
                             getColDefs = function () {
                                 // Auto get Defs except attribute __level__ ....
                                 if (scope.treeData.length) {
-                                    var _col_defs = [], _firstRow = scope.treeData[0];
+                                    var _col_defs = [], _firstNode = scope.treeData[0];
                                     var regex = new RegExp("(^__([a-zA-Z0-9_\-]*)__$|^" + expandingProperty + "$)");
-                                    for (var idx in _firstRow) {
+                                    for (var idx in _firstNode) {
                                         if (!regex.test(idx)) {
                                             _col_defs.push(
                                                 {
@@ -608,16 +609,16 @@
                             }
                         }
 
-                        scope.tree_rows = [];
+                        scope.tree_nodes = [];
 
-                        var selected_branch = null,
-                            for_each_branch = function (f) {
+                        var selected_node = null,
+                            for_each_node = function (f) {
                                 var do_f, _i, _len, _ref;
-                                do_f = function (branch, level) {
-                                    f(branch, level);
-                                    if (branch.__children__ != null) {
+                                do_f = function (node, level) {
+                                    f(node, level);
+                                    if (node.__children__ != null) {
                                         var _i, _len, _ref;
-                                        _ref = branch.__children__;
+                                        _ref = node.__children__;
                                         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                                             do_f(_ref[_i], level + 1);
                                         }
@@ -628,33 +629,33 @@
                                     do_f(_ref[_i], 1);
                                 }
                             },
-                            select_branch = function (branch) {
-                                if (!branch) {
-                                    if (selected_branch != null) {
-                                        selected_branch.__selected__ = false;
+                            select_node = function (node) {
+                                if (!node) {
+                                    if (selected_node != null) {
+                                        selected_node.__selected__ = false;
                                     }
-                                    selected_branch = null;
+                                    selected_node = null;
                                     return;
                                 }
-                                if (branch !== selected_branch) {
-                                    if (selected_branch != null) {
-                                        selected_branch.__selected__ = false;
+                                if (node !== selected_node) {
+                                    if (selected_node != null) {
+                                        selected_node.__selected__ = false;
                                     }
-                                    branch.__selected__ = true;
-                                    selected_branch = branch;
-                                    expand_all_parents(branch);
+                                    node.__selected__ = true;
+                                    selected_node = node;
+                                    expand_all_parents(node);
                                     if (angular.isFunction(scope.on_select)) {
                                         return $timeout(
                                             function () {
-                                                return scope.on_select({branch: branch});
+                                                return scope.on_select({node: node});
                                             }
                                         );
                                     }
                                 }
                             },
                             get_parent = function (node) {
-                                if (node.__parent_real__ !== null && node.__parent_real__ > -1 && node.__parent_real__ < scope.tree_rows.length) {
-                                    return scope.tree_rows[node.__parent_real__];
+                                if (node.__parent_real__ !== null && node.__parent_real__ > -1 && node.__parent_real__ < scope.tree_nodes.length) {
+                                    return scope.tree_nodes[node.__parent_real__];
                                 }
                                 return null;
                             },
@@ -668,8 +669,8 @@
                             },
                             expand_all_parents = function (child) {
                                 return for_all_ancestors(
-                                    child, function (b) {
-                                        return b.__expanded__ = true;
+                                    child, function (node) {
+                                        return node.__expanded__ = true;
                                     }
                                 );
                             },
@@ -682,91 +683,92 @@
                                     getColDefs();
                                 }
 
-                                var _len, _data;
-                                _data = scope.treeData;
-                                _len = _data.length;
-                                var _tree_rows = [];
+                                var _data = scope.treeData,
+                                    _len = _data.length,
+                                    _tree_nodes = [];
                                 if (_len > 0) {
-                                    var _i, do_f;
-                                    do_f = function (branch, parent, parent_real, level, visible, index) {
-                                        var _i, _len, _icon;
-                                        if (!angular.isArray(branch.__children__)) {
-                                            branch.__children__ = [];
-                                        }
+                                    var _i,
+                                        do_f = function (node, parent, parent_real, level, visible, index) {
+                                            var _i, _len, _icon;
+                                            if (!angular.isArray(node.__children__)) {
+                                                node.__children__ = [];
+                                            }
 
-                                        branch.__parent_real__ = parent_real;
-                                        branch.__parent__ = parent;
-                                        _len = branch.__children__.length;
+                                            node.__parent_real__ = parent_real;
+                                            node.__parent__ = parent;
+                                            _len = node.__children__.length;
 
-                                        if (branch.__expanded__ == null && _len > 0) {
-                                            branch.__expanded__ = level < expand_level;
-                                        }
+                                            if (node.__expanded__ == null && _len > 0) {
+                                                node.__expanded__ = level < expand_level;
+                                            }
 
-                                        if (_len === 0) {
-                                            _icon = -1;
-                                        } else {
-                                            if (branch.__expanded__) {
-                                                _icon = 1;
+                                            if (_len === 0) {
+                                                _icon = -1;
                                             } else {
-                                                _icon = 0;
+                                                if (node.__expanded__) {
+                                                    _icon = 1;
+                                                } else {
+                                                    _icon = 0;
+                                                }
                                             }
-                                        }
-                                        // Insert item vertically
-                                        var _index_real = _tree_rows.length;
-                                        branch.__index__ = index;
-                                        branch.__index_real__ = _index_real;
-                                        branch.__level__ = level;
-                                        branch.__icon__ = _icon;
-                                        branch.__visible__ = visible;
+                                            // Insert item vertically
+                                            var _index_real = _tree_nodes.length;
+                                            node.__index__ = index;
+                                            node.__index_real__ = _index_real;
+                                            node.__level__ = level;
+                                            node.__icon__ = _icon;
+                                            node.__visible__ = visible;
 
-                                        if (branch.__uid__ == null) {
-                                            branch.__uid__ = "" + Math.random();
-                                        }
-
-                                        _tree_rows.push(branch);
-
-                                        // Check brach children
-                                        var _dept = 1;
-                                        if (_len > 0) {
-                                            for (_i = 0; _i < _len; _i++) {
-                                                _dept += do_f(
-                                                    branch.__children__[_i],
-                                                    (scope.primary_key == '__uid__') ? branch.__uid__ : branch[scope.primary_key],
-                                                    _index_real,
-                                                    level + 1,
-                                                    visible && branch.__expanded__,
-                                                    _i
-                                                );
+                                            if (node.__uid__ == null) {
+                                                node.__uid__ = "" + Math.random();
                                             }
-                                        }
 
-                                        var _hashKey;
-                                        if (scope.primary_key == '__uid__') {
-                                            _hashKey = '#' + parent_real + '#' + _index_real + '#' + branch.__uid__;
-                                        } else {
-                                            _hashKey = '#' + parent_real + '#' + _index_real + '#' + branch[scope.primary_key];
-                                        }
+                                            _tree_nodes.push(node);
 
-                                        if (branch.__hashKey__ == null || branch.__hashKey__ != _hashKey) {
-                                            branch.__hashKey__ = _hashKey;
-                                            delete(scope.$globals[_hashKey]);
-                                        }
+                                            // Check node children
+                                            var _dept = 1;
+                                            if (_len > 0) {
+                                                for (_i = 0; _i < _len; _i++) {
+                                                    _dept += do_f(
+                                                        node.__children__[_i],
+                                                        (scope.primary_key == '__uid__') ? node.__uid__ : node[scope.primary_key],
+                                                        _index_real,
+                                                        level + 1,
+                                                        visible && node.__expanded__,
+                                                        _i
+                                                    );
+                                                }
+                                            }
 
-                                        branch.__dept__ = _dept;
+                                            var _hashKey;
+                                            if (scope.primary_key == '__uid__') {
+                                                _hashKey = '#' + parent_real + '#' + _index_real + '#' + node.__uid__;
+                                            } else {
+                                                _hashKey = '#' + parent_real + '#' + _index_real + '#' + node[scope.primary_key];
+                                            }
 
-                                        return _dept;
-                                    };
+                                            if (node.__hashKey__ == null || node.__hashKey__ != _hashKey) {
+                                                node.__hashKey__ = _hashKey;
+                                                delete(scope.$globals[_hashKey]);
+                                            }
 
-                                    var _deptTotal = 0;
+                                            node.__dept__ = _dept;
+
+                                            return _dept;
+                                        },
+                                        _deptTotal = 0;
                                     for (_i = 0; _i < _len; _i++) {
                                         _deptTotal += do_f(_data[_i], null, null, 1, true, _i);
                                     }
 
                                     // clear Element Empty
-                                    var _offset, _max, _keys = Object.keys(scope.$globals), len = scope.$globals.length;
-                                    _offset = len - _deptTotal;
+                                    var _offset, _max, _keys = Object.keys(scope.$globals);
+
+                                    _len = scope.$globals.length;
+                                    _offset = _len - _deptTotal;
+
                                     if (_offset != 0) {
-                                        _max = len - _offset;
+                                        _max = _len - _offset;
                                         _min = _max - Math.abs(_offset);
                                         for (_i = _min; _i < _max; _i++) {
                                             delete(scope.$globals[_keys[_i]]);
@@ -774,23 +776,23 @@
                                     }
 
                                 }
-                                scope.tree_rows = _tree_rows;
-                                return scope.tree_rows;
+                                scope.tree_nodes = _tree_nodes;
+                                return scope.tree_nodes;
                             };
 
-                        scope.onClick = function (branch) {
+                        scope.onClick = function (node) {
                             if (angular.isFunction(scope.on_click)) {
                                 $timeout(
                                     function () {
-                                        scope.on_click({branch: branch});
+                                        scope.on_click({node: node});
                                     }
                                 );
                             }
                         };
 
-                        scope.onSelect = function (branch) {
-                            if (branch !== selected_branch) {
-                                select_branch(branch);
+                        scope.onSelect = function (node) {
+                            if (node !== selected_node) {
+                                select_node(node);
                             }
                         };
 
@@ -804,119 +806,119 @@
 
                         tree = scope.tree;
                         tree.expand_all = function () {
-                            for_each_branch(
-                                function (b, level) {
-                                    b.__expanded__ = true;
+                            for_each_node(
+                                function (node, level) {
+                                    node.__expanded__ = true;
                                 }
                             );
                         };
                         tree.collapse_all = function () {
-                            for_each_branch(
-                                function (b, level) {
-                                    b.__expanded__ = false;
+                            for_each_node(
+                                function (node, level) {
+                                    node.__expanded__ = false;
                                 }
                             );
                         };
-                        tree.get_first_branch = function () {
+                        tree.get_first_node = function () {
                             n = scope.treeData.length;
                             if (n > 0) {
                                 return scope.treeData[0];
                             }
                             return null;
                         };
-                        tree.select_first_branch = function () {
-                            var b;
-                            b = tree.get_first_branch();
-                            return tree.select_branch(b);
+                        tree.select_first_node = function () {
+                            var node;
+                            node = tree.get_first_node();
+                            return tree.select_node(node);
                         };
-                        tree.get_selected_branch = function () {
-                            return selected_branch;
+                        tree.get_selected_node = function () {
+                            return selected_node;
                         };
-                        tree.get_parent_branch = function (b) {
-                            return get_parent(b);
+                        tree.get_parent_node = function (node) {
+                            return get_parent(node);
                         };
-                        tree.select_branch = function (b) {
-                            select_branch(b);
-                            return b;
+                        tree.select_node = function (node) {
+                            select_node(node);
+                            return node;
                         };
-                        tree.get_children = function (b) {
-                            return b.__children__;
+                        tree.get_children = function (node) {
+                            return node.__children__;
                         };
-                        tree.select_parent_branch = function (b) {
+                        tree.select_parent_node = function (node) {
                             var p;
-                            if (b == null) {
-                                b = tree.get_selected_branch();
+                            if (node == null) {
+                                node = tree.get_selected_node();
                             }
-                            if (b != null) {
-                                p = tree.get_parent_branch(b);
+                            if (node != null) {
+                                p = tree.get_parent_node(node);
                                 if (p != null) {
-                                    tree.select_branch(p);
+                                    tree.select_node(p);
                                     return p;
                                 }
                             }
                         };
-                        tree.add_branch = function (parent, new_branch, index) {
+                        tree.add_node = function (parent, new_node, index) {
                             if ((typeof index) != "number") {
                                 if (parent != null) {
-                                    parent.__children__.push(new_branch);
+                                    parent.__children__.push(new_node);
                                     parent.__expanded__ = true;
                                 } else {
-                                    scope.treeData.push(new_branch);
+                                    scope.treeData.push(new_node);
                                 }
                             } else {
                                 if (parent != null) {
-                                    parent.__children__.splice(index, 0, new_branch);
+                                    parent.__children__.splice(index, 0, new_node);
                                     parent.__expanded__ = true;
                                 } else {
-                                    scope.treeData.splice(index, 0, new_branch);
+                                    scope.treeData.splice(index, 0, new_node);
                                 }
                             }
-                            return new_branch;
+                            return new_node;
                         };
-                        tree.add_root_branch = function (new_branch) {
-                            tree.add_branch(null, new_branch);
-                            return new_branch;
+                        tree.add_root_node = function (new_node) {
+                            tree.add_node(null, new_node);
+                            return new_node;
                         };
-                        tree.remove_branch = function (branch) {
-                            branch = branch || tree.get_selected_branch();
-                            if (branch) {
+                        tree.remove_node = function (node) {
+                            node = node || tree.get_selected_node();
+                            if (node) {
                                 var parent;
-                                if (branch.__parent_real__ !== null) {
-                                    parent = tree.get_parent_branch(branch).__children__;
+                                if (node.__parent_real__ !== null) {
+                                    parent = tree.get_parent_node(node).__children__;
                                 } else {
                                     parent = scope.treeData;
                                 }
-                                var index = parent.indexOf(branch);
+                                var index = parent.indexOf(node);
                                 parent.splice(index, 1);
-                                selected_branch = null;
+                                selected_node = null;
                             }
                         };
-                        tree.expand_branch = function (b) {
-                            if (b == null) {
-                                b = tree.get_selected_branch();
+                        tree.expand_node = function (node) {
+                            if (node == null) {
+                                node = tree.get_selected_node();
                             }
-                            if (b != null) {
-                                b.__expanded__ = true;
-                                return b;
+                            if (node != null) {
+                                node.__expanded__ = true;
+                                return node;
                             }
                         };
 
-                        tree.collapse_branch = function (b) {
-                            if (b == null) {
-                                b = selected_branch;
+                        tree.collapse_node = function (node) {
+                            if (node == null) {
+                                node = selected_node;
                             }
-                            if (b != null) {
-                                b.__expanded__ = false;
-                                return b;
+                            if (node != null) {
+                                node.__expanded__ = false;
+                                return node;
                             }
                         };
-                        tree.get_siblings = function (b) {
+                        tree.get_siblings = function (node) {
                             var p, siblings;
-                            if (b == null) {
-                                b = selected_branch;
+                            if (node == null) {
+                                node = selected_node;
                             }
-                            if (b != null) {
-                                p = tree.get_parent_branch(b);
+                            if (node != null) {
+                                p = tree.get_parent_node(node);
                                 if (p) {
                                     siblings = p.__children__;
                                 } else {
@@ -925,129 +927,129 @@
                                 return siblings;
                             }
                         };
-                        tree.get_next_sibling = function (b) {
+                        tree.get_next_sibling = function (node) {
                             var i, siblings;
-                            if (b == null) {
-                                b = selected_branch;
+                            if (node == null) {
+                                node = selected_node;
                             }
-                            if (b != null) {
-                                siblings = tree.get_siblings(b);
+                            if (node != null) {
+                                siblings = tree.get_siblings(node);
                                 n = siblings.length;
-                                i = siblings.indexOf(b);
+                                i = siblings.indexOf(node);
                                 if (i < n) {
                                     return siblings[i + 1];
                                 }
                             }
                         };
-                        tree.get_prev_sibling = function (b) {
+                        tree.get_prev_sibling = function (node) {
                             var i, siblings;
-                            if (b == null) {
-                                b = selected_branch;
+                            if (node == null) {
+                                node = selected_node;
                             }
-                            siblings = tree.get_siblings(b);
+                            siblings = tree.get_siblings(node);
                             n = siblings.length;
-                            i = siblings.indexOf(b);
+                            i = siblings.indexOf(node);
                             if (i > 0) {
                                 return siblings[i - 1];
                             }
                         };
-                        tree.select_next_sibling = function (b) {
+                        tree.select_next_sibling = function (node) {
                             var next;
-                            if (b == null) {
-                                b = selected_branch;
+                            if (node == null) {
+                                node = selected_node;
                             }
-                            if (b != null) {
-                                next = tree.get_next_sibling(b);
+                            if (node != null) {
+                                next = tree.get_next_sibling(node);
                                 if (next != null) {
-                                    return tree.select_branch(next);
+                                    return tree.select_node(next);
                                 }
                             }
                         };
-                        tree.select_prev_sibling = function (b) {
+                        tree.select_prev_sibling = function (node) {
                             var prev;
-                            if (b == null) {
-                                b = selected_branch;
+                            if (node == null) {
+                                node = selected_node;
                             }
-                            if (b != null) {
-                                prev = tree.get_prev_sibling(b);
+                            if (node != null) {
+                                prev = tree.get_prev_sibling(node);
                                 if (prev != null) {
-                                    return tree.select_branch(prev);
+                                    return tree.select_node(prev);
                                 }
                             }
                         };
-                        tree.get_first_child = function (b) {
+                        tree.get_first_child = function (node) {
                             var _ref;
-                            if (b == null) {
-                                b = selected_branch;
+                            if (node == null) {
+                                node = selected_node;
                             }
-                            if (b != null) {
-                                if (((_ref = b.__children__) != null ? _ref.length : void 0) > 0) {
-                                    return b.__children__[0];
+                            if (node != null) {
+                                if (((_ref = node.__children__) != null ? _ref.length : void 0) > 0) {
+                                    return node.__children__[0];
                                 }
                             }
                         };
-                        tree.get_closest_ancestor_next_sibling = function (b) {
+                        tree.get_closest_ancestor_next_sibling = function (node) {
                             var next, parent;
-                            next = tree.get_next_sibling(b);
+                            next = tree.get_next_sibling(node);
                             if (next != null) {
                                 return next;
                             } else {
-                                parent = tree.get_parent_branch(b);
+                                parent = tree.get_parent_node(node);
                                 return tree.get_closest_ancestor_next_sibling(parent);
                             }
                         };
-                        tree.get_next_branch = function (b) {
+                        tree.get_next_node = function (node) {
                             var next;
-                            if (b == null) {
-                                b = selected_branch;
+                            if (node == null) {
+                                node = selected_node;
                             }
-                            if (b != null) {
-                                next = tree.get_first_child(b);
+                            if (node != null) {
+                                next = tree.get_first_child(node);
                                 if (next != null) {
                                     return next;
                                 } else {
-                                    next = tree.get_closest_ancestor_next_sibling(b);
+                                    next = tree.get_closest_ancestor_next_sibling(node);
                                     return next;
                                 }
                             }
                         };
-                        tree.select_next_branch = function (b) {
+                        tree.select_next_node = function (node) {
                             var next;
-                            if (b == null) {
-                                b = selected_branch;
+                            if (node == null) {
+                                node = selected_node;
                             }
-                            if (b != null) {
-                                next = tree.get_next_branch(b);
+                            if (node != null) {
+                                next = tree.get_next_node(node);
                                 if (next != null) {
-                                    tree.select_branch(next);
+                                    tree.select_node(next);
                                     return next;
                                 }
                             }
                         };
-                        tree.last_descendant = function (b) {
+                        tree.last_descendant = function (node) {
                             var last_child;
-                            if (b == null) {
+                            if (node == null) {
                                 debugger;
                             }
-                            n = b.__children__.length;
+                            n = node.__children__.length;
                             if (n === 0) {
-                                return b;
+                                return node;
                             } else {
-                                last_child = b.__children__[n - 1];
+                                last_child = node.__children__[n - 1];
                                 return tree.last_descendant(last_child);
                             }
                         };
-                        tree.get_prev_branch = function (b) {
+                        tree.get_prev_node = function (node) {
                             var parent, prev_sibling;
-                            if (b == null) {
-                                b = selected_branch;
+                            if (node == null) {
+                                node = selected_node;
                             }
-                            if (b != null) {
-                                prev_sibling = tree.get_prev_sibling(b);
+                            if (node != null) {
+                                prev_sibling = tree.get_prev_sibling(node);
                                 if (prev_sibling != null) {
                                     return tree.last_descendant(prev_sibling);
                                 } else {
-                                    parent = tree.get_parent_branch(b);
+                                    parent = tree.get_parent_node(node);
                                     return parent;
                                 }
                             }
@@ -1055,15 +1057,15 @@
                         tree.reload_data = function () {
                             return on_treeData_change();
                         };
-                        tree.select_prev_branch = function (b) {
+                        tree.select_prev_node = function (node) {
                             var prev;
-                            if (b == null) {
-                                b = selected_branch;
+                            if (node == null) {
+                                node = selected_node;
                             }
-                            if (b != null) {
-                                prev = tree.get_prev_branch(b);
+                            if (node != null) {
+                                prev = tree.get_prev_node(node);
                                 if (prev != null) {
-                                    tree.select_branch(prev);
+                                    tree.select_node(prev);
                                     return prev;
                                 }
                             }
@@ -1091,10 +1093,10 @@
                                 if (!eventScope || !eventScope.$type) {
                                     return;
                                 }
-                                if (eventScope.$type != 'TreeTableNode' && eventScope.$type != 'TreeTableNodeHandle') { // Check if it is a node or a handle
+                                if (eventScope.$type != 'TreeDnDNode' && eventScope.$type != 'TreeDnDNodeHandle') { // Check if it is a node or a handle
                                     return;
                                 }
-                                if (eventScope.$type != 'TreeTableNodeHandle') { // If the node has a handle, then it should be clicked by the handle
+                                if (eventScope.$type != 'TreeDnDNodeHandle') { // If the node has a handle, then it should be clicked by the handle
                                     return;
                                 }
 
@@ -1105,7 +1107,7 @@
                                 }
                                 // check if it or it's parents has a 'data-nodrag' attribute
                                 while (eventElm && eventElm[0] && eventElm[0] != element) {
-                                    if ($TreeTableHelper.nodrag(eventElm)) { // if the node mark as `nodrag`, DONOT drag it.
+                                    if ($TreeDnDHelper.nodrag(eventElm)) { // if the node mark as `nodrag`, DONOT drag it.
                                         return;
                                     }
                                     eventElm = eventElm.parent();
@@ -1122,13 +1124,13 @@
                                 }
                                 e.preventDefault();
 
-                                var eventObj = $TreeTableHelper.eventObj(e);
+                                var eventObj = $TreeDnDHelper.eventObj(e);
                                 firstMoving = true;
-                                dragInfo = $TreeTableHelper.dragInfo(dragScope);
+                                dragInfo = $TreeDnDHelper.dragInfo(dragScope);
                                 scope.setDragging(dragInfo);
                                 var tagName = dragScope.$element.prop('tagName').toLowerCase();
 
-                                pos = $TreeTableHelper.positionStarted(eventObj, dragScope.$element);
+                                pos = $TreeDnDHelper.positionStarted(eventObj, dragScope.$element);
 
                                 if (tagName === 'tr') {
                                     dragElm = angular.element($window.document.createElement('table'))
@@ -1138,22 +1140,22 @@
                                 } else {
                                     dragElm = angular.element($window.document.createElement('ul'))
                                         .addClass(scope.config.dragClass)
-                                        .addClass('tree-table-rows')
+                                        .addClass('tree-dnd-nodes')
                                         .addClass(scope.tree_class);
                                 }
 
                                 dragElm.css(
                                     {
-                                        'width':   $TreeTableHelper.width(dragScope.$element) + 'px',
+                                        'width':   $TreeDnDHelper.width(dragScope.$element) + 'px',
                                         'z-index': 9995
                                     }
                                 );
 
                                 offsetEdge = 0;
-                                var _width = $TreeTableHelper.width(dragScope.$element);
+                                var _width = $TreeDnDHelper.width(dragScope.$element);
                                 if (tagName == 'tr') {
                                     var _tbody = angular.element($window.document.createElement('tbody'));
-                                    offsetEdge = dragScope.node().__level__ - 1;
+                                    offsetEdge = dragScope.getData().__level__ - 1;
                                     var drag_descendant = function (node) {
                                         var _scope, _element, _i, _len, _nodes, _clone;
 
@@ -1162,7 +1164,7 @@
 
                                         _clone = _element.clone();
 
-                                        $TreeTableHelper.replaceIndent(
+                                        $TreeDnDHelper.replaceIndent(
                                             _scope,
                                             _clone,
                                             node.__level__ - offsetEdge,
@@ -1182,7 +1184,7 @@
                                         }
                                     }
 
-                                    drag_descendant(dragScope.node());
+                                    drag_descendant(dragScope.getData());
 
                                     dragElm.append(_tbody);
                                 } else {
@@ -1206,6 +1208,7 @@
 
                                 placeElm = scope.initPlace(dragScope.$element, dragInfo.level, dragElm);
                                 placeElm.css('width', _width);
+
                                 if (scope.enabledStatus) {
                                     scope.refreshStatus();
                                     scope.setPositionStatus(e);
@@ -1245,7 +1248,7 @@
                                     }
                                     return;
                                 }
-                                var eventObj = $TreeTableHelper.eventObj(e);
+                                var eventObj = $TreeDnDHelper.eventObj(e);
                                 var prev, leftElmPos, topElmPos;
                                 if (dragElm) {
                                     e.preventDefault();
@@ -1297,7 +1300,7 @@
                                     if (top_scroll > eventObj.pageY) {
                                         window.scrollBy(0, -10);
                                     }
-                                    $TreeTableHelper.positionMoved(e, pos, firstMoving);
+                                    $TreeDnDHelper.positionMoved(e, pos, firstMoving);
                                     if (firstMoving) {
                                         firstMoving = false;
                                         return;
@@ -1343,14 +1346,14 @@
                                             return;
                                         }
 
-                                        targetElm = targetScope.$element; // Get the element of tree-table-node
+                                        targetElm = targetScope.$element; // Get the element of tree-dnd-node
 
-                                        var targetBefore, targetOffset = $TreeTableHelper.offset(targetElm);
+                                        var targetBefore, targetOffset = $TreeDnDHelper.offset(targetElm);
 
                                         if (tagName == 'tr') {
-                                            targetBefore = eventObj.pageY < (targetOffset.top + $TreeTableHelper.height(targetElm) / 2);
+                                            targetBefore = eventObj.pageY < (targetOffset.top + $TreeDnDHelper.height(targetElm) / 2);
                                         } else {
-                                            var _height = $TreeTableHelper.height(targetElm) - $TreeTableHelper.height(targetScope.elementChilds);
+                                            var _height = $TreeDnDHelper.height(targetElm) - $TreeDnDHelper.height(targetScope.elementChilds);
                                             if (eventObj.pageY > targetOffset.top + _height) {
                                                 return;
                                             }
@@ -1363,19 +1366,19 @@
                                             dragInfo.level,
                                             dragElm
                                         );
-                                        placeElm.css('width', $TreeTableHelper.width(targetElm));
+                                        placeElm.css('width', $TreeDnDHelper.width(targetElm));
 
                                         if (targetScope.$callbacks.dragEnabled()) {
                                             if (targetScope.accept(dragInfo, targetBefore)) {
-                                                dragInfo.level = targetScope.node().__level__;
+                                                dragInfo.level = targetScope.getData().__level__;
                                                 if (targetBefore) {
-                                                    var _target = targetScope.node(),
+                                                    var _target = targetScope.getData(),
                                                         _parent = targetScope.getNode(_target.__parent_real__),
                                                         _prev;
 
                                                     // Insert Element before Target
                                                     if (dragInfo.drag == targetScope && dragInfo.isDirty(
-                                                            targetScope.node().__index_real__ - 1
+                                                            targetScope.getData().__index_real__ - 1
                                                         )) {
                                                         _prev = targetScope.getPrevGlobal(dragInfo.node.__index_real__);
                                                     } else {
@@ -1398,7 +1401,7 @@
                                                     }
 
                                                     if (tagName == 'tr') {
-                                                        $TreeTableHelper.replaceIndent(
+                                                        $TreeDnDHelper.replaceIndent(
                                                             targetScope,
                                                             placeElm,
                                                             dragInfo.level
@@ -1414,7 +1417,7 @@
                                                     //placeElm.insertBefore(targetElm);
                                                 } else {
                                                     var _level = dragInfo.level, _org = false;
-                                                    _target = targetScope.node();
+                                                    _target = targetScope.getData();
 
                                                     dragInfo.target = _target;
                                                     dragInfo.scope = targetScope;
@@ -1431,7 +1434,7 @@
                                                             pos:    0
                                                         }
                                                         if (tagName == 'tr') {
-                                                            $TreeTableHelper.replaceIndent(
+                                                            $TreeDnDHelper.replaceIndent(
                                                                 targetScope,
                                                                 placeElm,
                                                                 _level
@@ -1455,7 +1458,7 @@
                                                         }
 
                                                         if (tagName == 'tr') {
-                                                            $TreeTableHelper.replaceIndent(
+                                                            $TreeDnDHelper.replaceIndent(
                                                                 targetScope,
                                                                 placeElm,
                                                                 _level
@@ -1508,7 +1511,7 @@
                                                         }
 
                                                         if (tagName == 'tr') {
-                                                            $TreeTableHelper.replaceIndent(
+                                                            $TreeDnDHelper.replaceIndent(
                                                                 targetScope,
                                                                 placeElm,
                                                                 dragInfo.level
@@ -1540,7 +1543,7 @@
                                                         }
 
                                                         if (tagName == 'tr') {
-                                                            $TreeTableHelper.replaceIndent(
+                                                            $TreeDnDHelper.replaceIndent(
                                                                 targetScope,
                                                                 placeElm,
                                                                 dragInfo.level
@@ -1587,7 +1590,7 @@
                                                 rollback_descendant(_nodes[_i]);
                                             }
                                         }
-                                        rollback_descendant(dragInfo.drag.node());
+                                        rollback_descendant(dragInfo.drag.getData());
                                     } else {
                                         if (scope.config.hiddenClass) {
                                             dragInfo.drag.$element.removeClass(scope.config.hiddenClass);
@@ -1719,7 +1722,7 @@
                             }
                         );
 
-                        $http.get(attrs.templateUrl || treeTableTemplate.getPath(), {cache: $templateCache}).success(
+                        $http.get(attrs.templateUrl || $TreeDnDTemplate.getPath(), {cache: $templateCache}).success(
                             function (data) {
                                 element.append($compile(data)(scope));
                             }
@@ -1729,9 +1732,9 @@
                 };
             }]
     ).directive(
-        'treeTableNode', [
-            '$window', '$document', '$timeout', '$TreeTableHelper', 'treeTableTemplate',
-            function ($window, $document, $timeout, $TreeTableHelper, treeTableTemplate) {
+        'treeDndNode', [
+            '$window', '$document', '$timeout', '$TreeDnDHelper', '$TreeDnDTemplate',
+            function ($window, $document, $timeout, $TreeDnDHelper, $TreeDnDTemplate) {
                 return {
                     restrict:   'A',
                     replace:    true,
@@ -1745,13 +1748,13 @@
                                 return $scope.getPrevGlobal($scope.$modelValue.__index_real__);
                             }
 
-                            $scope.node = function () {
+                            $scope.getData = function () {
                                 return $scope.$modelValue;
                             }
 
                             $scope.visible = function (node) {
                                 if (node != null) {
-                                    return node.__visible__ ? node : $scope.visible($scope.tree_rows[node.__parent_real__]);
+                                    return node.__visible__ ? node : $scope.visible($scope.tree_nodes[node.__parent_real__]);
                                 }
                                 return null;
                             }
@@ -1767,7 +1770,7 @@
                         }],
                     link:       function (scope, element, attrs) {
                         scope.$element = element;
-                        scope.$type = 'TreeTableNode';
+                        scope.$type = 'TreeDnDNode';
                         scope.$iconClass = '';
 
                         if (scope.config.nodeClass) {
@@ -1775,7 +1778,7 @@
                         }
 
                         scope.$watch(
-                            attrs['treeTableNode'], function (newValue, oldValue, scope) {
+                            attrs['treeDndNode'], function (newValue, oldValue, scope) {
                                 scope.setScope(scope, newValue);
                                 scope.$modelValue = newValue;
                                 scope.$iconClass = scope.classIcon[newValue.__icon__];
@@ -1786,22 +1789,22 @@
                 };
             }]
     ).directive(
-        'treeTableNodes', function () {
+        'treeDndNodes', function () {
             return {
                 restrict: 'A',
                 replace:  true,
                 link:     function (scope, element, attrs) {
-                    scope.$type = 'TreeTableNodes';
+                    scope.$type = 'TreeDnDNodes';
                     scope.$element = element;
-                    scope.datas = [];
+                    scope.nodes = [];
 
                     if (scope.setElementChilds) {
                         scope.setElementChilds(element);
                     }
 
                     scope.$watch(
-                        attrs['treeTableNodes'], function (newValue, oldValue, scope) {
-                            scope.datas = newValue;
+                        attrs['treeDndNodes'], function (newValue, oldValue, scope) {
+                            scope.nodes = newValue;
                         }, true
                     );
 
@@ -1812,13 +1815,13 @@
             };
         }
     ).directive(
-        'treeTableNodeHandle', function () {
+        'treeDndNodeHandle', function () {
             return {
                 restrict: 'A',
                 scope:    true,
                 link:     function (scope, element, attrs) {
                     scope.$element = element;
-                    scope.$type = 'TreeTableNodeHandle';
+                    scope.$type = 'TreeDnDNodeHandle';
                     if (scope.config.handleClass) {
                         element.addClass(scope.config.handleClass);
                     }
@@ -1826,11 +1829,11 @@
             };
         }
     ).factory(
-        'treeTableTemplate', [
+        '$TreeDnDTemplate', [
             '$templateCache', function ($templateCache) {
-                var templatePath = 'template/treeTable/treeTable.html';
-                var copyPath = 'template/treeTable/treeTableStatusCopy.html';
-                var movePath = 'template/treeTable/treeTableStatusMove.html';
+                var templatePath = 'template/TreeDnD/TreeDnD.html';
+                var copyPath = 'template/TreeDnD/TreeDnDStatusCopy.html';
+                var movePath = 'template/TreeDnD/TreeDnDStatusMove.html';
                 var scopes = {};
                 return {
                     setMove: function (path, scope) {
@@ -1868,7 +1871,7 @@
 
             }]
     ).factory(
-        '$TreeTableHelper', [
+        '$TreeDnDHelper', [
             '$document', '$window', function ($document, $window) {
                 return {
                     calsIndent:      null,
@@ -1885,7 +1888,7 @@
                         return obj;
                     },
                     dragInfo:        function (scope) {
-                        var _node = scope.node();
+                        var _node = scope.getData();
                         return {
                             node:      _node,
                             parent:    scope.getNode(_node.__parent_real__),
@@ -1927,7 +1930,7 @@
                                         return null;
                                     } else {
                                         _node = _target;
-                                        _target = this.scope.tree_rows[_target.__parent_real__];
+                                        _target = this.scope.tree_nodes[_target.__parent_real__];
                                     }
                                 }
                                 return false;
@@ -2014,7 +2017,7 @@
                 };
             }]
     ).factory(
-        '$TreeTableConvert', function () {
+        '$TreeDnDConvert', function () {
             return {
                 line2tree: function (data, primaryKey, parentKey) {
                     if (!data || data.length == 0 || !primaryKey || !parentKey) {
@@ -2064,15 +2067,15 @@
         }
     ).constant(
         'tgConfig', {
-            treeClass:        'tree-table',
-            emptyTreeClass:   'tree-table-empty',
-            hiddenClass:      'tree-table-hidden',
-            nodeClass:        'tree-table-row',
-            nodesClass:       'tree-table-rows',
-            handleClass:      'tree-table-handle',
-            placeHolderClass: 'tree-table-placeholder',
-            dragClass:        'tree-table-drag',
-            statusClass:      'tree-table-status',
+            treeClass:        'tree-dnd',
+            emptyTreeClass:   'tree-dnd-empty',
+            hiddenClass:      'tree-dnd-hidden',
+            nodeClass:        'tree-dnd-node',
+            nodesClass:       'tree-dnd-nodes',
+            handleClass:      'tree-dnd-handle',
+            placeHolderClass: 'tree-dnd-placeholder',
+            dragClass:        'tree-dnd-drag',
+            statusClass:      'tree-dnd-status',
             levelThreshold:   30
         }
     );

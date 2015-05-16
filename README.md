@@ -1,20 +1,20 @@
-# angular-tree-table
-[Angular 1.x] Display tree table &amp; event DrapnDrop, field 'td' by tree (other normal) - without jQuery.
+# angular-tree-dnd
+[Angular 1.x] Display tree dnd &amp; event DrapnDrop, field 'td' by tree (other normal) - without jQuery.
 ## Current Version
-[![GitHub version](https://badge.fury.io/gh/thienhung1989%2Fangular-tree-table.svg)](http://badge.fury.io/gh/thienhung1989%2Fangular-tree-table)
+[![GitHub version](https://badge.fury.io/gh/thienhung1989%2Fangular-tree-dnd.svg)](http://badge.fury.io/gh/thienhung1989%2Fangular-tree-dnd)
 
 ## Demo: 
-- http://thienhung1989.github.io/angular-tree-table/demo
+- http://thienhung1989.github.io/angular-tree-dnd/demo
 - http://plnkr.co/edit/6zQNvW?p=preview
 
 
 ## Install bower:
 ```js
-bower angular-tree-table install
+bower angular-tree-dnd install
 ```
 
 * Function 'filter' & 'group by' not add in ng-repeate (it's slow & incompatible with $id($$hash) )
-* Able add function to tree-table by:
+* Able add function to tree-dnd by:
 	* Example: *(See on Demo 2)*
 ```js
 	$scope.my_tree.addFunction = function(b){
@@ -22,17 +22,17 @@ bower angular-tree-table install
 	  alert('Function added in Controller "App.js"');
 	}
 ```
-		* Call function: *(tree.remove_branch extended see below with function other)*
+		* Call function: *(tree.remove_node extended see below with function other)*
 ```js
               $scope.col_defs = [
                     {
                         field: "Description"
                     }, {
                         displayName:  'Function',
-                        cellTemplate: '<button ng-click="tree.addFunction(row)" class="btn btn-default btn-sm">Added Controller!</button>'
+                        cellTemplate: '<button ng-click="tree.addFunction(node)" class="btn btn-default btn-sm">Added Controller!</button>'
                     }, {
                         displayName:  'Remove',
-                        cellTemplate: '<button ng-click="tree.remove_branch(row)" class="btn btn-default btn-sm">Remove</button>'
+                        cellTemplate: '<button ng-click="tree.remove_node(node)" class="btn btn-default btn-sm">Remove</button>'
                     }];
 ```
 
@@ -72,37 +72,37 @@ $scope.$callbacks = {
 ```html
 	tree.expand_all();
 	tree.collapse_all();
-	tree.select_first_branch();
-	tree.select_branch(branch);
-	tree.add_branch(parent, new_branch, index);
-	tree.add_root_branch(new_branch);
-	tree.remove_branch(branch);
-	tree.expand_branch(branch);
-	tree.collapse_branch(branch);
-	tree.get_selected_branch();
-	tree.get_first_child(branch);
-	tree.get_children(branch);
-	tree.get_first_branch();
-	tree.get_next_branch(branch);
-	tree.get_prev_branch(branch);
-	tree.get_parent_branch(branch);
-	tree.get_siblings(branch);
-	tree.get_next_sibling(branch);
-	tree.get_prev_sibling(branch);
-	tree.get_closest_ancestor_next_sibling(branch);
-	tree.select_next_branch(branch);
-	tree.select_next_sibling(branch);
-	tree.select_prev_sibling(branch);
-	tree.select_parent_branch(branch);
-	tree.last_descendant(branch);
-	tree.select_prev_branch(branch);
+	tree.select_first_node();
+	tree.select_node(node);
+	tree.add_node(parent, new_node, index);
+	tree.add_root_node(new_node);
+	tree.remove_node(node);
+	tree.expand_node(node);
+	tree.collapse_node(node);
+	tree.get_selected_node();
+	tree.get_first_child(node);
+	tree.get_children(node);
+	tree.get_first_node();
+	tree.get_next_node(node);
+	tree.get_prev_node(node);
+	tree.get_parent_node(node);
+	tree.get_siblings(node);
+	tree.get_next_sibling(node);
+	tree.get_prev_sibling(node);
+	tree.get_closest_ancestor_next_sibling(node);
+	tree.select_next_node(node);
+	tree.select_next_sibling(node);
+	tree.select_prev_sibling(node);
+	tree.select_parent_node(node);
+	tree.last_descendant(node);
+	tree.select_prev_node(node);
 ```
 
 * Example
 **init:
 ```html
- <tree-table
-        class="table"
+ <tree-dnd
+        class="dnd"
         tree-data="tree_data"
         tree-control="my_tree"
         callbacks="callbacks"
@@ -110,22 +110,22 @@ $scope.$callbacks = {
         icon-leaf="none"
         icon-expand="fa fa-fw fa-angle-right"
         icon-collapse="fa fa-fw fa-angle-down"
-        template-url="tree-table-template.html"
+        template-url="tree-dnd-template.html"
         column-defs="col_defs"
         expand-on="expanding_property"
-        on-select="my_tree_handler(branch)"
-        on-click="my_tree_handler(branch)"
+        on-select="my_tree_handler(node)"
+        on-click="my_tree_handler(node)"
         data-indent="30"
         data-indent-unit="px"
         data-indent-plus="15"
    >
-</tree-table>
+</tree-dnd>
 ```
 ** Template Extened:
 ```html
-<script type="text/ng-template" id="tree-table-template.html">
-	<div class="tree-table">
-            <table class="table">
+<script type="text/ng-template" id="tree-dnd-template.html">
+	<div class="tree-dnd">
+            <dnd class="dnd">
                 <thead>
                     <tr>
                         <th ng-class="expandingProperty.titleClass" ng-style="expandingProperty.titleStyle">
@@ -138,27 +138,27 @@ $scope.$callbacks = {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr tree-table-node ng-repeat="row in tree_rows track by hashedTree(row)"
-                        ng-show="row.__visible__" ng-class="(row.__selected__ ? ' active':'')"
+                    <tr tree-dnd-node ng-repeat="node in tree_rows track by hashedTree(node)"
+                        ng-show="node.__visible__" ng-class="(node.__selected__ ? ' active':'')"
                         class="ng-animate ">
                         <td ng-if="!expandingProperty.template"
-                            ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(row.__level__)}"
-                            ng-click="user_clicks_branch(row)" ng-class="expandingProperty.cellClass"
+                            ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(node.__level__)}"
+                            ng-click="user_clicks_node(node)" ng-class="expandingProperty.cellClass"
                             compile="expandingProperty.cellTemplate">
-                        <span tree-table-node-handle>
+                        <span tree-dnd-node-handle>
                             <i class="fa fa-sort text-muted m-r-sm"></i>
-                        </span> {{row[expandingProperty.field] || row[expandingProperty]}} <a> <i
-                                ng-class="row.__tree_icon__" ng-click="row.__expanded__ = !row.__expanded__"
+                        </span> {{node[expandingProperty.field] || node[expandingProperty]}} <a> <i
+                                ng-class="node.__tree_icon__" ng-click="node.__expanded__ = !node.__expanded__"
                                 class="tree-icon"></i> </a>
                         </td>
                         <td ng-if="expandingProperty.template" compile="expandingProperty.template"></td>
                         <td ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
                             compile="col.cellTemplate">
-                            {{row[col.field]}}
+                            {{node[col.field]}}
                         </td>
                     </tr>
                 </tbody>
-            </table>
+            </dnd>
         </div>
 	<pre>{{ treeData | json }}</pre>
 	<pre>{{ tree_rows | json }}</pre>
@@ -211,10 +211,10 @@ $scope.$callbacks = {
              * pass: bypass resutl in `$callback.beforeDrop:`.
              * isMove: status Moving or Copying.
 
-* Add 'data' to TreeTableNode  `tree-table-node=data` in template;
+* Add 'data' to TreeDnDNode  `tree-dnd-node=data` in template;
 ```html
-<tr tree-table-node="row" ng-repeat="row in tree_rows track by hashedTree(row)"
-                            ng-show="row.__visible__" ng-class="(row.__selected__ ? ' active':'')" class="ng-animate ">
+<tr tree-dnd-node="node" ng-repeat="node in tree_rows track by hashedTree(node)"
+                            ng-show="node.__visible__" ng-class="(node.__selected__ ? ' active':'')" class="ng-animate ">
     ....
 </tr>
 ```
@@ -224,58 +224,58 @@ $scope.$callbacks = {
 * Combinding with list-tree.
 
 ```html
-              <script type="text/ng-template" id="tree-table-template-render.html">
-                    <ul tree-table-nodes="tree_data">
-                        <li tree-table-node="row" ng-repeat="row in datas track by row.__hashKey__"
-                            ng-show="row.__visible__" compile="expandingProperty.cellTemplate"
-                            ng-include="'tree-table-template-fetch.html'"></li>
+              <script type="text/ng-template" id="tree-dnd-template-render.html">
+                    <ul tree-dnd-nodes="tree_data">
+                        <li tree-dnd-node="node" ng-repeat="node in datas track by node.__hashKey__"
+                            ng-show="node.__visible__" compile="expandingProperty.cellTemplate"
+                            ng-include="'tree-dnd-template-fetch.html'"></li>
                     </ul>
                 </script>
                 
-                <script type="text/ng-template" id="tree-table-template-fetch.html">
+                <script type="text/ng-template" id="tree-dnd-template-fetch.html">
                     <div class="list-group-item"
-                         ng-class="(row.__selected__ ? 'list-group-item-success':'')"
-                         ng-click="onClick(row)"
+                         ng-class="(node.__selected__ ? 'list-group-item-success':'')"
+                         ng-click="onClick(node)"
                          ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {}">
 
-                        <a class="btn btn-default" aria-label="Justify" type="button" tree-table-node-handle>
+                        <a class="btn btn-default" aria-label="Justify" type="button" tree-dnd-node-handle>
                             <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
                         </a> 
                         
-                        {{row[expandingProperty.field] || row[expandingProperty]}}
+                        {{node[expandingProperty.field] || node[expandingProperty]}}
                         
-                        <span ng-class="$iconClass" ng-click="toggleExpand(row)"></span>
+                        <span ng-class="$iconClass" ng-click="toggleExpand(node)"></span>
                         <div class="pull-right">
                             <span ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
                                   compile="col.cellTemplate">
-                                {{row[col.field]}}
+                                {{node[col.field]}}
                             </span>
                         </div>
                     </div>
-                    <ul tree-table-nodes="row.__children__">
-                        <li tree-table-node="row" ng-repeat="row in datas track by row.__hashKey__"
-                            ng-show="row.__visible__" compile="expandingProperty.cellTemplate"
-                            ng-include="'tree-table-template-fetch.html'"></li>
+                    <ul tree-dnd-nodes="node.__children__">
+                        <li tree-dnd-node="node" ng-repeat="node in datas track by node.__hashKey__"
+                            ng-show="node.__visible__" compile="expandingProperty.cellTemplate"
+                            ng-include="'tree-dnd-template-fetch.html'"></li>
                     </ul>
                 </script>
                 
-                <tree-table tree-data="tree_data"
+                <tree-dnd tree-data="tree_data"
                             tree-control="my_tree"
                             column-defs="col_defs_min"
                             expand-on="expanding_property"
-                            on-select="select_handler(branch)"
-                            on-click="click_handler(branch)"
-                            template-url="tree-table-template-render.html"
+                            on-select="select_handler(node)"
+                            on-click="click_handler(node)"
+                            template-url="tree-dnd-template-render.html"
                             icon-leaf="none"
                             icon-expand="glyphicon glyphicon-chevron-down"
                             icon-collapse="glyphicon glyphicon-chevron-right"
-                        ></tree-table>
+                        ></tree-dnd>
 ```
 
 
 ## Add attributes
     * `__tree_icon__` : changed to `__icon__` *(-1: leaf, 0: collect, 1: expaned)* - *(in Tree_Data)*
-    * Added `$iconClass` replace for `__tree_icon__` *(avoid conflict when create tree-table use one `tree-data`)*
+    * Added `$iconClass` replace for `__tree_icon__` *(avoid conflict when create tree-dnd use one `tree-data`)*
     * Add function:
     * re-Add function `dropped` in `$callbaks` *(used to copying or remove node old)*:
         * 
@@ -305,7 +305,7 @@ $scope.$callbacks = {
     * 'template-move': to add url template of `Status Move` *(can bypass string or variable in controller, but just only get $templateCache, if not exist will get default)*;
     * Example:
 ```html
-<tree-table class="tree-table table table-hover b-b b-light" tree-data="tree_data" tree-control="my_tree"
+<tree-dnd class="tree-dnd dnd dnd-hover b-b b-light" tree-data="tree_data" tree-control="my_tree"
     primary-key="primaryKey" 
     callbacks="callbacks" 
     
@@ -323,15 +323,15 @@ $scope.$callbacks = {
     on-select="select_handler()"
     on-click="click_handler()"
     
-    template-url="tree-table-template.html" 
-    template-move="'tree-table-template.html'"
-    template-copy="tree-table-template.html"
+    template-url="tree-dnd-template.html" 
+    template-move="'tree-dnd-template.html'"
+    template-copy="tree-dnd-template.html"
 
     data-indent="30"
     data-indent-unit="px"
     data-indent-plus="15"
     
-></tree-table>
+></tree-dnd>
 
 ```
 

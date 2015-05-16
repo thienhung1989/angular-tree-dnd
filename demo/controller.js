@@ -8,14 +8,14 @@
     'use strict';
     var app, deps;
 
-    deps = ['treeTable'];
+    deps = ['ntt.TreeDnD'];
 
-    app = angular.module('treeTableTest', deps);
+    app = angular.module('TreeDnDTest', deps);
     app.controller(
         'CategoryMenuController', [
-            '$scope', '$TreeTableConvert', 'DataDemo', function ($scope, $TreeTableConvert, DataDemo) {
+            '$scope', '$TreeDnDConvert', 'DataDemo', function ($scope, $TreeDnDConvert, DataDemo) {
                 // debug in demo
-                $scope.branch = {};
+                $scope.node = {};
                 $scope.log = {};
 
                 var tree;
@@ -23,30 +23,30 @@
                 $scope.my_tree = tree = {};
 
 
-                // set callbacks to tree-table
+                // set callbacks to tree-dnd
                 $scope.callbacks = {
                     accept: function (source, dest, index_dest) {
                         return true;
                     }
                 }
 
-                $scope.my_tree.addFunction = function (b) {
-                    console.log(b);
+                $scope.my_tree.addFunction = function (node) {
+                    console.log(node);
                     alert('Function added in Controller "App.js"');
                 }
 
-                $scope.remove_branch = function () {
-                    return $scope.my_tree.remove_branch();
+                $scope.remove_node = function () {
+                    return $scope.my_tree.remove_node();
                 }
 
-                $scope.click_handler = function (branch) {
+                $scope.click_handler = function (node) {
                     alert('you Clicked on! In debug "console.log" show info');
-                    console.log(branch);
+                    console.log(node);
                 }
 
-                $scope.select_handler = function (branch) {
+                $scope.select_handler = function (node) {
                     alert('you Selected on! In debug "console.log" show info');
-                    console.log(branch);
+                    console.log(node);
                 }
 
                 $scope.expanding_property = {
@@ -67,24 +67,24 @@
                         titleClass:   'text-center',
                         cellClass:    'v-middle text-center',
                         displayName:  'Description',
-                        cellTemplate: "<i class=\"fa {{ !row.Description ? 'fa-times text-danger-lter' : 'fa-check text-success' }} text\"></i>"
+                        cellTemplate: "<i class=\"fa {{ !node.Description ? 'fa-times text-danger-lter' : 'fa-check text-success' }} text\"></i>"
                     }, {
                         displayName:  'Function',
-                        cellTemplate: '<button ng-click="tree.addFunction(row)" class="btn btn-default btn-sm">Added Controller!</button>'
+                        cellTemplate: '<button ng-click="tree.addFunction(node)" class="btn btn-default btn-sm">Added Controller!</button>'
                     }, {
                         displayName:  'Remove',
-                        cellTemplate: '<button ng-click="tree.remove_branch(row)" class="btn btn-default btn-sm">Remove</button>'
+                        cellTemplate: '<button ng-click="tree.remove_node(node)" class="btn btn-default btn-sm">Remove</button>'
                     }];
 
                 $scope.col_defs_min = [{
                                            displayName:  'Function',
-                                           cellTemplate: '<button ng-click="tree.addFunction(row)" class="btn btn-default btn-sm">Added Controller!</button>'
+                                           cellTemplate: '<button ng-click="tree.addFunction(node)" class="btn btn-default btn-sm">Added Controller!</button>'
                                        }, {
                                            displayName:  'Remove',
-                                           cellTemplate: '<button ng-click="tree.remove_branch(row)" class="btn btn-default btn-sm">Remove</button>'
+                                           cellTemplate: '<button ng-click="tree.remove_node(node)" class="btn btn-default btn-sm">Remove</button>'
                                        }];
 
-                $scope.tree_data = $TreeTableConvert.line2tree(DataDemo.getDatas(), 'DemographicId', 'ParentId');
+                $scope.tree_data = $TreeDnDConvert.line2tree(DataDemo.getDatas(), 'DemographicId', 'ParentId');
             }]
     ).factory(
         'DataDemo', function () {
