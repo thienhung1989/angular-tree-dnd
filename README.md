@@ -1,4 +1,6 @@
 # angular-tree-dnd
+
+[![Join the chat at https://gitter.im/thienhung1989/angular-tree-dnd](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/thienhung1989/angular-tree-dnd?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [Angular 1.x] Display tree dnd &amp; event DrapnDrop, field 'td' by tree (other normal) - without jQuery.
 ## Current Version
 [![GitHub version](https://badge.fury.io/gh/thienhung1989%2Fangular-tree-dnd.svg)](http://badge.fury.io/gh/thienhung1989%2Fangular-tree-dnd)
