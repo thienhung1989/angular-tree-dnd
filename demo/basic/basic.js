@@ -1,18 +1,8 @@
-/**
- * Created by Nguyen on 4/29/2015.
- */
-/**
- * Created by Nguyen on 4/29/2015.
- */
+
 (function () {
     'use strict';
-    var app, deps;
-
-    deps = ['ntt.TreeDnD'];
-
-    app = angular.module('TreeDnDTest', deps);
     app.controller(
-        'CategoryMenuController', [
+        'DemoBasicController', [
             '$scope', '$TreeDnDConvert', 'DataDemo', function ($scope, $TreeDnDConvert, DataDemo) {
                 // debug in demo
                 $scope.node = {};
@@ -22,31 +12,9 @@
                 $scope.tree_data = {};
                 $scope.my_tree = tree = {};
 
-
-                // set callbacks to tree-dnd
-                $scope.callbacks = {
-                    accept: function (source, dest, index_dest) {
-                        return true;
-                    }
-                }
-
                 $scope.my_tree.addFunction = function (node) {
                     console.log(node);
                     alert('Function added in Controller "App.js"');
-                }
-
-                $scope.remove_node = function () {
-                    return $scope.my_tree.remove_node();
-                }
-
-                $scope.click_handler = function (node) {
-                    alert('you Clicked on! In debug "console.log" show info');
-                    console.log(node);
-                }
-
-                $scope.select_handler = function (node) {
-                    alert('you Selected on! In debug "console.log" show info');
-                    console.log(node);
                 }
 
                 $scope.expanding_property = {
