@@ -1,30 +1,51 @@
 {
-    "name": "angular-tree-dnd",
-    "version": "3.0.0",
-    "description":"Display tree table (or list) & event DrapnDrop (allow drag multi tree-dnd include all type: table, ol, ul) by AngularJS, using CSS animation and Bootstrap style",
-    "main":[
-        "src/ng-tree-dnd.css",
-        "src/ng-tree-dnd.js",
-        "src/ng-tree-dnd.min.css",
-        "src/ng-tree-dnd.min.js"
-        ],
-    "licence":"MIT",
-    "keywords":["angularjs","bootstrap", "tree", "grid","widget", "table", "dnd"],
-    "authors":["Nguyen Thien Hung"],
-    "homepage"  :"https://github.com/thienhung1989/angular-tree-dnd",
-    "repository":{
-        "type":"git",
-        "url":"git://github.com/thienhung1989/angular-tree-dnd"
-    },
-    "ignore": [
-        "temp",
-        "test",
-        ".gitignore",
-        "bower.json",
-        "package.json",
-        "README.md"
-    ],
-    "dependencies": {
-        "angular": ">=1.2"
-    }
+  "name": "ng-tree-dnd",
+  "version": "3.0.1",
+  "authors": ["Nguyen Thien Hung"],
+  "homepage": "https://github.com/thienhung1989/ng-tree-dnd",
+  "description": "Display tree table (or list) & event DrapnDrop (allow drag multi tree-dnd include all type: table, ol, ul) by AngularJS, using CSS animation and Bootstrap style",
+  "main": [
+    "dist/ng-tree-dnd.css",
+    "dist/ng-tree-dnd.js",
+    "dist/ng-tree-dnd.min.css",
+    "dist/ng-tree-dnd.min.js"
+  ],
+  "licence": "MIT",
+  "keywords": [
+    "angularjs",
+    "bootstrap",
+    "tree",
+    "grid",
+    "widget",
+    "table",
+    "dnd"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/thienhung1989/ng-tree-dnd"
+  },
+  "ignore": [
+    "temp",
+    "test",
+    ".gitignore",
+    "examples",
+    "demo",
+    "build",
+    "guide",
+    "node_modules",
+    "source",
+    "tasks",
+    "tests",
+    "gulpfile.js",
+    "karma.conf.js"
+  ],
+  "dependencies": {
+    "angular": ">=1.2"
+  },
+  "devDependencies": {
+    "angular-mocks": ">= 1.2.0",
+    "angular-route": ">= 1.2.0",
+    "angularfire": "~0.8.2",
+    "bootstrap-css": ">=3.2.0"
+  }
 }

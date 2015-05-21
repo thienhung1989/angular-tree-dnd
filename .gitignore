@@ -1,0 +1,20 @@
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.log
+
+# Project dependencies #
+########################
+node_modules
+
+# IDE files #
+.idea
+*.iml
+
+demo/bower_components
+demo/source

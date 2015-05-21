@@ -1,7 +1,71 @@
+## v3.0.1
+ * Add `gulp`, `travis`,...
+ * `dragBorder`: allow `drag` indent if `position` of `drag` >= `border` drag.
+ * `for_all_descendants`: To access all descendant of node.
+	* param: for_all_descendants(node, fnCallback);
+	* return: false *(when `fnCallback` return `false` or `null`)*, true *(if accessed all descendant)*
+	* fnCallback: to proccess when dir to node.
+		* result: if return true or Object then `break` function `for_all_descendants` *(when function `for_all_descendants` return `false`)*
+ * `for_all_ancestors`: sample like `for_all_descendants` *(but use to `ancestors`)*;
+
+ * Attribute `tree-class` if `type`:
+	* `string`: will cast value to `scope.tree_class`
+	* `object`: will cast vaule to `$TreeDnDClass`
+		* '$TreeDnDClass': constant of `class` in Tree, able `extend` by attribute `tree-class`
+			* tree:        'tree-dnd', *(auto `addClass` tree-dnd)*
+			* empty:       'tree-dnd-empty',
+			* hidden:      'tree-dnd-hidden',
+			* node:        'tree-dnd-node',  *(auto `addClass` tree-dnd-node)*
+			* nodes:       'tree-dnd-nodes', *(auto `addClass` tree-dnd-nodes)*
+			* handle:      'tree-dnd-handle',
+			* place:       'tree-dnd-placeholder',
+			* drag:        'tree-dnd-drag',
+			* status:      'tree-dnd-status',
+			* icon:
+				* '1':  'glyphicon glyphicon-minus', *(able cast by attribute `icon-leaf`)*
+				* '0':  'glyphicon glyphicon-plus', *(able cast by attribute `icon-leaf`)*
+				* '-1': 'glyphicon glyphicon-file', *(able cast by attribute `icon-leaf`)*
+ * Attribute `tree-control` - Allow `developer` create new or overdrive all function exist below :
+	* Directive:
+		* collapse_all: ()
+		* collapse_node: (node)
+		* expand_all: ()
+		* expand_all_parents: (child)
+		* expand_node: (node)
+		* select_first_node: ()
+		* select_next_node: (node)
+		* select_next_sibling: (node)
+		* select_node: (node)
+		* deselect_node: ()
+		* select_parent_node: (node)
+		* select_prev_node: (node)
+		* select_prev_sibling: (node)
+	* Event:
+		* for_all_ancestors: (child, fn)
+		* for_all_descendants: (node, fn)
+		* get_children: (node)
+		* get_closest_ancestor_next_sibling: (node)
+		* get_first_child: (node)
+		* get_first_node: ()
+		* get_last_descendant: (node)
+		* get_next_node: (node)
+		* get_next_sibling: (node)
+		* get_parent: (node)
+		* get_prev_node: (node)
+		* get_prev_sibling: (node)
+		* get_selected_node: ()
+		* get_siblings: (node)
+	* Effect:
+		* reload_data: ()
+		* add_node: (parent, new_node, index)
+		* add_node_root: (new_node)
+		* remove_node: (node)
+		* selected_node: null
+		
 ## v3.0.0
 * Renamed 
     * module `treeTable` to `ntt.TreeDnD`
-    * `angular-tree-table` to `angular-tree-dnd`:
+    * `angular-tree-table` to `ng-tree-dnd`:
     * `tree-table` to `tree-dnd`.
     * `tree-table-node` to `tree-dnd-node`.
     * `tree-table-nodes` to `tree-dnd-nodes`.

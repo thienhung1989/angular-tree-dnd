@@ -5,6 +5,7 @@
 ## Current Version
 [![GitHub version](https://badge.fury.io/gh/thienhung1989%2Fangular-tree-dnd.svg)](http://badge.fury.io/gh/thienhung1989%2Fangular-tree-dnd)
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/thienhung1989/ng-tree-dnd?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 ## Demo: 
 - http://thienhung1989.github.io/angular-tree-dnd/demo
 - http://plnkr.co/edit/6zQNvW?p=preview

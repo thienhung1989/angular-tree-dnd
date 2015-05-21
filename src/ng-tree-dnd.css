@@ -78,7 +78,7 @@
 }
 
 .tree-dnd-handle {
-    cursor: move;
+    cursor: pointer;
     text-decoration: none;
     font-weight: bold;
     -webkit-box-sizing: border-box;
@@ -109,6 +109,10 @@
     margin: 0px;
     padding: 0px;
     list-style: none;
+}
+
+.tree-dnd-nodes .tree-dnd-node {
+    border-radius: 0px !important;
 }
 
 .tree-dnd-nodes .tree-dnd-nodes {
