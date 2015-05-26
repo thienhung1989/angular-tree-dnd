@@ -1,23 +1,26 @@
 {
   "autoupdate": {
     "source": "git",
-    "target": "git://github.com/thienhung1989/ng-tree-dnd.git",
+    "target": "git://github.com/thienhung1989/angular-tree-dnd.git",
     "basePath": "dist/",
     "files": [
       "ng-tree-dnd.js",
       "ng-tree-dnd.css",
       "ng-tree-dnd.min.css",
-      "ng-tree-dnd.min.js"
+      "ng-tree-dnd.min.js",
+      "ng-tree-dnd.min.js.map"
     ]
   },
-  "author": "https://github.com/thienhung1989/ng-tree-dnd/graphs/contributors",
-  "name": "ng-tree-dnd",
-  "version": "3.0.1",
-  "homepage": "http://thienhung1989.github.io/ng-tree-dnd/",
-  "dependencies": {},
+  "author": "https://github.com/thienhung1989/angular-tree-dnd/graphs/contributors",
+  "name": "angular-tree-dnd",
+  "version": "3.0.2",
+  "homepage": "http://thienhung1989.github.io/angular-tree-dnd/",
+  "dependencies": {
+    "angular": ">=1.2"
+  },
   "repository": {
     "type": "git",
-    "url": "git://github.com/thienhung1989/ng-tree-dnd.git"
+    "url": "git://github.com/thienhung1989/angular-tree-dnd.git"
   },
   "devDependencies": {
     "angular": ">=1.2.*",
@@ -32,11 +35,12 @@
     "gulp-minify-css": "^1.1.0",
     "gulp-rename": "^1.2.0",
     "gulp-symlink": "^2.1.0",
+    "gulp-util": ">=0.*",
     "gulp-uglify": "^1.1.0",
     "gulp-replace": ">=0.*",
     "gulp-sourcemaps": ">=1.*",
     "jshint-stylish": "^1.0.0",
-    "karma": "^0.12.24",
+    "karma": ">=0.12.*",
     "karma-firefox-launcher": "^0.1.3",
     "karma-jasmine": "~0.1.0",
     "karma-phantomjs-launcher": "^0.1.4",

@@ -4,10 +4,6 @@
     app.controller(
         'DemoBasicController', [
             '$scope', '$TreeDnDConvert', 'DataDemo', function ($scope, $TreeDnDConvert, DataDemo) {
-                // debug in demo
-                $scope.node = {};
-                $scope.log = {};
-
                 var tree;
                 $scope.tree_data = {};
                 $scope.my_tree = tree = {};
@@ -43,15 +39,6 @@
                         displayName:  'Remove',
                         cellTemplate: '<button ng-click="tree.remove_node(node)" class="btn btn-default btn-sm">Remove</button>'
                     }];
-
-                $scope.col_defs_min = [{
-                                           displayName:  'Function',
-                                           cellTemplate: '<button ng-click="tree.addFunction(node)" class="btn btn-default btn-sm">Added Controller!</button>'
-                                       }, {
-                                           displayName:  'Remove',
-                                           cellTemplate: '<button ng-click="tree.remove_node(node)" class="btn btn-default btn-sm">Remove</button>'
-                                       }];
-
                 $scope.tree_data = $TreeDnDConvert.line2tree(DataDemo.getDatas(), 'DemographicId', 'ParentId');
             }]
     ).factory(

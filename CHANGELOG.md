@@ -1,3 +1,16 @@
+## v3.0.2
+ * Add function `Scope.$safeApply()`.
+ * Fix Watch
+ * Fix Bower.json
+ * Fix any error angular 1.2.1.
+ * New feature:
+     * Filter.
+     * Add `scope.targeting` *(boolean)*: `true` - when `dragMove` targeting *(tree-dnd over)*.  
+     * Add attribute `enableCollapse` to enable Mode `collapse node` when `dragStart`.
+ * Next feature:
+    * Multi select.
+    * OrderBy data.
+    
 ## v3.0.1
  * Add `gulp`, `travis`,...
  * `dragBorder`: allow `drag` indent if `position` of `drag` >= `border` drag.

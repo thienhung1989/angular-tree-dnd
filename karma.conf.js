@@ -2,7 +2,7 @@ module.exports = function(config) {
   'use strict';
 
   var cfg = {
-    bowerComponents: 'demo/bower_components'
+    bowerComponents: 'demo/framework/vendor'
   };
 
   config.set({
@@ -43,7 +43,7 @@ module.exports = function(config) {
 
     // level of logging
     // possible values: LOG_DISABLE || LOG_ERROR || LOG_WARN || LOG_INFO || LOG_DEBUG
-    logLevel: config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG,
+//    logLevel:     config.LOG_ERROR || config.LOG_WARN || config.LOG_DEBUG,
 
     port: 9876,
     reporters: 'dots',

@@ -6,7 +6,14 @@ angular.module('ntt.TreeDnD')
                 if (!data || data.length === 0 || !primaryKey || !parentKey) {
                     return [];
                 }
-                var tree = [], rootIds = [], item = data[0], _primary = item[primaryKey], treeObjs = {}, parentId, parent, len = data.length, i = 0;
+                var tree = [],
+                    rootIds = [],
+                    item = data[0],
+                    _primary = item[primaryKey],
+                    treeObjs = {},
+                    parentId, parent,
+                    len = data.length,
+                    i = 0;
                 while (i < len) {
                     item = data[i++];
                     _primary = item[primaryKey];

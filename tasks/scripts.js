@@ -5,6 +5,7 @@ module.exports = function (gulp, $, pkg, through) {
     var fnUglify, fnReplace;
     fnUglify = function () {
         return gulp.src('dist/ng-tree-dnd.js')
+            .pipe($.sourcemaps.init())
             .pipe(
             $.uglify(
                 {
@@ -13,6 +14,7 @@ module.exports = function (gulp, $, pkg, through) {
             )
         ).pipe($.replace(/\s*\*\s*@preserve/gi, ''))
             .pipe($.rename('ng-tree-dnd.min.js'))
+            .pipe($.sourcemaps.write("/"))
             .pipe(gulp.dest('dist'));
     };
     fnReplace = function (stream, streamSrc, pattern, before, after) {
@@ -35,9 +37,13 @@ module.exports = function (gulp, $, pkg, through) {
                             replace += after;
                         }
 
-                        streamSrc.pipe($.replace(pattern, function(match){
-                            return replace;
-                        }))
+                        streamSrc.pipe(
+                            $.replace(
+                                pattern, function (match) {
+                                    return replace;
+                                }
+                            )
+                        )
                             .pipe(
                             through.obj(
                                 function (f, e, c) {
@@ -127,13 +133,15 @@ module.exports = function (gulp, $, pkg, through) {
     );
 
     gulp.task(
-        'test', function () {
+        'test', function (cb) {
             return $.karma.server.start(
                 {
                     configFile: __dirname + '/../karma.conf.js',
-                    singleRun:  true
-                }, function (err) {
-                    process.exit(err ? 1 : 0);
+                    singleRun:  true,
+                    autoWatch:  true,
+                }, function (exitCode) {
+                    $.util.log('Karma has exited with ' + exitCode);
+                    cb();
                 }
             );
         }
