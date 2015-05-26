@@ -22,8 +22,8 @@ var gulp       = require('gulp'),
 $.karma = require('karma');
 
 gulp.task(
-    'build', function () {
-        return gulp.start('styles', 'jshint-dist', 'uglify', 'test');
+    'build', ['styles', 'jshint', 'uglify', 'jshint-dist'], function () {
+        return gulp.start('test');
     }
 );
 

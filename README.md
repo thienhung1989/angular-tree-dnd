@@ -1,19 +1,33 @@
 # angular-tree-dnd
+[Angular 1.x] Display treeDnD &amp; event DrapnDrop, field 'td' by tree.
+ 
+##License:
+﻿[![license](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/thienhung1989/angular-tree-dnd/blob/master/LICENSE)
 
-[![Join the chat at https://gitter.im/thienhung1989/angular-tree-dnd](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/thienhung1989/angular-tree-dnd?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[Angular 1.x] Display tree dnd &amp; event DrapnDrop, field 'td' by tree (other normal) - without jQuery.
 ## Current Version
-[![GitHub version](https://badge.fury.io/gh/thienhung1989%2Fangular-tree-dnd.svg)](http://badge.fury.io/gh/thienhung1989%2Fangular-tree-dnd)
+[![GitHub version](https://badge.fury.io/gh/thienhung1989%2Fangular-tree-dnd.svg)](http://badge.fury.io/gh/thienhung1989%2Fangular-tree-dnd) [![Build Status](https://travis-ci.org/thienhung1989/angular-tree-dnd.svg?branch=master)](https://travis-ci.org/thienhung1989/angular-tree-dnd)
 
+## Support *(just when I'm online)*
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/thienhung1989/ng-tree-dnd?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 ## Demo: 
 - http://thienhung1989.github.io/angular-tree-dnd/demo
 - http://plnkr.co/edit/6zQNvW?p=preview
 
-
+##Requirement:
+```
+angular: >=1.2.1
+```
+ 
 ## Install bower:
+* Bower
 ```js
-bower angular-tree-dnd install
+bower install angular-tree-dnd
+```
+
+* NPM
+```js
+npm install angular-tree-dnd
 ```
 
 * Function 'filter' & 'group by' not add in ng-repeate (it's slow & incompatible with $id($$hash) )
@@ -105,67 +119,65 @@ $scope.$callbacks = {
 * Example
 **init:
 ```html
- <tree-dnd
-        class="dnd"
-        tree-data="tree_data"
-        tree-control="my_tree"
-        callbacks="callbacks"
-        drag-enabled="true"
-        icon-leaf="none"
-        icon-expand="fa fa-fw fa-angle-right"
-        icon-collapse="fa fa-fw fa-angle-down"
-        template-url="tree-dnd-template.html"
-        column-defs="col_defs"
-        expand-on="expanding_property"
-        on-select="my_tree_handler(node)"
-        on-click="my_tree_handler(node)"
-        data-indent="30"
-        data-indent-unit="px"
-        data-indent-plus="15"
-   >
+<tree-dnd
+    tree-class="dnd"
+    tree-data="tree_data"
+    tree-control="my_tree"
+    callbacks="callbacks"
+    drag-enabled="true"
+    icon-leaf="none"
+    icon-expand="fa fa-fw fa-angle-right"
+    icon-collapse="fa fa-fw fa-angle-down"
+    template-url="tree-dnd-template.html"
+    column-defs="col_defs"
+    expand-on="expanding_property"
+    on-select="my_tree_handler(node)"
+    on-click="my_tree_handler(node)"
+    data-indent="30"
+    data-indent-unit="px"
+    data-indent-plus="15"
+>
 </tree-dnd>
 ```
 ** Template Extened:
 ```html
 <script type="text/ng-template" id="tree-dnd-template.html">
 	<div class="tree-dnd">
-            <dnd class="dnd">
-                <thead>
-                    <tr>
-                        <th ng-class="expandingProperty.titleClass" ng-style="expandingProperty.titleStyle">
-                            {{expandingProperty.displayName || expandingProperty.field || expandingProperty}}
-                        </th>
-                        <th ng-repeat="col in colDefinitions" ng-class="col.titleClass"
-                            ng-style="col.titleStyle">
-                            {{col.displayName || col.field}}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr tree-dnd-node ng-repeat="node in tree_rows track by hashedTree(node)"
-                        ng-show="node.__visible__" ng-class="(node.__selected__ ? ' active':'')"
-                        class="ng-animate ">
-                        <td ng-if="!expandingProperty.template"
-                            ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(node.__level__)}"
-                            ng-click="user_clicks_node(node)" ng-class="expandingProperty.cellClass"
-                            compile="expandingProperty.cellTemplate">
-                        <span tree-dnd-node-handle>
-                            <i class="fa fa-sort text-muted m-r-sm"></i>
-                        </span> {{node[expandingProperty.field] || node[expandingProperty]}} <a> <i
-                                ng-class="node.__tree_icon__" ng-click="node.__expanded__ = !node.__expanded__"
-                                class="tree-icon"></i> </a>
-                        </td>
-                        <td ng-if="expandingProperty.template" compile="expandingProperty.template"></td>
-                        <td ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
-                            compile="col.cellTemplate">
-                            {{node[col.field]}}
-                        </td>
-                    </tr>
-                </tbody>
-            </dnd>
-        </div>
-	<pre>{{ treeData | json }}</pre>
-	<pre>{{ tree_rows | json }}</pre>
+        <dnd class="dnd">
+            <thead>
+                <tr>
+                    <th ng-class="expandingProperty.titleClass" ng-style="expandingProperty.titleStyle">
+                        {{expandingProperty.displayName || expandingProperty.field || expandingProperty}}
+                    </th>
+                    <th ng-repeat="col in colDefinitions" ng-class="col.titleClass"
+                        ng-style="col.titleStyle">
+                        {{col.displayName || col.field}}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr tree-dnd-node ng-repeat="node in tree_rows track by hashedTree(node)"
+                    ng-show="node.__visible__" ng-class="(node.__selected__ ? ' active':'')"
+                    class="ng-animate ">
+                    <td ng-if="!expandingProperty.template"
+                        ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(node.__level__)}"
+                        ng-click="user_clicks_node(node)" ng-class="expandingProperty.cellClass"
+                        compile="expandingProperty.cellTemplate">
+                    <span tree-dnd-node-handle>
+                        <i class="fa fa-sort text-muted m-r-sm"></i>
+                    </span> {{node[expandingProperty.field] || node[expandingProperty]}} <a> <i
+                            ng-class="node.__tree_icon__" ng-click="node.__expanded__ = !node.__expanded__"
+                            class="tree-icon"></i> </a>
+                    </td>
+                    <td ng-if="expandingProperty.template" compile="expandingProperty.template"></td>
+                    <td ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
+                        compile="col.cellTemplate">
+                        {{node[col.field]}}
+                    </td>
+                </tr>
+            </tbody>
+        </dnd>
+    </div>
 </script>
 ```
 ## dragStop:
@@ -217,63 +229,64 @@ $scope.$callbacks = {
 
 * Add 'data' to TreeDnDNode  `tree-dnd-node=data` in template;
 ```html
-<tr tree-dnd-node="node" ng-repeat="node in tree_rows track by hashedTree(node)"
-                            ng-show="node.__visible__" ng-class="(node.__selected__ ? ' active':'')" class="ng-animate ">
+<tr tree-dnd-node="node" 
+    ng-repeat="node in tree_rows track by hashedTree(node)"
+    ng-show="node.__visible__" 
+    ng-class="(node.__selected__ ? ' active':'')" 
+>
     ....
 </tr>
 ```
 
-# Display ListTree (UL, OL)
-
+## Display ListTree (UL, OL)
 * Combinding with list-tree.
-
 ```html
-              <script type="text/ng-template" id="tree-dnd-template-render.html">
-                    <ul tree-dnd-nodes="tree_data">
-                        <li tree-dnd-node="node" ng-repeat="node in nodes track by node.__hashKey__"
-                            ng-show="node.__visible__" compile="expandingProperty.cellTemplate"
-                            ng-include="'tree-dnd-template-fetch.html'"></li>
-                    </ul>
-                </script>
-                
-                <script type="text/ng-template" id="tree-dnd-template-fetch.html">
-                    <div class="list-group-item"
-                         ng-class="(node.__selected__ ? 'list-group-item-success':'')"
-                         ng-click="onClick(node)"
-                         ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {}">
+<script type="text/ng-template" id="tree-dnd-template-render.html">
+    <ul tree-dnd-nodes="tree_data">
+        <li tree-dnd-node="node" ng-repeat="node in nodes track by node.__hashKey__"
+            ng-show="node.__visible__" compile="expandingProperty.cellTemplate"
+            ng-include="'tree-dnd-template-fetch.html'"></li>
+    </ul>
+</script>
 
-                        <a class="btn btn-default" aria-label="Justify" type="button" tree-dnd-node-handle>
-                            <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
-                        </a> 
-                        
-                        {{node[expandingProperty.field] || node[expandingProperty]}}
-                        
-                        <span ng-class="$iconClass" ng-click="toggleExpand(node)"></span>
-                        <div class="pull-right">
-                            <span ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
-                                  compile="col.cellTemplate">
-                                {{node[col.field]}}
-                            </span>
-                        </div>
-                    </div>
-                    <ul tree-dnd-nodes="node.__children__">
-                        <li tree-dnd-node="node" ng-repeat="node in nodes track by node.__hashKey__"
-                            ng-show="node.__visible__" compile="expandingProperty.cellTemplate"
-                            ng-include="'tree-dnd-template-fetch.html'"></li>
-                    </ul>
-                </script>
-                
-                <tree-dnd tree-data="tree_data"
-                            tree-control="my_tree"
-                            column-defs="col_defs_min"
-                            expand-on="expanding_property"
-                            on-select="select_handler(node)"
-                            on-click="click_handler(node)"
-                            template-url="tree-dnd-template-render.html"
-                            icon-leaf="none"
-                            icon-expand="glyphicon glyphicon-chevron-down"
-                            icon-collapse="glyphicon glyphicon-chevron-right"
-                        ></tree-dnd>
+<script type="text/ng-template" id="tree-dnd-template-fetch.html">
+    <div class="list-group-item"
+         ng-class="(node.__selected__ ? 'list-group-item-success':'')"
+         ng-click="onClick(node)"
+         ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {}">
+
+        <a class="btn btn-default" aria-label="Justify" type="button" tree-dnd-node-handle>
+            <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
+        </a> 
+        
+        {{node[expandingProperty.field] || node[expandingProperty]}}
+        
+        <span ng-class="$iconClass" ng-click="toggleExpand(node)"></span>
+        <div class="pull-right">
+            <span ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
+                  compile="col.cellTemplate">
+                {{node[col.field]}}
+            </span>
+        </div>
+    </div>
+    <ul tree-dnd-nodes="node.__children__">
+        <li tree-dnd-node="node" ng-repeat="node in nodes track by node.__hashKey__"
+            ng-show="node.__visible__" compile="expandingProperty.cellTemplate"
+            ng-include="'tree-dnd-template-fetch.html'"></li>
+    </ul>
+</script>
+
+<tree-dnd tree-data="tree_data"
+    tree-control="my_tree"
+    column-defs="col_defs_min"
+    expand-on="expanding_property"
+    on-select="select_handler(node)"
+    on-click="click_handler(node)"
+    template-url="tree-dnd-template-render.html"
+    icon-leaf="none"
+    icon-expand="glyphicon glyphicon-chevron-down"
+    icon-collapse="glyphicon glyphicon-chevron-right"
+></tree-dnd>
 ```
 
 
@@ -309,6 +322,7 @@ $scope.$callbacks = {
 * 'template-copy': to add url template of `Status Copy` *(can bypass string or variable in controller, but just only get $templateCache, if not exist will get default)*;
 * 'template-move': to add url template of `Status Move` *(can bypass string or variable in controller, but just only get $templateCache, if not exist will get default)*;
 * Example:
+
 ```html
 <tree-dnd class="tree-dnd dnd dnd-hover b-b b-light" tree-data="tree_data" tree-control="my_tree"
     primary-key="primaryKey" 
@@ -341,5 +355,4 @@ $scope.$callbacks = {
 ```
 
 ## Thank To:
-
 This product is the combination and optimization of 2: [![angular-ui-tree](https://github.com/angular-ui-tree/angular-ui-tree)](https://github.com/angular-ui-tree/angular-ui-tree)  (Drag2Drop) và [![tree-grid-directive](https://github.com/khan4019/tree-grid-directive)](https://github.com/khan4019/tree-grid-directive) (Display Tree2Table).

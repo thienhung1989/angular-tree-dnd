@@ -19,7 +19,13 @@ angular.module('ntt.TreeDnD')
                                  */
                                 var new_elem = link(scope);
                                 // Which we can then append to our DOM element.
-                                element.empty().append(new_elem);
+                                if(angular.isFunction(element.empty)){
+                                    element.empty()
+                                }else{
+                                    element.html('');
+                                }
+
+                                element.append(new_elem)
                             }
                         }
                     );
