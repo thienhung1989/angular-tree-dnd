@@ -1,11 +1,10 @@
-
 (function () {
     'use strict';
     app.controller(
-        'ListController', [
+        'MultiController', [
             '$scope', '$TreeDnDConvert', 'DataDemo', function ($scope, $TreeDnDConvert, DataDemo) {
                 var tree;
-                $scope.tree_data = {};
+
                 $scope.my_tree = tree = {};
 
                 $scope.my_tree.addFunction = function (node) {
@@ -20,15 +19,87 @@
                     displayName: 'Name'
                 };
 
-                $scope.col_defs_min = [
+                $scope.col_defs_table = [
+                    {
+                        field:       "Description",
+                        titleStyle:  {
+                            'width': '80pt'
+                        },
+                        titleClass:  'text-center',
+                        cellClass:   'v-middle text-center',
+                        displayName: 'Description'
+                    },
                     {
                         displayName:  'Function',
-                        cellTemplate: '<button ng-click="tree.addFunction(node)" class="btn btn-default btn-sm">Added Controller!</button>'
+                        cellTemplate: '<button ng-click="tree.addFunction(node)" class="btn btn-default btn-sm">Controller!</button>'
                     }, {
                         displayName:  'Remove',
                         cellTemplate: '<button ng-click="tree.remove_node(node)" class="btn btn-default btn-sm">Remove</button>'
                     }];
-                $scope.tree_data = $TreeDnDConvert.line2tree(DataDemo.getDatas(), 'DemographicId', 'ParentId');
+
+                $scope.col_defs_list = [
+                    {
+                        cellTemplate: '<button ng-click="tree.addFunction(node)" class="btn btn-default btn-sm">Controller!</button>'
+                    }, {
+                        cellTemplate: '<button ng-click="tree.remove_node(node)" class="btn btn-default btn-sm">Remove</button>'
+                    }]
+
+                $scope.tree_list = $TreeDnDConvert.line2tree(DataDemo.getDatas(), 'DemographicId', 'ParentId');
+                $scope.tree_table = angular.copy($scope.tree_list);
+
+
+                // Tree-Clone
+                $scope.tree_clone = $TreeDnDConvert.line2tree(
+                    [
+                        {
+                            "DemographicId": -1,
+                            "ParentId":      null,
+                            "Name":          "United States of America",
+                            "Description":   "United States of America",
+                            "Area":          9826675,
+                            "Population":    318212000,
+                            "TimeZone":      "UTC -5 to -10"
+                        }], 'DemographicId', 'ParentId'
+                );
+                $scope.col_defs_clone = [
+                    {
+                        cellTemplate: '<button class="btn btn-default btn-sm">#: {{ node.DemographicId }}</button>'
+                    }];
+
+                var id = 1999, _clone;
+
+                $scope.callbacks = {
+                    accept: function(){
+                        // disable all drop from tree other
+                        return false;
+                    },
+                    droppable: function(){
+                        // disable drop self and other
+                        return false;
+                    },
+                    changeKey: function (node) {
+                        // We overide changeKey default
+                        id++,
+                            node.DemographicId = id;
+                        node.Name = node.Name + '#' + id;
+                        node.__uid__ = Math.random();
+                        if (node.__selected__) {
+                            delete(node.__selected__);
+                        }
+                    },
+                    // this function clone default, extended in callbacks
+                    /*clone:     function (node, _this) {
+                        // _this = $scope.$callbacks, we will easy call function extended!
+                        _clone = angular.copy(node);
+                        _this.for_all_descendants(_clone, _this.changeKey);
+                        return _clone;
+                    },*/
+                    remove:    function (node, parent, _this) {
+                        // If not set enable-move="false" then this function will call
+                        // We change it like function clone, to sure it always clone node!
+                        return _this.clone(node, _this);
+                    }
+                };
             }]
     ).factory(
         'DataDemo', function () {

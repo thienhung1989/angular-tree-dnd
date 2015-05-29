@@ -47,49 +47,68 @@ angular.module('ntt.TreeDnD')
 
                     _passed = fnBefore(options, node, condition);
 
+                    if (angular.isFunction(fnAfter)) {
+                        if(fnAfter(options, node, condition, _passed) === true){
+                            return false;
+                        }
+                    }
+
                     if (!angular.isUndefinedOrNull(condition[nameChild])) {
                         _childs = condition[nameChild];
                         _len = _childs.length;
                         for (_i = 0; _i < _len; _i++) {
-                            for_all_descendants_condition(
-                                options,
-                                node,
-                                _childs[_i],
-                                nameChild,
-                                fnBefore,
-                                fnAfter
-                            );
+                            if(for_all_descendants_condition(
+                                    options,
+                                    node,
+                                    _childs[_i],
+                                    nameChild,
+                                    fnBefore,
+                                    fnAfter
+                                ) === false){
+                                return false;
+                            }
                         }
                     }
 
-                    if (angular.isFunction(fnAfter)) {
-                        fnAfter(options, node, condition, _passed);
-                    }
-
-                    return _state;
                 },
                 _fnProccess = function (options, node, condition) {
 
                     var _key = condition.field,
                         _callback = condition.callback,
-                        _check,
-                        _state = null;
-
-                    if (!angular.isUndefinedOrNull(node[_key])) {
-                        _check = node[_key];
-                        if (angular.isFunction(_callback)) {
-                            _state = _callback(_check, $filter);
-                        } else {
-                            if (typeof _callback === 'boolean') {
-                                _check = !!_check;
-                                _state = _check === _callback;
-                            } else if (!angular.isUndefinedOrNull(_callback)) {
-                                var _regex = new RegExp(_callback);
-                                _state = _regex.test(_check);
-                            } else {
-                                _state = null;
+                        _state = null,
+                        _switch = null,
+                        _iO, _keysO, _lenO,
+                        _fnCheck = function (_check){
+                            if(angular.isUndefinedOrNull(_check) || angular.isArray(_check)) {
+                                return null;
                             }
+
+                            if (angular.isFunction(_callback)) {
+                                return _callback(_check, $filter);
+                            } else {
+                                if (typeof _callback === 'boolean') {
+                                    _check = !!_check;
+                                    return _check === _callback;
+                                } else if (!angular.isUndefinedOrNull(_callback)) {
+                                    var _regex = new RegExp(_callback, 'g');
+                                    return _regex.test(_check);
+                                } else {
+                                    return null;
+                                }
+                            }
+                        };
+                    if(_key === '_$'){
+                        _keysO = Object.keys(node);
+                        _lenO = _keysO.length;
+                        for( _iO = 0; _iO < _lenO; _iO++){
+                            _switch = _fnCheck(node[_keysO[_iO]]);
+                            if(_switch === true){
+                                return true;
+                            }
+                            _state = _switch;
                         }
+                    } else if (!angular.isUndefinedOrNull(node[_key])) {
+                        _state = _fnCheck(node[_key]);
                     }
 
                     return _state;
@@ -111,27 +130,32 @@ angular.module('ntt.TreeDnD')
                 },
                 _fnConvert = function (filters) {
                     // convert filter object to array filter
-                    if (angular.isObject(filters)) {
+                    if (angular.isObject(filters) && !angular.isArray(filters)) {
                         _keysF = Object.keys(filters);
                         _lenF = _keysF.length;
                         _filter = [];
-
+                        var _first = true;
                         if (_lenF > 0) {
-                            _condition = {
-                                field:    _keysF[0],
-                                callback: filters[_keysF[0]]
-                            };
-                            _filter.push(_condition);
+                            for (_iF = 0; _iF < _lenF; _iF++){
 
-                            for (_iF = 1; _iF < _lenF; _iF++) {
+                                if((typeof filters[_keysF[_iF]]) === 'string' && filters[_keysF[_iF]].length === 0){
+                                    continue;
+                                }
+
                                 _state = {
                                     field:    _keysF[_iF],
                                     callback: filters[_keysF[_iF]]
                                 };
 
-                                _condition.conditions = [];
-                                _condition.conditions.push(_state);
-                                _condition = _state;
+                                if(_first){
+                                    _filter.push(_state);
+                                    _first = false;
+                                    _condition = _state;
+                                }else{
+                                    _condition.conditions = [];
+                                    _condition.conditions.push(_state);
+                                    _condition = _state;
+                                }
                             }
                         }
                         return _filter;
@@ -139,77 +163,72 @@ angular.module('ntt.TreeDnD')
                     else {
                         return filters;
                     }
-                };
+                },
+                _fnMain = function (treeData, filters, _options) {
+                    if (!angular.isArray(treeData)
+                        || treeData.length === 0
+                        || !(angular.isArray(filters) || angular.isObject(filters))
+                        || filters.length === 0) {
+                        return treeData;
+                    }
 
-            return function (treeData, filters, _options) {
-                if (!angular.isArray(treeData)
-                    || treeData.length === 0
-                    || !(angular.isArray(filters) || angular.isObject(filters))
-                    || filters.length === 0) {
-                    return treeData;
-                }
+                    var _i, _len,
+                        _iF, _lenF, _keysF,
+                        _state, _passed,
+                        _filter, _condition;
 
-                var _i, _len,
-                    _iF, _lenF, _keysF,
-                    _state, _passed,
-                    _filter, _condition;
+                    _filter = _fnConvert(filters);
+                    if(!(angular.isArray(_filter) || angular.isObject(_filter))
+                       || _filter.length === 0) {
+                        return treeData;
+                    }
 
-                _filter = _fnConvert(filters);
-                _lenF = _filter.length;
-                var _fnBefore = function (options, node, isPassed) {
-                    var _PassedNull = 0,
-                        _passed = 0,
-                        _return = false,
-                        _deptW = 0, _fnAfterDept = function (opts, node, condition, isPassed) {
-                            _deptW++;
+                    _lenF = _filter.length;
+                    var _fnBefore = function (options, node, isPassed) {
+                        var _passed = false,
+                            _fnAfterDept = function (opts, node, condition, isPassed) {
+                                if (isPassed === false) {
+                                    _passed = false;
+                                    // break-all;
+                                    return true;
+                                }
 
-                            if (isPassed === true) {
-                                _passed++;
-                            } else if (isPassed === null) {
-                                _PassedNull++;
-                            }
-                        };
+                                _passed = _passed || isPassed;
+                            };
 
-                    if (_lenF === 0) {
-                        node.__filtered__ = true;
-                        _return = true;
-                    } else {
-                        for (_iF = 0; _iF < _lenF; _iF++) {
-                            _deptW = 0;
-                            for_all_descendants_condition(
-                                options,
-                                node,
-                                _filter[_iF], 'conditions',
-                                _fnProccess, _fnAfterDept
-                            );
+                        if (_lenF === 0) {
+                            node.__filtered__ = true;
+                            return true;
+                        } else {
+                            for (_iF = 0; _iF < _lenF; _iF++) {
+                                for_all_descendants_condition(
+                                    options,
+                                    node,
+                                    _filter[_iF], 'conditions',
+                                    _fnProccess, _fnAfterDept
+                                );
 
-                            if (_PassedNull === _deptW) {
-                                _return = true;
-                            } else {
-                                if (_PassedNull + _passed === _deptW) {
-                                    _return = true;
-                                } else if (isPassed === true && options.showChild === true) {
-                                    _return = true;
-                                } else {
-                                    _return = false;
+                                if (_passed) {
+                                    return true;
                                 }
                             }
                         }
+
+                        return false;
+                    };
+
+                    for (_i = 0, _len = treeData.length; _i < _len; _i++) {
+                        for_all_descendants(
+                            _options,
+                            treeData[_i],
+                            '__children__',
+                            _fnBefore, _fnAfter
+                        );
                     }
 
-                    return _return;
+                    return treeData;
                 };
 
-                for (_i = 0, _len = treeData.length; _i < _len; _i++) {
-                    for_all_descendants(
-                        _options,
-                        treeData[_i],
-                        '__children__',
-                        _fnBefore, _fnAfter
-                    );
-                }
-
-                return treeData;
-            };
+            return _fnMain;
         }]
 );

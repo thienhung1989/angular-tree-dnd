@@ -1,12 +1,31 @@
 <div class="row">
     <div class="col-xs-3">
-        <label>Any: <input ng-model="_filter.$"></label> <br>
-        <label>Name: <input ng-model="_filter.Name"></label><br>
-        <label>Description: <input ng-model="_filter.Description"></label><br>
-        <label>Area: <input ng-model="_filter.Area"></label><br>
-        <label>Population: <input ng-model="_filter.Population"></label><br>
+
+        <div class="list-group">
+            <div class="list-group-item active">
+                Filter for Table
+            </div>
+
+            <div class="list-group-item">
+                <label>Any: <input ng-model="_filter._$"></label> <br>
+                <label>Name: <input ng-model="_filter.Name"></label><br>
+                <label>Description: <input ng-model="_filter.Description"></label><br>
+                <label>Area: <input ng-model="_filter.Area"></label><br>
+                <label>Population: <input ng-model="_filter.Population"></label><br>
+            </div>
+        </div>
     </div>
-    <div class="col-xs-9" ng-include="'filter/filter.html'"></div>
+
+    <div class="col-xs-9">
+
+        <div class="list-group">
+            <div class="list-group-item active">
+                Table: Template Inside
+            </div>
+            <div class="list-group-item"  ng-include="'filter/filter.html'">
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="row">
