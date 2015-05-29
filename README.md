@@ -28,7 +28,7 @@ npm install angular-tree-dnd
 - https://github.com/thienhung1989/angular-tree-dnd/blob/master/DOCUMENTS.md
 
 ## Changes Log:
-- https://github.com/thienhung1989/angular-tree-dnd/blob/master/CHANGELOG.
+- https://github.com/thienhung1989/angular-tree-dnd/blob/master/CHANGELOG.md
 
 ### Thank To:
 This product is the combination and optimization of 2: [![angular-ui-tree]](https://github.com/angular-ui-tree/angular-ui-tree)  (Drag2Drop) và [![tree-grid-directive]](https://github.com/khan4019/tree-grid-directive) (Display Tree2Table).
