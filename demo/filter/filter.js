@@ -1,14 +1,13 @@
 (function () {
     'use strict';
     app.controller(
-        'FilterBasicController', [
+        'FilterController', [
             '$scope', '$TreeDnDConvert', 'DataDemo', function ($scope, $TreeDnDConvert, DataDemo) {
                 var tree = {};
                 $scope.tree_data = {};
                 $scope.my_tree = tree = {};
 
                 $scope._filter = {};
-
                 $scope.expanding_property = {
                     /*template: "<td>OK All</td>",*/
                     field:       "Name",

@@ -3,7 +3,7 @@ angular.module('template/TreeDnD/TreeDnD.html', []).run(
         '$templateCache', function ($templateCache) {
         $templateCache.put(
             'template/TreeDnD/TreeDnD.html',
-            "" + "<table ng-class=\"tree_class\">"
+            "" + "<table ng-class=\"$tree_class\">"
             + "    <thead>"
             + "  <tr>"
             + "     <th ng-class=\"expandingProperty.titleClass\" ng-style=\"expandingProperty.titleStyle\">"

@@ -1,3 +1,18 @@
+## v3.0.3
+ * Fix error dragDrop for Tree
+ * Optimal getElementChilds
+ * Add new Demo *(filter, multi tree)*
+ * Problems:
+    * Error when drag node to thead *(table)*
+ * Next feature:
+    * Split angular-tree-dnd:
+        * Only Directive control: next, prev,...
+        * Only DragNDrop
+        * ....
+        * And Full-All
+        * OrderBy
+        
+
 ## v3.0.2
  * Add function `Scope.$safeApply()`.
  * Fix Watch

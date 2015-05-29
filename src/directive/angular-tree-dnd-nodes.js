@@ -5,14 +5,11 @@ angular.module('ntt.TreeDnD')
             restrict: 'A',
             replace:  true,
             link:     function (scope, element, attrs) {
-                scope.$type = 'TreeDnDNodes';
-                scope.$element = element;
                 scope.nodes = [];
                 scope.$nodes_class = '';
-
-                if (scope.setElementChilds) {
-                    scope.setElementChilds(element);
-                }
+                scope.$type = 'TreeDnDNodes';
+                scope.$element = element;
+                scope.getScopeNode = null;
 
                 scope.$watch(
                     attrs.treeDndNodes, function (newValue, oldValue, scope) {
@@ -20,9 +17,9 @@ angular.module('ntt.TreeDnD')
                     }, true
                 );
 
-                if (scope.class.nodes) {
-                    element.addClass(scope.class.nodes);
-                    scope.$nodes_class = scope.class.nodes;
+                if (scope.$class.nodes) {
+                    element.addClass(scope.$class.nodes);
+                    scope.$nodes_class = scope.$class.nodes;
                 }
             }
         };

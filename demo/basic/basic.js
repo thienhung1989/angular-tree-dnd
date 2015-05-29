@@ -2,7 +2,7 @@
 (function () {
     'use strict';
     app.controller(
-        'DemoBasicController', [
+        'BasicController', [
             '$scope', '$TreeDnDConvert', 'DataDemo', function ($scope, $TreeDnDConvert, DataDemo) {
                 var tree;
                 $scope.tree_data = {};

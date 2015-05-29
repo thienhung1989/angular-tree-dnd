@@ -2,50 +2,38 @@ angular.module('ntt.TreeDnD')
     .directive(
     'treeDndNode', function () {
         return {
-            restrict:   'A',
-            replace:    true,
-            controller: [
-                '$scope', function ($scope) {
-                    $scope.$modelValue = null;
-                    $scope.$scopeChildren = null;
-                    $scope.elementChilds = null;
-
-                    $scope.prev = function () {
-                        return $scope.getPrevGlobal($scope.$modelValue.__index_real__);
-                    };
-
-                    $scope.getData = function () {
-                        return $scope.$modelValue;
-                    };
-
-                    $scope.setElementChilds = function (_elements) {
-                        $scope.elementChilds = _elements;
-                    };
-
-                    $scope.getScopeNode = function () {
-                        return $scope;
-                    };
-
-                }],
+            restrict: 'A',
+            replace:  true,
             link:       function (scope, element, attrs) {
+                scope.$modelValue = null;
                 scope.$element = element;
                 scope.$type = 'TreeDnDNode';
                 scope.$icon_class = '';
                 scope.$node_class = '';
+                scope.getScopeNode = function () {
+                    return scope;
+                };
 
-                if (scope.class.node) {
-                    element.addClass(scope.class.node);
-                    scope.$node_class = scope.class.node;
+                scope.getData = function () {
+                    return scope.$modelValue;
+                };
+
+                scope.getElementChilds = function () {
+                    return angular.element(element[0].querySelector('[tree-dnd-nodes]'));
+                };
+
+                if (scope.$class.node) {
+                    element.addClass(scope.$class.node);
+                    scope.$node_class = scope.$class.node;
                 }
 
                 scope.$watch(
                     attrs.treeDndNode, function (newValue, oldValue, scope) {
                         scope.setScope(scope, newValue);
                         scope.$modelValue = newValue;
-                        scope.$icon_class = scope.class.icon[newValue.__icon__];
+                        scope.$icon_class = scope.$class.icon[newValue.__icon__];
                     }, true
                 );
-
             }
         };
     }

@@ -4,7 +4,6 @@
 
           filter="_filter"
 
-
           primary-key="DemographicId"
           column-defs="col_defs"
           expand-on="expanding_property"
@@ -16,7 +15,7 @@
           enable-drag="true"
           enable-status="true"
           enable-move="true">
-    <table ng-class="tree_class">
+    <table ng-class="$tree_class">
         <thead>
             <tr>
                 <th ng-class="expandingProperty.titleClass" ng-style="expandingProperty.titleStyle">

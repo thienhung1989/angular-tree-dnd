@@ -9,19 +9,25 @@ app = angular.module('TreeDnDTest', deps)
             .when(
             '/basic', {
                 templateUrl: 'basic/basic-frame.html',
-                controller:  'DemoBasicController'
+                controller:  'BasicController'
             }
         )
             .when(
             '/filter', {
                 templateUrl: 'filter/filter-frame.html',
-                controller:  'FilterBasicController'
+                controller:  'FilterController'
             }
         )
             .when(
             '/list', {
                 templateUrl: 'list/list-frame.html',
-                controller:  'ListBasicController'
+                controller:  'ListController'
+            }
+        )
+            .when(
+            '/multi', {
+                templateUrl: 'multi/multi-frame.html',
+                controller:  'MultiController'
             }
         )
             .otherwise({redirectTo: '/basic'});
@@ -46,6 +52,10 @@ app = angular.module('TreeDnDTest', deps)
                     {
                         label: "List Tree",
                         href:  "#/list"
+                    },
+                    {
+                        label: "Multi",
+                        href:  "#/multi"
                     },
                     {
                         label: "Github",

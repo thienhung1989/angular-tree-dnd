@@ -51,7 +51,7 @@
     cursor: pointer;
 }
 
-.tree-dnd .dnd > thead > tr > td, .dnd > tbody > tr > td, .dnd > tfoot > tr > td {
+.tree-dnd > thead > tr > td, .tree-dnd > tbody > tr > td, .tree-dnd > tfoot > tr > td {
     vertical-align: middle !important;
 }
 
