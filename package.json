@@ -13,7 +13,7 @@
   },
   "author": "https://github.com/thienhung1989/angular-tree-dnd/graphs/contributors",
   "name": "angular-tree-dnd",
-  "version": "3.1.0",
+  "version": "3.0.4",
   "homepage": "http://thienhung1989.github.io/angular-tree-dnd/",
   "dependencies": {
     "angular": ">=1.2"
