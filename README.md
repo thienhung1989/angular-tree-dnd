@@ -24,11 +24,19 @@ bower install angular-tree-dnd
 npm install angular-tree-dnd
 ```
 
+## Feature
+* Display Data-Tree with 2 type: Table-Grid & List *(ul, ol)*.
+* Drag & Drop.
+* Filter Data-Tree.
+* GroupBy *(building, not ready)*
+* Extended function `Directive for` Data-Tree *(next, prex, remove,...)*
+
+
 ## Manuals & Documents:
 - https://github.com/thienhung1989/angular-tree-dnd/blob/master/DOCUMENTS.md
 
 ## Changes Log:
-- https://github.com/thienhung1989/angular-tree-dnd/blob/master/CHANGELOG.
+- https://github.com/thienhung1989/angular-tree-dnd/blob/master/CHANGELOG.md
 
 ### Thank To:
 This product is the combination and optimization of 2: [![angular-ui-tree]](https://github.com/angular-ui-tree/angular-ui-tree)  (Drag2Drop) và [![tree-grid-directive]](https://github.com/khan4019/tree-grid-directive) (Display Tree2Table).

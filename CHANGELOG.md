@@ -1,3 +1,17 @@
+## v3.0.4
+ * Fixed:
+    * Indent when error dragging in list.
+    * Optimal `$watch` of tree-dnd.
+ * Added:
+    * Just only `plugin` when need *(increment speed init tree)*:
+        * Filter.
+        * Order By.
+        * Drag & Drop.
+        * Control of Tree.
+    * In Demo:
+        * Custom Options & Demo live.
+        * Order By.
+
 ## v3.0.3
  * Fix error dragDrop for Tree
  * Optimal getElementChilds

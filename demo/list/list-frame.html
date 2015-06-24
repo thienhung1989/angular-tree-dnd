@@ -3,10 +3,11 @@
 </div>
 
 <div class="row">
-	<div class="col-xs-7" view-source="list"></div>
+    <div class="col-xs-7" view-source="list"></div>
 
-	<div class="col-xs-5">
-		<h2>Generated Model</h2>
-		<pre class="code">{{ tree_data | json }}</pre>
-	</div>
+    <div class="col-xs-5">
+        <panel title="Generated Model" type="success">
+            <show-code source="tree_data | json" type="javascript"></show-code>
+        </panel>
+    </div>
 </div>
