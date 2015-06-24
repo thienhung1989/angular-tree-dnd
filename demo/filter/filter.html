@@ -1,27 +1,16 @@
-<tree-dnd tree-class="table table-bordered table-hover table-striped"
-          tree-data="tree_data"
-          tree-control="my_tree"
+<!-- Template Global using in two filter below-->
 
-          filter="_filter"
-
-          primary-key="DemographicId"
-          column-defs="col_defs"
-          expand-on="expanding_property"
-          indent="30"
-          indent-plus="20"
-          indent-unit="px"
-
-          enable-hotkey="true"
-          enable-drag="true"
-          enable-status="true"
-          enable-move="true">
+<script type="text/ng-template" id="tree-dnd-template-render.html">
     <table ng-class="$tree_class">
         <thead>
             <tr>
-                <th ng-class="expandingProperty.titleClass" ng-style="expandingProperty.titleStyle">
+                <th ng-class="expandingProperty.titleClass" ng-style="expandingProperty.titleStyle"
+
+                    compile="expandingProperty.titleTemplate">
                     {{expandingProperty.displayName || expandingProperty.field || expandingProperty}}
                 </th>
-                <th ng-repeat="col in colDefinitions" ng-class="col.titleClass" ng-style="col.titleStyle">
+                <th ng-repeat="col in colDefinitions" ng-class="col.titleClass" ng-style="col.titleStyle"
+                    compile="col.titleTemplate">
                     {{col.displayName || col.field}}
                 </th>
             </tr>
@@ -34,7 +23,9 @@
                 <td ng-if="!expandingProperty.template" tree-dnd-node-handle
                     ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(node.__level__)}"
                     ng-class="expandingProperty.cellClass" compile="expandingProperty.cellTemplate">
-                    <a data-nodrag> <i ng-class="$icon_class" ng-click="toggleExpand(node)" class="tree-icon"></i>
+                    <a data-nodrag> <i ng-class="$icon_class"
+                                       ng-click="toggleExpand(node)"
+                                       class="tree-icon"></i>
                     </a> {{node[expandingProperty.field] || node[expandingProperty]}}
                 </td>
                 <td ng-if="expandingProperty.template" compile="expandingProperty.template"></td>
@@ -45,4 +36,82 @@
             </tr>
         </tbody>
     </table>
-</tree-dnd>
+</script>
+
+<!-- Begin Filter Outside -->
+<div ng-class="{active: models.activeTab === 'OutSide' || !models.activeTab}" class="tab-pane row">
+    <div class="col-xs-3">
+        <panel title="Filter for Table (Outside)">
+            <div class="form-group">
+                <label>Any: <input class="form-control" ng-model="_filter._$"></label>
+            </div>
+            <div class="form-group">
+                <label>Name: <input class="form-control" ng-model="_filter.Name"></label>
+            </div>
+            <div class="form-group">
+                <label>Description: <input class="form-control" ng-model="_filter.Description"></label>
+            </div>
+            <div class="form-group">
+                <label>Area: <input class="form-control" ng-model="_filter.Area"></label>
+            </div>
+            <div class="form-group">
+                <label>Population: <input class="form-control" ng-model="_filter.Population"></label>
+            </div>
+        </panel>
+    </div>
+
+    <div class="col-xs-9">
+        <panel title="Table: Template Outside">
+            <tree-dnd tree-class="table table-bordered table-hover table-striped"
+                      tree-data="tree_data"
+                      tree-control="my_tree"
+                      filter="_filter"
+                      primary-key="DemographicId"
+                      column-defs="col_defs"
+                      expand-on="expanding_property"
+
+                      template-url="tree-dnd-template-render.html"
+
+                      indent="30"
+                      indent-plus="20"
+                      indent-unit="px"
+                      enable-hotkey="true"
+                      enable-drag="true"
+                      enable-drop="true"
+                      enable-status="true"
+                      enable-move="true">
+            </tree-dnd>
+        </panel>
+
+    </div>
+</div>
+<!-- End init Filter-Outside -->
+
+<!-- Begin init Filter-Inside -->
+<div ng-class="{active: models.activeTab === 'InSide'}" class="tab-pane row">
+    <panel title="Table: Template Inside">
+        <div class="form-group form-inline clearfix ">
+            <label class="pull-right">Search: <input class="form-control" ng-model="_filter._$"></label>
+        </div>
+        <tree-dnd tree-class="table table-bordered table-hover table-striped"
+                  tree-data="tree_data"
+                  tree-control="my_tree"
+                  filter="_filter"
+                  primary-key="DemographicId"
+                  column-defs="col_defs_inside"
+                  expand-on="expanding_property_inside"
+
+                  template-url="tree-dnd-template-render.html"
+
+                  indent="30"
+                  indent-plus="20"
+                  indent-unit="px"
+                  enable-hotkey="true"
+                  enable-drag="true"
+                  enable-drop="true"
+                  enable-status="true"
+                  enable-move="true">
+        </tree-dnd>
+    </panel>
+</div>
+<!-- End Init Filter-Inside -->

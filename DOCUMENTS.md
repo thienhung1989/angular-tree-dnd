@@ -1,4 +1,88 @@
+* Construct operation of the condition filter:
+	* Object:
+	```js
+		{
+			Test: 'a',
+			Test3: '3',
+			__condition__: 'and' // or AND, true
+			// __condition__: 'or' // sample: 'OR', false, null
+		}
+	```
+		* All will convert to:
+			* If field: `__condition__` not exist then __condition__ = null;
+				* When condition `or`:
+					```js
+					scope.filter = [
+						{ field: 'Test', callbacks: 'a' },
+						{ field: 'Test3', callbacks: '3' },
+					]
 
+					scope.filterOptions = {
+						beginAnd: 'false'
+					}
+					```
+				* When condition `and` *(all sample with `or`, just different in `scope.filterOptions`)*:
+					```js
+					scope.filterOptions = {
+						beginAnd: true
+					}
+					```
+	* Array: 
+		* Construct of filter:
+			```js
+			scope.filter = [
+				{ field: 'Test', callbacks: 'a' },
+				{ field: 'Test3', callbacks: '3' },
+			]
+			```
+		* Multi condition:
+			* Example: Test || Test3 || (Test4 && Test5)
+			```js
+			scope.filter = [
+				{ field: 'Test', callbacks: 'a' },
+				{ field: 'Test3', callbacks: '3' },
+				[
+					{ field: 'Test4', callbacks: 'a' },
+					{ field: 'Test5', callbacks: 'a' }
+				]
+			]
+			
+			scope.filterOptions = {
+				beginAnd: 'false' // null
+			}
+			```
+			* Example: Test && Test3 && (Test4 || Test5)
+			```js
+			scope.filter = [
+				{ field: 'Test', callbacks: 'a' },
+				{ field: 'Test3', callbacks: '3' },
+				[
+					{ field: 'Test4', callbacks: 'a' },
+					{ field: 'Test5', callbacks: 'a' }
+				]
+			]
+			
+			scope.filterOptions = {
+				beginAnd: true // or `true`
+			}
+			```
+			
+			* Example: Test && Test3 && (Test4 || (Test5 && Test6))
+			```js
+			scope.filter = [
+				{ field: 'Test', callbacks: 'a' },
+				{ field: 'Test3', callbacks: '3' },
+				[
+					{ field: 'Test4', callbacks: 'a' },
+					[
+						{ field: 'Test5', callbacks: 'a' },
+						{ field: 'Test6', callbacks: 'a' }
+					]
+				]
+			]
+			```
+			
+			
 ### Orther:
 * Function 'filter' & 'group by' not add in ng-repeate (it's slow & incompatible with $id($$hash) )
 * Able add function to tree-dnd by:

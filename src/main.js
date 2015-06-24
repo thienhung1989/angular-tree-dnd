@@ -30,22 +30,27 @@
  * (c) 2015 Nguyuễn Thiện Hùng - <nguyenthienhung1989@gmail.com>
  */
 (function () {
-    angular.isUndefinedOrNull = function(val) {
-        return angular.isUndefined(val) || val === null
+    'use strict';
+    angular.isUndefinedOrNull = function (val) {
+        return angular.isUndefined(val) || val === null;
+    }
+
+    angular.isDefined = function (val) {
+        return !(angular.isUndefined(val) || val === null);
     }
 
     angular.module('ntt.TreeDnD', ['template/TreeDnD/TreeDnD.html']).constant(
         '$TreeDnDClass', {
-            tree:        'tree-dnd',
-            empty:       'tree-dnd-empty',
-            hidden:      'tree-dnd-hidden',
-            node:        'tree-dnd-node',
-            nodes:       'tree-dnd-nodes',
-            handle:      'tree-dnd-handle',
-            place:       'tree-dnd-placeholder',
-            drag:        'tree-dnd-drag',
-            status:      'tree-dnd-status',
-            icon: {
+            tree:   'tree-dnd',
+            empty:  'tree-dnd-empty',
+            hidden: 'tree-dnd-hidden',
+            node:   'tree-dnd-node',
+            nodes:  'tree-dnd-nodes',
+            handle: 'tree-dnd-handle',
+            place:  'tree-dnd-placeholder',
+            drag:   'tree-dnd-drag',
+            status: 'tree-dnd-status',
+            icon:   {
                 '1':  'glyphicon glyphicon-minus',
                 '0':  'glyphicon glyphicon-plus',
                 '-1': 'glyphicon glyphicon-file'

@@ -1,23 +1,35 @@
-<div class="row">
-	<div class="col-xs-3">
-		<ul basic-toolbars class="btn-group-vertical btn-sm">
-			<li ng-repeat="toolbar in toolbars" 
-				ng-disabled="!toolbar.click" 
-				ng-click="!toolbar.click ? (false) : (toolbar.log) ? (log = getFn(toolbar.click)()) : getFn(toolbar.click)()" 
-				ng-class="toolbar.class || 'btn btn-success btn-sm'">
-				{{ toolbar.click || toolbar.label }}
-				<i ng-if="toolbar.log">(*)</i>
-			</li>
-		</ul>
-	</div>
-    <div class="col-xs-9" ng-include="'basic/basic.html'"></div>
-</div>
+<div ng-controller="BasicController">
+    <div class="row">
+        <div class="col-xs-3">
+            <ul basic-toolbars class="btn-group-vertical btn-sm">
+                <li ng-repeat="toolbar in toolbars"
+                    ng-disabled="!toolbar.click"
+                    ng-click="!toolbar.click ? (false) : (toolbar.log) ? (log = getFn(toolbar.click)()) : getFn(toolbar.click)()"
+                    ng-class="toolbar.class || 'btn btn-success btn-sm'">
+                    {{ toolbar.click || toolbar.label }} <i ng-if="toolbar.log">(*)</i>
+                </li>
+            </ul>
+        </div>
 
-<div class="row">
-	<div class="col-xs-7" view-source="basic"></div>
+        <div class="col-xs-9">
+            <div class="row">
+                <panel title="Tree-DnD Basic (Only Tree-Control)">
+                    <div ng-include="'basic/basic.html'">
+                    </div>
+                </panel>
+            </div>
+        </div>
+    </div>
 
-	<div class="col-xs-5">
-		<h2>Generated Model</h2>
-		<pre class="code">{{ tree_data | json }}</pre>
-	</div>
+    <div class="row">
+        <div class="col-xs-7" view-source="basic"></div>
+
+        <show-code source="dataDemo | json"></show-code>
+
+        <div class="col-xs-5">
+            <panel title="Generated Model" type="success">
+                <show-code source="tree_data | json" type="javascript"></show-code>
+            </panel>
+        </div>
+    </div>
 </div>

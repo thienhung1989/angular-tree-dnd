@@ -1,7 +1,7 @@
 angular.module('ntt.TreeDnD')
     .factory(
     '$TreeDnDConvert', function () {
-        return {
+        var _$initConvert = {
             line2tree: function (data, primaryKey, parentKey) {
                 if (!data || data.length === 0 || !primaryKey || !parentKey) {
                     return [];
@@ -54,6 +54,8 @@ angular.module('ntt.TreeDnD')
 
                 return access_child(data);
             }
-        };
+        }
+
+        return _$initConvert;
     }
 );

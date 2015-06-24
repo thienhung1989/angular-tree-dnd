@@ -2,8 +2,7 @@ angular.module('ntt.TreeDnD')
     .factory(
     '$TreeDnDHelper', [
         '$document', '$window', function ($document, $window) {
-            return {
-                calsIndent:      null,
+            var _$helper = {
                 nodrag:          function (targetElm) {
                     return (typeof targetElm.attr('data-nodrag')) !== "undefined";
                 },
@@ -104,5 +103,6 @@ angular.module('ntt.TreeDnD')
                     angular.element(element.children()[0]).css(attr, scope.$callbacks.calsIndent(indent));
                 }
             };
+            return _$helper;
         }]
 );
