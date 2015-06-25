@@ -1,48 +1,43 @@
 angular.module('ntt.TreeDnD')
     .directive(
-    'treeDndNode', function () {
-        return {
-            restrict: 'A',
-            replace:  true,
-            link:     function (scope, element, attrs) {
-                var _enabledDragDrop = (typeof scope.dragEnabled === 'boolean' || typeof scope.dropEnabled === 'boolean');
-                scope.$modelValue = null;
-                scope.$icon_class = '';
-                scope.$node_class = '';
+    'treeDndNode', [
+        '$parse', '$http', '$templateCache', '$compile', function ($parse, $http, $templateCache, $compile) {
+            return {
+                restrict:   'A',
+                controller: function ($scope, $element, $attrs) {
+                    $scope.$node_class = '';
 
-                if (scope.$class.node) {
-                    element.addClass(scope.$class.node);
-                    scope.$node_class = scope.$class.node;
-                }
+                    if ($scope.$class.node) {
+                        $element.addClass($scope.$class.node);
+                        $scope.$node_class = $scope.$class.node;
+                    }
 
-                scope.$watch(
-                    attrs.treeDndNode, function (newValue, oldValue, scope) {
-                        if (_enabledDragDrop) {
-                            scope.setScope(scope, newValue);
-                        }
-                        scope.$modelValue = newValue;
-                        scope.$icon_class = scope.$class.icon[newValue.__icon__];
-                    }, true
-                );
+                    var _enabledDragDrop = (typeof $scope.dragEnabled === 'boolean' || typeof $scope.dropEnabled === 'boolean');
 
-                if (_enabledDragDrop) {
+                    var keyNode = $attrs.treeDndNode;
 
-                    scope.$element = element;
-                    scope.$type = 'TreeDnDNode';
+                    if (_enabledDragDrop) {
+                        $scope.setScope($scope, $scope[keyNode]);
+                    }
 
-                    scope.getScopeNode = function () {
-                        return scope;
+                    $scope.getElementChilds = function () {
+                        return angular.element($element[0].querySelector('[tree-dnd-nodes]'));
                     };
 
-                    scope.getData = function () {
-                        return scope.$modelValue;
-                    };
+                    if (_enabledDragDrop) {
 
-                    scope.getElementChilds = function () {
-                        return angular.element(element[0].querySelector('[tree-dnd-nodes]'));
+                        $scope.$element = $element;
+                        $scope.$type = 'TreeDnDNode';
+
+                        $scope.getData = function () {
+                            return $scope[keyNode];
+                        };
+                    }
+
+                    $scope.getScopeNode = function () {
+                        return $scope;
                     };
                 }
-            }
-        };
-    }
+            };
+        }]
 );

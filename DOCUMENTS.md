@@ -213,7 +213,7 @@ $scope.$callbacks = {
                 <tr tree-dnd-node ng-repeat="node in tree_rows track by hashedTree(node)"
                     ng-show="node.__visible__" ng-class="(node.__selected__ ? ' active':'')"
                     class="ng-animate ">
-                    <td ng-if="!expandingProperty.template"
+                    <td
                         ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(node.__level__)}"
                         ng-click="user_clicks_node(node)" ng-class="expandingProperty.cellClass"
                         compile="expandingProperty.cellTemplate">
@@ -223,7 +223,6 @@ $scope.$callbacks = {
                             ng-class="node.__tree_icon__" ng-click="node.__expanded__ = !node.__expanded__"
                             class="tree-icon"></i> </a>
                     </td>
-                    <td ng-if="expandingProperty.template" compile="expandingProperty.template"></td>
                     <td ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
                         compile="col.cellTemplate">
                         {{node[col.field]}}
@@ -296,8 +295,8 @@ $scope.$callbacks = {
 * Combinding with list-tree.
 ```html
 <script type="text/ng-template" id="tree-dnd-template-render.html">
-    <ul tree-dnd-nodes="tree_data">
-        <li tree-dnd-node="node" ng-repeat="node in nodes track by node.__hashKey__"
+    <ul tree-dnd-nodes>
+        <li tree-dnd-node="node" ng-repeat="node in tree_data track by node.__hashKey__"
             ng-show="node.__visible__" compile="expandingProperty.cellTemplate"
             ng-include="'tree-dnd-template-fetch.html'"></li>
     </ul>
@@ -323,8 +322,8 @@ $scope.$callbacks = {
             </span>
         </div>
     </div>
-    <ul tree-dnd-nodes="node.__children__">
-        <li tree-dnd-node="node" ng-repeat="node in nodes track by node.__hashKey__"
+    <ul tree-dnd-nodes>
+        <li tree-dnd-node="node" ng-repeat="node in node.__children__ track by node.__hashKey__"
             ng-show="node.__visible__" compile="expandingProperty.cellTemplate"
             ng-include="'tree-dnd-template-fetch.html'"></li>
     </ul>

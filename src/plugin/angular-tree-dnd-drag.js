@@ -119,7 +119,7 @@ angular.module('ntt.TreeDnD')
                                     _clone = _element.clone();
 
                                     $TreeDnDHelper.replaceIndent(
-                                        _scope,
+                                        _$scope,
                                         _clone,
                                         _node.__level__ - $params.offsetEdge,
                                         'padding-left'
@@ -340,29 +340,26 @@ angular.module('ntt.TreeDnD')
                             );
 
                             targetScope = targetElm.scope();
-                            if (!targetScope) {
+                            if (!targetScope || !targetScope.$callbacks || !targetScope.$callbacks.droppable()) {
+                                // Not allowed Drop Item
                                 return;
                             }
 
                             fnSwapTree = function () {
                                 treeScope = targetScope.getScopeTree();
                                 _target = _info.target;
+
                                 if (_info.target !== treeScope) {
-                                    if (treeScope.$callbacks.droppable()) {
-                                        // Replace by place-holder new
-                                        _target.hidePlace();
-                                        _target.targeting = false;
-                                        treeScope.targeting = true;
+                                    // Replace by place-holder new
+                                    _target.hidePlace();
+                                    _target.targeting = false;
+                                    treeScope.targeting = true;
 
-                                        _info.target = treeScope;
-                                        $params.placeElm = treeScope.initPlace(targetScope.$element, $params.dragElm);
+                                    _info.target = treeScope;
+                                    $params.placeElm = treeScope.initPlace(targetScope.$element, $params.dragElm);
 
-                                        _target = null;
-                                        isSwapped = true;
-                                    } else {
-                                        // Not allowed Drop Item
-                                        return false;
-                                    }
+                                    _target = null;
+                                    isSwapped = true;
                                 }
                                 return true;
                             };
@@ -616,7 +613,7 @@ angular.module('ntt.TreeDnD')
                                     _scope = _$scope.getScope(_node);
                                     _element = _scope.$element;
 
-                                    if (_scope.$class.hidden) {
+                                    if (_$scope.$class.hidden) {
                                         _element.removeClass(_$scope.$class.hidden);
                                     }
                                 }

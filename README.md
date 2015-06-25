@@ -10,7 +10,6 @@
 
 ### Demo: 
 - http://thienhung1989.github.io/angular-tree-dnd/demo
-- http://plnkr.co/edit/6zQNvW?p=preview
 
 ###Requirement:
 ```
@@ -39,4 +38,4 @@ npm install angular-tree-dnd
 - https://github.com/thienhung1989/angular-tree-dnd/blob/master/CHANGELOG.md
 
 ### Thank To:
-This product is the combination and optimization of 2: [![angular-ui-tree]](https://github.com/angular-ui-tree/angular-ui-tree)  (Drag2Drop) và [![tree-grid-directive]](https://github.com/khan4019/tree-grid-directive) (Display Tree2Table).
+This product is the combination and optimization of 2: [JimLiu](https://github.com/https://github.com/jimliu)  (Drag2Drop) và [khan4019](https://github.com/khan4019) (Display Tree2Table).

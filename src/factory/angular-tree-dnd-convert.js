@@ -36,23 +36,21 @@ angular.module('ntt.TreeDnD')
                 }
                 return tree;
             },
-            tree2tree: function (data, parentKey) {
-                var access_child = function (data) {
-                    var _tree = [];
-                    var _i, _len = data.length, _copy, _child;
-                    for (_i = 0; _i < _len; _i++) {
-                        _copy = angular.copy(data[_i]);
-                        if (angular.isArray(_copy[parentKey]) && _copy[parentKey].length > 0) {
-                            _child = access_child(_copy[parentKey]);
-                            delete(_copy[parentKey]);
-                            _copy.__children__ = _child;
-                        }
-                        _tree.push(_copy);
+            tree2tree: function access_child(data, parentKey) {
+                var _tree = [],
+                    _i,
+                    _len = data ? data.length : 0,
+                    _copy, _child;
+                for (_i = 0; _i < _len; _i++) {
+                    _copy = angular.copy(data[_i]);
+                    if (angular.isArray(_copy[parentKey]) && _copy[parentKey].length > 0) {
+                        _child = access_child(_copy[parentKey], parentKey);
+                        delete(_copy[parentKey]);
+                        _copy.__children__ = _child;
                     }
-                    return _tree;
-                };
-
-                return access_child(data);
+                    _tree.push(_copy);
+                }
+                return _tree;
             }
         }
 
