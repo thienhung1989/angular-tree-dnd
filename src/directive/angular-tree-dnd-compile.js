@@ -8,24 +8,13 @@ angular.module('ntt.TreeDnD')
                     scope.$watch(
                         attrs.compile, function (new_val) {
                             if (new_val) {
-                                /*
-                                 * Compile creates a linking function
-                                 * that can be used with any scope.
-                                 */
-                                var link = $compile(new_val);
-                                /*
-                                 * Executing the linking function
-                                 * creates a new element.
-                                 */
-                                var new_elem = link(scope);
-                                // Which we can then append to our DOM element.
-                                if(angular.isFunction(element.empty)){
+                                if (angular.isFunction(element.empty)) {
                                     element.empty()
-                                }else{
+                                } else {
                                     element.html('');
                                 }
 
-                                element.append(new_elem)
+                                element.append($compile(new_val)(scope));
                             }
                         }
                     );
@@ -42,18 +31,7 @@ angular.module('ntt.TreeDnD')
                     scope.$watch(
                         attrs.compileReplace, function (new_val) {
                             if (new_val) {
-                                /*
-                                 * Compile creates a linking function
-                                 * that can be used with any scope.
-                                 */
-                                var link = $compile(new_val);
-                                /*
-                                 * Executing the linking function
-                                 * creates a new element.
-                                 */
-                                var new_elem = link(scope);
-
-                                element.replaceWith(new_elem)
+                                element.replaceWith($compile(new_val)(scope));
                             }
                         }
                     );

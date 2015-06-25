@@ -1,7 +1,13 @@
 ## v3.0.4
+ * Removed:
+    * `$watch` in node, nodes
+    * $icon_class -> node.__icon_class__
+
  * Fixed:
     * Indent when error dragging in list.
-    * Optimal `$watch` of tree-dnd.
+    * Optimal `$watch` of tree-dnd (faster, stabler).
+
+   
  * Added:
     * Just only `plugin` when need *(increment speed init tree)*:
         * Filter.
@@ -203,7 +209,7 @@
 </script>
 <script type="text/ng-template" id="tree-table-template-fetch.html">
     <a tree-table-node-handle class="btn btn-default"> - </a>{{row[expandingProperty.field] || row[expandingProperty]}}
-    <a ng-if="row.__expanded__ != null" class="btn btn-default"
+    <a ng-show="row.__expanded__ != null" class="btn btn-default"
        ng-click="expand(row)"> {{ (row.__expanded__) ? '-' : '+' }} </a>
     <ul tree-table-nodes="row.__children__" class="tree-table-rows">
         <li tree-table-node="row" ng-repeat="row in datas track by row.__hashKey__" ng-show="row.__visible__"

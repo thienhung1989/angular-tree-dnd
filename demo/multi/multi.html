@@ -1,7 +1,7 @@
 <script type="text/ng-template" id="tree-dnd-template-render.html">
     <div ng-class="(treeData.length) ? '' : 'list-group-item'">
-        <ul tree-dnd-nodes="treeData" style="min-height: 100px">
-            <li tree-dnd-node="node" ng-repeat="node in nodes track by node.__hashKey__"
+        <ul tree-dnd-nodes style="min-height: 100px">
+            <li tree-dnd-node="node" ng-repeat="node in treeData track by node.__hashKey__"
                 ng-show="node.__visible__"
                 ng-include="'tree-dnd-template-fetch.html'"></li>
         </ul>
@@ -18,7 +18,7 @@
 
         {{node[expandingProperty.field] || node[expandingProperty]}}
 
-        <span ng-class="$icon_class" ng-click="toggleExpand(node)"></span>
+        <span ng-class="node.__icon_class__" ng-click="toggleExpand(node)"></span>
 
         <div class="pull-right">
             <span ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
@@ -27,8 +27,8 @@
             </span>
         </div>
     </div>
-    <ul tree-dnd-nodes="node.__children__">
-        <li tree-dnd-node="node" ng-repeat="node in nodes track by node.__hashKey__"
+    <ul tree-dnd-nodes>
+        <li tree-dnd-node="node" ng-repeat="node in node.__children__ track by node.__hashKey__"
             ng-show="node.__visible__"
             ng-include="'tree-dnd-template-fetch.html'"></li>
     </ul>
