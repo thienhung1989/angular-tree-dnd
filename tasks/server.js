@@ -5,7 +5,7 @@ module.exports = function (gulp, $) {
     gulp.task(
         'connect', [
             'clean:demo',
-            'scripts:setup',
+            //'scripts:setup',
             'styles'
         ], function () {
             var livereloadPort = 35729;
