@@ -15,7 +15,27 @@
 ```
 angular: >=1.2.1
 ```
- 
+
+### Source *(x.x.x >= 3.0.4)*
+
+```html
+<!-- Latest compiled and minified CSS -->
+<link href="//thienhung1989.github.io/angular-tree-dnd/x.x.x/ng-tree-dnd.min.css"  rel="stylesheet" />
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="//thienhung1989.github.io/angular-tree-dnd/x.x.x/ng-tree-dnd.min.js"></script>
+```
+
+####Full:
+
+```html
+<!-- Latest compiled and minified CSS -->
+<link href="//thienhung1989.github.io/angular-tree-dnd/x.x.x/ng-tree-dnd.css"  rel="stylesheet" />
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="//thienhung1989.github.io/angular-tree-dnd/x.x.x/ng-tree-dnd.js"></script>
+```
+
 ### Install bower:
 ```js
 bower install angular-tree-dnd

@@ -93,6 +93,17 @@ module.exports = function (gulp, $, pkg, through) {
     );
 
     gulp.task(
+        'release', function () {
+            return gulp.src(
+                [
+                    'dist/**/*'
+                ]
+            )
+                .pipe(gulp.dest(pkg.version));
+        }
+    );
+
+    gulp.task(
         'concat', function () {
             var streamInject = gulp.src(
                 [
