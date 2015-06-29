@@ -39,6 +39,8 @@
     "gulp-uglify": "^1.1.0",
     "gulp-replace": ">=0.*",
     "gulp-sourcemaps": ">=1.*",
+    "gulp-remove-code": ">=1.*",
+    "gulp-clone": ">=1.*",
     "jshint-stylish": "^1.0.0",
     "karma": ">=0.12.*",
     "karma-firefox-launcher": "^0.1.3",

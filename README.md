@@ -16,25 +16,10 @@
 angular: >=1.2.1
 ```
 
-### Source *(x.x.x >= 3.0.4)*
+### Source (>= 3.0.4)
 
-```html
-<!-- Latest compiled and minified CSS -->
-<link href="//thienhung1989.github.io/angular-tree-dnd/x.x.x/ng-tree-dnd.min.css"  rel="stylesheet" />
+http://thienhung1989.github.io/angular-tree-dnd/3.0.4/ng-tree-dnd.css
 
-<!-- Latest compiled and minified JavaScript -->
-<script src="//thienhung1989.github.io/angular-tree-dnd/x.x.x/ng-tree-dnd.min.js"></script>
-```
-
-####Full:
-
-```html
-<!-- Latest compiled and minified CSS -->
-<link href="//thienhung1989.github.io/angular-tree-dnd/x.x.x/ng-tree-dnd.css"  rel="stylesheet" />
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="//thienhung1989.github.io/angular-tree-dnd/x.x.x/ng-tree-dnd.js"></script>
-```
 
 ### Install bower:
 ```js
@@ -59,3 +44,16 @@ npm install angular-tree-dnd
 
 ### Thank To:
 This product is the combination and optimization of 2: [JimLiu](https://github.com/https://github.com/jimliu)  (Drag2Drop) và [khan4019](https://github.com/khan4019) (Display Tree2Table).
+
+
+## Contact
+
+[git]: http://git-scm.com/
+[bower]: http://bower.io
+[npm]: https://www.npmjs.org/
+[node]: http://nodejs.org
+[protractor]: https://github.com/angular/protractor
+[jasmine]: http://jasmine.github.io
+[karma]: http://karma-runner.github.io
+[travis]: https://travis-ci.org/
+[http-server]: https://github.com/nodeapps/http-server

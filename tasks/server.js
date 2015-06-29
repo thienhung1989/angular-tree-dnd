@@ -8,7 +8,7 @@ module.exports = function (gulp, $) {
             //'scripts:setup',
             'styles'
         ], function () {
-            var livereloadPort = 35729;
+            var livereloadPort = 35723;
 
             $.connect.server(
                 {
@@ -16,18 +16,16 @@ module.exports = function (gulp, $) {
                     livereload: {
                         port: livereloadPort
                     },
-                    root:       'demo',
+                    root:       './',
                     middleware: function (connect) {
                         function mountFolder(connect, dir) {
                             return connect.static(require('path').resolve(dir));
                         }
 
                         return [
-                            require('connect-livereload')({port: livereloadPort}),
-                            mountFolder(connect, 'src'),
                             mountFolder(connect, 'dist'),
-                            mountFolder(connect, 'bower_components'),
-                            mountFolder(connect, 'demo')
+                            mountFolder(connect, 'demo'),
+                            require('connect-livereload')({port: livereloadPort})
                         ];
                     }
                 }
@@ -40,7 +38,10 @@ module.exports = function (gulp, $) {
             gulp.watch(
                 [
                     '.jshintrc',
-                    'src/**/*.js',
+                    'dist/**/*.js',
+                    'dist/**/*.css',
+                    'demo/**/*.js',
+                    'demo/**/*.css',
                     'demo/**/*.html'
                 ], function (event) {
                     return gulp.src(event.path)
@@ -52,19 +53,14 @@ module.exports = function (gulp, $) {
                 [
                     '.jshintrc',
                     'src/**/*.js'
-                ], ['jshint', 'jscs']
+                ], ['jshint']
             );
 
             gulp.watch(
                 [
-                    'src/**/*.scss'
+                    'src/**/*.scss',
+                    'src/**/*.css'
                 ], ['styles']
-            );
-
-            gulp.watch(
-                [
-                    'demo/**/*.scss'
-                ], ['styles:demo']
             );
         }
     );

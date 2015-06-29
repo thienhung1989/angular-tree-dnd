@@ -105,6 +105,7 @@ module.exports = function (gulp, $, pkg, through) {
 
     gulp.task(
         'concat', function () {
+            // init files includ
             var streamInject = gulp.src(
                 [
                     'src/**/*.js',
@@ -115,23 +116,38 @@ module.exports = function (gulp, $, pkg, through) {
             )
                 .pipe($.replace(/^\s*angular\.module\('ntt\.TreeDnD'\)\s*((.|\s)+\))[\s;]*/gm, '$1'))
                 .pipe($.concat('ng-tree-dnd.js', {newLine: ''}));
+
+            // replace `version` by `version` of package.json in file `main.js`
             var streamMain = gulp.src(['src/main.js'])
                 .pipe($.replace(/\/\/<!--Version-->/gi, pkg.version));
 
+            // join all file `*.append.js` to  file `ng-tree-dnd.js`
             var streamAppend = gulp.src(['src/**/*.append.js'])
                 .pipe($.concat('ng-tree-dnd.js'))
 
+            // replace
             streamMain = fnReplace(
-                streamAppend,
-                streamMain,
-                /;?\s*\/\/<!--Replace_Concat-->/gi,
-                ';\/\/<!--Replace_Concat-->;\n\n'
+                streamAppend, // stream insert
+                streamMain, // insert into stream
+                /;?\s*\/\/<!--Replace_Concat-->/gi, // parent to insert stream
+                ';\/\/<!--Replace_Concat-->;\n\n' // insert after place
             );
-
+            var cloneSink = $.clone.sink();
+            // return stream final concated
             return fnReplace(
-                streamInject, streamMain,
+                streamInject,
+                streamMain,
                 /;?\s*\/\/<!--Replace_Concat-->/gi
-            ).pipe(gulp.dest('dist'))
+            )
+                .pipe(concat("ng-tree-dnd.debug.js")) //<- rename file
+                .pipe($.removeCode({debug: true})) // keep debug
+                .pipe(cloneSink) //<- clone objects streaming through this point
+
+                .pipe(concat("ng-tree-dnd.js")) //<- restore file name
+                .pipe($.removeCode({debug: false})) // clear all debug in file main.
+
+                .pipe(cloneSink.tap()) //<- output cloned objects + ng-tree-dnd.debug.js
+                .pipe(gulp.dest('dist')) // move to dist
         }
     );
 

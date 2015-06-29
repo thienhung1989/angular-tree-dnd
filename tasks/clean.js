@@ -6,8 +6,8 @@ module.exports = function (gulp, $) {
       .pipe($.clean());
   });
 
-  gulp.task('clean:demo', function () {
-    return gulp.src('demo/src', { read: false })
+  gulp.task('clean:vendor', function () {
+    return gulp.src('demo/framework/vendor', { read: false })
       .pipe($.clean());
   });
 };
