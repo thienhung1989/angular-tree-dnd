@@ -21,12 +21,16 @@ angular: >=1.2.1
 http://thienhung1989.github.io/angular-tree-dnd/3.0.4/ng-tree-dnd.css
 
 
+
 ### Install bower:
 ```js
 bower install angular-tree-dnd
 
 npm install angular-tree-dnd
 ```
+
+## Problems
+* Big data not good (development with scrollInfinite, will update soon late).
 
 ## Feature
 * Display Data-Tree with 2 type: Table-Grid & List *(ul, ol)*.
