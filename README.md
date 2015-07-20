@@ -18,9 +18,11 @@ angular: >=1.2.1
 
 ### Source (>= 3.0.4)
 
+```
 http://thienhung1989.github.io/angular-tree-dnd/3.0.4/ng-tree-dnd.css
-
-
+http://thienhung1989.github.io/angular-tree-dnd/3.0.4/ng-tree-dnd.js
+http://thienhung1989.github.io/angular-tree-dnd/3.0.4/ng-tree-dnd.min.js
+```
 
 ### Install bower:
 ```js
