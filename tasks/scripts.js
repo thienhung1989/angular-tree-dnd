@@ -11,10 +11,11 @@ module.exports = function (gulp, $, pkg, through) {
                 {
                     preserveComments: 'some'
                 }
-            )
-        ).pipe($.replace(/\s*\*\s*@preserve/gi, ''))
+            ).on('error', $.util.log)
+        )
+            .pipe($.replace(/\s*\*\s*@preserve/gi, ''))
             .pipe($.rename('ng-tree-dnd.min.js'))
-            .pipe($.sourcemaps.write("/"))
+            .pipe($.sourcemaps.write('/'))
             .pipe(gulp.dest('dist'));
     };
     fnReplace = function (stream, streamSrc, pattern, before, after) {
@@ -26,7 +27,7 @@ module.exports = function (gulp, $, pkg, through) {
                     }
 
                     if (fileInput.isBuffer()) {
-                        var replace = "";
+                        var replace = '';
                         if (before) {
                             replace += before + fileInput.contents;
                         } else {
@@ -39,7 +40,7 @@ module.exports = function (gulp, $, pkg, through) {
 
                         streamSrc.pipe(
                             $.replace(
-                                pattern, function (match) {
+                                pattern, function (/*match*/) {
                                     return replace;
                                 }
                             )
@@ -86,7 +87,7 @@ module.exports = function (gulp, $, pkg, through) {
                     '!dist/**/*.min.js'
                 ]
             )
-                .pipe($.jshint())
+                .pipe($.jshint('.jshintrc'))
                 .pipe($.jshint.reporter('jshint-stylish'))
                 .pipe($.jshint.reporter('fail'));
         }
@@ -114,8 +115,8 @@ module.exports = function (gulp, $, pkg, through) {
                     '!src/main.js'
                 ]
             )
-                .pipe($.replace(/^\s*angular\.module\('ntt\.TreeDnD'\)\s*((.|\s)+\))[\s;]*/gm, '$1'))
-                .pipe($.concat('ng-tree-dnd.js', {newLine: ''}));
+                //.pipe($.replace(/^\s*angular\.module\('ntt\.TreeDnD'\)\s*((.|\s)+\))[\s;]*/gm, '$1'))
+                .pipe($.concat('ng-tree-dnd.js', {newLine: '\n\n'}));
 
             // replace `version` by `version` of package.json in file `main.js`
             var streamMain = gulp.src(['src/main.js'])
@@ -123,31 +124,33 @@ module.exports = function (gulp, $, pkg, through) {
 
             // join all file `*.append.js` to  file `ng-tree-dnd.js`
             var streamAppend = gulp.src(['src/**/*.append.js'])
-                .pipe($.concat('ng-tree-dnd.js'))
+                .pipe($.concat('ng-tree-dnd.js'));
 
             // replace
             streamMain = fnReplace(
                 streamAppend, // stream insert
                 streamMain, // insert into stream
-                /;?\s*\/\/<!--Replace_Concat-->/gi, // parent to insert stream
-                ';\/\/<!--Replace_Concat-->;\n\n' // insert after place
+                /\s*\/\/<!--Replace_Concat-->/gi, // parent to insert stream
+                '\/\/<!--Replace_Concat-->\n\n' // insert after place
             );
+
             var cloneSink = $.clone.sink();
             // return stream final concated
             return fnReplace(
                 streamInject,
                 streamMain,
-                /;?\s*\/\/<!--Replace_Concat-->/gi
+                /\s*\/\/<!--Replace_Concat-->/gi
             )
-                .pipe(concat("ng-tree-dnd.debug.js")) //<- rename file
-                .pipe($.removeCode({debug: true})) // keep debug
+                .pipe($.concat('ng-tree-dnd.debug.js')) //<- rename file
+                .pipe($.removeCode({nodebug: false})) // keep debug
                 .pipe(cloneSink) //<- clone objects streaming through this point
 
-                .pipe(concat("ng-tree-dnd.js")) //<- restore file name
-                .pipe($.removeCode({debug: false})) // clear all debug in file main.
+                .pipe($.concat('ng-tree-dnd.js')) //<- restore file name
+                .pipe($.removeCode({nodebug: true})) // clear all debug in file main.
+                .pipe($.replace(/\$log.debug\([\]]*\);?\s*/gmi, ''))// remove all $log.debug();
 
                 .pipe(cloneSink.tap()) //<- output cloned objects + ng-tree-dnd.debug.js
-                .pipe(gulp.dest('dist')) // move to dist
+                .pipe(gulp.dest('dist')); // move to dist
         }
     );
 
@@ -165,7 +168,7 @@ module.exports = function (gulp, $, pkg, through) {
                 {
                     configFile: __dirname + '/../karma.conf.js',
                     singleRun:  true,
-                    autoWatch:  true,
+                    autoWatch:  true
                 }, function (exitCode) {
                     $.util.log('Karma has exited with ' + exitCode);
                     cb();

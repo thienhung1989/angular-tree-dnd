@@ -13,7 +13,7 @@
                 };
 
                 $scope.expanding_property = {
-                    field:       "Name",
+                    field:       'Name',
                     titleClass:  'text-center',
                     cellClass:   'v-middle',
                     displayName: 'Name'

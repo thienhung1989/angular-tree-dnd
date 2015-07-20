@@ -4,7 +4,7 @@ angular.module('ntt.TreeDnD')
         '$document', '$window', function ($document, $window) {
             var _$helper = {
                 nodrag:          function (targetElm) {
-                    return (typeof targetElm.attr('data-nodrag')) !== "undefined";
+                    return typeof targetElm.attr('data-nodrag') !== 'undefined';
                 },
                 eventObj:        function (e) {
                     var obj = e;
@@ -99,7 +99,7 @@ angular.module('ntt.TreeDnD')
                     pos.dirAx = newAx;
                 },
                 replaceIndent:   function (scope, element, indent, attr) {
-                    attr = attr ? attr : 'left';
+                    attr =  attr || 'left';
                     angular.element(element.children()[0]).css(attr, scope.$callbacks.calsIndent(indent));
                 }
             };

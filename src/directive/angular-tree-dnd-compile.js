@@ -9,7 +9,7 @@ angular.module('ntt.TreeDnD')
                         attrs.compile, function (new_val) {
                             if (new_val) {
                                 if (angular.isFunction(element.empty)) {
-                                    element.empty()
+                                    element.empty();
                                 } else {
                                     element.html('');
                                 }

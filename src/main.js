@@ -31,16 +31,19 @@
  */
 (function () {
     'use strict';
-    angular.isUndefinedOrNull = function (val) {
+    angular.isUndefinedOrNull = isUndefinedOrNull;
+    angular.isDefined = isDefined;
+
+    function isUndefinedOrNull(val) {
         return angular.isUndefined(val) || val === null;
     }
 
-    angular.isDefined = function (val) {
+    function isDefined(val) {
         return !(angular.isUndefined(val) || val === null);
     }
 
     angular.module('ntt.TreeDnD', ['template/TreeDnD/TreeDnD.html'])
-        //removeIf(debug)
+        //removeIf(nodebug)
         .config(
         [
             '$provide', function ($provide) {
@@ -56,10 +59,10 @@
                          */
                         $delegate.debug = function () {
                             var args = [].slice.call(arguments);
-                            args[0] = [new Date().toString(), ': ', args[0]].join('');
+                            args[0]  = [new Date().toString(), ': ', args[0]].join('');
 
                             // Send on our enhanced message to the original debug method.
-                            origDebug.apply(null, args)
+                            origDebug.apply(null, args);
                         };
 
                         return $delegate;
@@ -67,7 +70,7 @@
             );
         }]
     )
-        //endRemoveIf(debug)
+        //endRemoveIf(nodebug)
         .constant(
         '$TreeDnDClass', {
             tree:   'tree-dnd',
@@ -87,4 +90,4 @@
         }
     );//<!--Replace_Concat-->
 
-}).call(window);
+})();

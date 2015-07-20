@@ -1,43 +1,114 @@
 angular.module('ntt.TreeDnD')
     .directive(
-    'treeDndNode', [
-        '$parse', '$http', '$templateCache', '$compile', function ($parse, $http, $templateCache, $compile) {
-            return {
-                restrict:   'A',
-                controller: function ($scope, $element, $attrs) {
-                    $scope.$node_class = '';
+    'treeDndNode', ['$TreeDnDViewport', '$timeout', function ($TreeDnDViewport, $timeout) {
+        return {
+            restrict:   'A',
+            replace:    true,
+            controller: fnController,
+            link:       fnLink
+        };
 
-                    if ($scope.$class.node) {
-                        $element.addClass($scope.$class.node);
-                        $scope.$node_class = $scope.$class.node;
-                    }
+        function fnController($scope, $element/*, $attrs*/) {
+            $scope.$node_class = '';
 
-                    var _enabledDragDrop = (typeof $scope.dragEnabled === 'boolean' || typeof $scope.dropEnabled === 'boolean');
+            if ($scope.$class.node) {
+                $element.addClass($scope.$class.node);
+                $scope.$node_class = $scope.$class.node;
+            }
 
-                    var keyNode = $attrs.treeDndNode;
+        }
 
-                    if (_enabledDragDrop) {
-                        $scope.setScope($scope, $scope[keyNode]);
-                    }
+        function fnLink(scope, element, attrs) {
 
-                    $scope.getElementChilds = function () {
-                        return angular.element($element[0].querySelector('[tree-dnd-nodes]'));
-                    };
+            var enabledDnD = typeof scope.dragEnabled === 'boolean' || typeof scope.dropEnabled === 'boolean',
+                keyNode    = attrs.treeDndNode,
+                first      = true;
 
-                    if (_enabledDragDrop) {
+            $TreeDnDViewport.add(scope, element);
 
-                        $scope.$element = $element;
-                        $scope.$type = 'TreeDnDNode';
+            if (enabledDnD) {
+                scope.$type = 'TreeDnDNode';
 
-                        $scope.getData = function () {
-                            return $scope[keyNode];
-                        };
-                    }
+                scope.getData = function () {
+                    return scope[keyNode];
+                };
+            }
 
-                    $scope.getScopeNode = function () {
-                        return $scope;
-                    };
-                }
+            scope.$element            = element;
+            scope[keyNode].__inited__ = true;
+
+            /*if (scope[keyNode].__index_real__ === scope.$TreeLimit - 1) {
+                console.time('Call_fnTimeGenerate_Node');
+                $timeout(function () {
+                    scope.updateLimit();
+                    console.log(scope.$TreeLimit);
+                    console.timeEnd('Call_fnTimeGenerate_Node');
+                }, 2000, false);
+            }*/
+
+            scope.setScope(scope, scope[keyNode]);
+
+            scope.getElementChilds = function () {
+                return angular.element(element[0].querySelector('[tree-dnd-nodes]'));
             };
-        }]
+
+            scope.getScopeNode = function () {
+                return scope;
+            };
+
+            scope.$watch(keyNode, fnWatchNode, true);
+
+            function fnWatchNode(newVal, oldVal) {
+                if (!newVal.__visible__) {
+                    element.addClass(scope.$class.hidden);
+                }
+
+                //console.time('Node_Changed');
+                var nodeNew = newVal, _nodes = scope[keyNode].__children__,
+                    _len    = _nodes.length, _i,
+                    _icon;
+
+                if (_len === 0) {
+                    _icon = -1;
+                } else {
+                    if (nodeNew.__expanded__) {
+                        _icon = 1;
+                    } else {
+                        _icon = 0;
+                    }
+                }
+
+                nodeNew.__icon__       = _icon;
+                nodeNew.__icon_class__ = scope.$class.icon[_icon];
+
+                function fnHiddenChild(node, parent) {
+                    var nodeScope = scope.getScope(node);
+                    //node.__visible__ = parent.__expanded__ && parent.__visible__;
+                    if (nodeScope) {
+                        if (nodeNew.__expanded__ && (node.__visible__ || parent.__expanded__)) {
+                            nodeScope.$element.removeClass(scope.$class.hidden);
+                        } else {
+                            nodeScope.$element.addClass(scope.$class.hidden);
+                        }
+                    } else {
+                        node.__visible__ = true;
+                    }
+
+                    return !node.__expanded__;
+                }
+
+                if (!first) {
+                    if (newVal.__expanded__ !== oldVal.__expanded__) {
+
+                        for (_i = 0; _i < _len; _i++) {
+                            scope.for_all_descendants(_nodes[_i], fnHiddenChild, nodeNew, true);
+                        }
+
+                        //console.timeEnd('Node_Changed');
+                    }
+                }
+                first = false;
+            }
+        }
+    }]
 );

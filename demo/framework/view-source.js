@@ -3,31 +3,31 @@ app.directive(
         function ($http, $timeout) {
             return {
                 scope:       {
-                    demoName:       "@viewSource",
-                    highlightLines: "="
+                    demoName:       '@viewSource',
+                    highlightLines: '='
                 },
                 templateUrl: 'framework/view-source.html',
-                link:        function (scope, element, attr) {
+                link:        function (scope/*, element, attr*/) {
 
                     scope.models = {
                         types:     [
                             {
-                                extension: "html",
-                                language:  "markup",
-                                label:     "Markup"
+                                extension: 'html',
+                                language:  'markup',
+                                label:     'Markup'
                             },
                             {
-                                extension: "js",
-                                language:  "javascript",
-                                label:     "Javascript"
+                                extension: 'js',
+                                language:  'javascript',
+                                label:     'Javascript'
                             },
                             {
-                                extension: "css",
-                                language:  "css",
-                                label:     "CSS"
-                            },
+                                extension: 'css',
+                                language:  'css',
+                                label:     'CSS'
+                            }
                         ],
-                        activeTab: "markup"
+                        activeTab: 'markup'
                     };
 
                     angular.forEach(

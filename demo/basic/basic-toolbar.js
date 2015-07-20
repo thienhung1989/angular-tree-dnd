@@ -4,11 +4,11 @@
             return {
                 restrict: 'A',
                 replace:  true,
-                link:     function (scope, element, attrs) {
+                link:     function (scope/*, element, attrs*/) {
                     // debug in demo
                     scope.getFn = function (name) {
                         return scope.my_tree[name];
-                    }
+                    };
 
                     scope.toolbars = [
                         {
@@ -91,7 +91,7 @@
                         },
                         {click:  'get_siblings',
                             log: true
-                        },
+                        }
                     ];
                 }
             }

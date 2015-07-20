@@ -4,7 +4,7 @@ module.exports = function (gulp, $) {
 
     gulp.task(
         'connect', [
-            'clean:demo',
+//            'clean:demo',
             //'scripts:setup',
             'styles'
         ], function () {
