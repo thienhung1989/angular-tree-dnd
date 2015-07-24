@@ -14,9 +14,9 @@ angular.module('ntt.TreeDnD')
 
         function _$init(scope) {
             var n, tree = {
-                selected_node:                     null,
-                for_all_descendants:               scope.for_all_descendants,
-                select_node:                       function (node) {
+                selected_node:       null,
+                for_all_descendants: scope.for_all_descendants,
+                select_node:         function (node) {
                     if (!node) {
                         if (tree.selected_node) {
                             delete tree.selected_node.__selected__;
@@ -38,7 +38,7 @@ angular.module('ntt.TreeDnD')
                     }
                     return node;
                 },
-                deselect_node:                     function () {
+                deselect_node:       function () {
                     _target = null;
                     if (tree.selected_node) {
                         delete tree.selected_node.__selected__;
@@ -47,13 +47,13 @@ angular.module('ntt.TreeDnD')
                     }
                     return _target;
                 },
-                get_parent:                        function (node) {
+                get_parent:          function (node) {
                     if (node && node.__parent_real__ !== null) {
                         return scope.tree_nodes[node.__parent_real__];
                     }
                     return null;
                 },
-                for_all_ancestors:                 function (child, fn) {
+                for_all_ancestors:   function (child, fn) {
                     _parent = tree.get_parent(child);
                     if (_parent) {
                         if (fn(_parent)) {
@@ -64,11 +64,23 @@ angular.module('ntt.TreeDnD')
                     }
                     return true;
                 },
-                expand_all_parents:                function (child) {
-                    return tree.for_all_ancestors(
-                        child, fnSetExpand
-                    );
+                expand_all_parents:  function (child) {
+                    child = child || tree.selected_node;
+                    if (typeof child === 'object') {
+                        tree.for_all_ancestors(
+                            child, fnSetExpand
+                        )
+                    }
                 },
+                collapse_all_parents:               function (child) {
+                    child = child || tree.selected_node;
+                    if (typeof child === 'object') {
+                        tree.for_all_ancestors(
+                            child, fnSetCollapse
+                        )
+                    }
+                },
+
                 reload_data:                       function () {
                     return scope.reload_data();
                 },
@@ -130,7 +142,7 @@ angular.module('ntt.TreeDnD')
                 },
                 expand_node:                       function (node) {
                     node = node || tree.selected_node;
-                    if (typeof node === 'object') {
+                    if (typeof node === 'object' && node.__expanded__) {
                         node.__expanded__ = true;
                         return node;
                     }
@@ -241,7 +253,8 @@ angular.module('ntt.TreeDnD')
                     }
                 },
                 select_first_node:                 function () {
-                    return tree.select_node(tree.get_first_node());
+                    var firstNode = tree.get_first_node();
+                    return tree.select_node(firstNode);
                 },
                 select_next_sibling:               function (node) {
                     node = node || tree.selected_node;

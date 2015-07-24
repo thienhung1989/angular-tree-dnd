@@ -47,7 +47,7 @@
                         'Area':          9826675,
                         'Population':    318212000,
                         'TimeZone':      'UTC -5 to -10'
-                    }, 10000, 7, null, 'DemographicId', 'ParentId');
+                    }, 500, 7, null, 'DemographicId', 'ParentId');
                 // $scope.tree_data = $TreeDnDConvert.line2tree(DataDemo.getDatas(), 'DemographicId', 'ParentId');
             }]
     );

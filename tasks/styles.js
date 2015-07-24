@@ -3,7 +3,7 @@
 module.exports = function (gulp, $) {
 
     gulp.task(
-        'styles', function () {
+        'min-css', function () {
             return gulp.src('src/*.css')
                 .pipe($.concat('ng-tree-dnd.css'))
                 .pipe(gulp.dest('dist'))

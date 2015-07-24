@@ -4,7 +4,7 @@
             <ul basic-toolbars class="btn-group-vertical btn-sm">
                 <li ng-repeat="toolbar in toolbars"
                     ng-disabled="!toolbar.click"
-                    ng-click="!toolbar.click ? (false) : (toolbar.log) ? (log = getFn(toolbar.click)()) : getFn(toolbar.click)()"
+                    ng-click="fnCall(toolbar)"
                     ng-class="toolbar.class || 'btn btn-success btn-sm'">
                     {{ toolbar.click || toolbar.label }} <i ng-if="toolbar.log">(*)</i>
                 </li>

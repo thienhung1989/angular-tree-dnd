@@ -20,9 +20,9 @@ angular.module('ntt.TreeDnD')
 
         function fnLink(scope, element, attrs) {
 
-            var enabledDnD = typeof scope.dragEnabled === 'boolean' || typeof scope.dropEnabled === 'boolean',
-                keyNode    = attrs.treeDndNode,
-                first      = true;
+            var enabledDnD            = typeof scope.dragEnabled === 'boolean' || typeof scope.dropEnabled === 'boolean',
+                keyNode               = attrs.treeDndNode,
+                first                 = true;
 
             $TreeDnDViewport.add(scope, element);
 
@@ -33,18 +33,18 @@ angular.module('ntt.TreeDnD')
                     return scope[keyNode];
                 };
             }
-
+            console.log('Create Node', scope[keyNode])
             scope.$element            = element;
             scope[keyNode].__inited__ = true;
 
             /*if (scope[keyNode].__index_real__ === scope.$TreeLimit - 1) {
-                console.time('Call_fnTimeGenerate_Node');
-                $timeout(function () {
-                    scope.updateLimit();
-                    console.log(scope.$TreeLimit);
-                    console.timeEnd('Call_fnTimeGenerate_Node');
-                }, 2000, false);
-            }*/
+             console.time('Call_fnTimeGenerate_Node');
+             $timeout(function () {
+             scope.updateLimit();
+             console.log(scope.$TreeLimit);
+             console.timeEnd('Call_fnTimeGenerate_Node');
+             }, 2000, false);
+             }*/
 
             scope.setScope(scope, scope[keyNode]);
 
@@ -58,7 +58,7 @@ angular.module('ntt.TreeDnD')
 
             scope.$watch(keyNode, fnWatchNode, true);
 
-            function fnWatchNode(newVal, oldVal) {
+            function fnWatchNode(newVal, oldVal, scope) {
                 if (!newVal.__visible__) {
                     element.addClass(scope.$class.hidden);
                 }
@@ -81,33 +81,48 @@ angular.module('ntt.TreeDnD')
                 nodeNew.__icon__       = _icon;
                 nodeNew.__icon_class__ = scope.$class.icon[_icon];
 
-                function fnHiddenChild(node, parent) {
-                    var nodeScope = scope.getScope(node);
-                    //node.__visible__ = parent.__expanded__ && parent.__visible__;
-                    if (nodeScope) {
-                        if (nodeNew.__expanded__ && (node.__visible__ || parent.__expanded__)) {
-                            nodeScope.$element.removeClass(scope.$class.hidden);
-                        } else {
-                            nodeScope.$element.addClass(scope.$class.hidden);
-                        }
-                    } else {
-                        node.__visible__ = true;
-                    }
-
-                    return !node.__expanded__;
-                }
-
                 if (!first) {
                     if (newVal.__expanded__ !== oldVal.__expanded__) {
-
+                        //if (scope.isTable) {
                         for (_i = 0; _i < _len; _i++) {
                             scope.for_all_descendants(_nodes[_i], fnHiddenChild, nodeNew, true);
                         }
-
+                        //} else {
+                        //    if (!childsElem) {
+                        //        childsElem = scope.getElementChilds();
+                        //    }
+                        //
+                        //    if (nodeNew.__expanded__) {
+                        //        childsElem.removeClass(scope.$class.hidden);
+                        //    } else {
+                        //        childsElem.addClass(scope.$class.hidden);
+                        //    }
+                        //}
                         //console.timeEnd('Node_Changed');
                     }
                 }
+
                 first = false;
+
+                function fnHiddenChild(node, parent) {
+                    //node.__visible__ = nodeNew.__expanded__ && (node.__visible__ || parent.__expanded__);
+                    var nodeScope = scope.getScope(node);
+                    if (nodeScope) {
+                        if (nodeNew.__expanded__ && (node.__visible__ || parent.__expanded__)) {
+                            nodeScope.$element.removeClass(scope.$class.hidden);
+                            node.__visible__ = true;
+                        } else {
+                            nodeScope.$element.addClass(scope.$class.hidden);
+                            node.__visible__ = false;
+                        }
+                    } else {
+                        // show node & init scope
+                        node.__visible__ = true;
+                    }
+
+                    // skip all child hiding... if not expaned
+                    return !node.__expanded__;
+                }
             }
         }
     }]

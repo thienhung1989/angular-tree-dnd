@@ -1,71 +1,6 @@
 'use strict';
 
 module.exports = function (gulp, $, pkg, through) {
-
-    var fnUglify, fnReplace;
-    fnUglify = function () {
-        return gulp.src('dist/ng-tree-dnd.js')
-            .pipe($.sourcemaps.init())
-            .pipe(
-            $.uglify(
-                {
-                    preserveComments: 'some'
-                }
-            ).on('error', $.util.log)
-        )
-            .pipe($.replace(/\s*\*\s*@preserve/gi, ''))
-            .pipe($.rename('ng-tree-dnd.min.js'))
-            .pipe($.sourcemaps.write('/'))
-            .pipe(gulp.dest('dist'));
-    };
-    fnReplace = function (stream, streamSrc, pattern, before, after) {
-        return stream.pipe(
-            through.obj(
-                function (fileInput, enc, cb) {
-                    if (fileInput.isStream()) {
-                        return cb();
-                    }
-
-                    if (fileInput.isBuffer()) {
-                        var replace = '';
-                        if (before) {
-                            replace += before + fileInput.contents;
-                        } else {
-                            replace += fileInput.contents;
-                        }
-
-                        if (after) {
-                            replace += after;
-                        }
-
-                        streamSrc.pipe(
-                            $.replace(
-                                pattern, function (/*match*/) {
-                                    return replace;
-                                }
-                            )
-                        )
-                            .pipe(
-                            through.obj(
-                                function (f, e, c) {
-
-                                    if (f.isStream()) {
-                                        return c();
-                                    }
-
-                                    if (f.isBuffer()) {
-                                        fileInput.contents = f.contents;
-                                        cb(null, fileInput);
-                                    }
-                                }
-                            )
-                        ).on('end', cb);
-                    }
-                }
-            )
-        );
-    };
-
     gulp.task(
         'jshint', function () {
             return gulp.src(
@@ -155,11 +90,21 @@ module.exports = function (gulp, $, pkg, through) {
     );
 
     gulp.task(
-        'uglify', ['concat'], fnUglify
-    );
-
-    gulp.task(
-        'uglify-noconcat', fnUglify
+        'min-js', function fnUglify() {
+            return gulp.src('dist/ng-tree-dnd.js')
+                .pipe($.sourcemaps.init())
+                .pipe(
+                $.uglify(
+                    {
+                        preserveComments: 'some'
+                    }
+                ).on('error', $.util.log)
+            )
+                .pipe($.replace(/\s*\*\s*@preserve/gi, ''))
+                .pipe($.rename('ng-tree-dnd.min.js'))
+                .pipe($.sourcemaps.write('/'))
+                .pipe(gulp.dest('dist'));
+        }
     );
 
     gulp.task(
@@ -176,5 +121,52 @@ module.exports = function (gulp, $, pkg, through) {
             );
         }
     );
-}
-;
+
+    function fnReplace(stream, streamSrc, pattern, before, after) {
+        return stream.pipe(
+            through.obj(
+                function (fileInput, enc, cb) {
+                    if (fileInput.isStream()) {
+                        return cb();
+                    }
+
+                    if (fileInput.isBuffer()) {
+                        var replace = '';
+                        if (before) {
+                            replace += before + fileInput.contents;
+                        } else {
+                            replace += fileInput.contents;
+                        }
+
+                        if (after) {
+                            replace += after;
+                        }
+
+                        streamSrc.pipe(
+                            $.replace(
+                                pattern, function (/*match*/) {
+                                    return replace;
+                                }
+                            )
+                        )
+                            .pipe(
+                            through.obj(
+                                function (f, e, c) {
+
+                                    if (f.isStream()) {
+                                        return c();
+                                    }
+
+                                    if (f.isBuffer()) {
+                                        fileInput.contents = f.contents;
+                                        cb(null, fileInput);
+                                    }
+                                }
+                            )
+                        ).on('end', cb);
+                    }
+                }
+            )
+        );
+    }
+};

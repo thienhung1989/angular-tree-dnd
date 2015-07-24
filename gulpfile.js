@@ -22,13 +22,13 @@ var gulp       = require('gulp'),
 $.karma = require('karma');
 
 gulp.task(
-    'build', ['styles', 'jshint', 'uglify'], function () {
+    'build', ['min-css', 'jshint', 'min-js'], function () {
         return gulp.start('jshint-dist', 'test');
     }
 );
 
 gulp.task(
-    'server', function () {
+    'run-server', function () {
         return gulp.start('connect', 'watch', 'open');
     }
 );
