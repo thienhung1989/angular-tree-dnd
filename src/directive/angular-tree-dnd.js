@@ -127,11 +127,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
         };
 
         $scope.getHash = function (node) {
-            if ($scope.primary_key === '__uid__') {
-                return '#' + node.__parent__ + '#' + node.__uid__ + '#' + node.__index__;
-            } else {
-                return '#' + node.__parent__ + '#' + node[$scope.primary_key] + '#' + node.__index__;
-            }
+            return '#' + node.__parent__ + '#' + node[$scope.primary_key];
         };
 
         $scope.$callbacks = {
@@ -184,9 +180,11 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 this.for_all_descendants(_clone, this.changeKey);
                 return _clone;
             },
-            remove:              function (node, parent, _this) {
+            remove:              function (node, parent, _this, keepReload) {
                 var temp = parent.splice(node.__index__, 1)[0];
-                $scope.reload_data();
+                if(!keepReload){
+                    $scope.reload_data();
+                }
                 return temp;
             },
             add:                 function (node, pos, parent, _this) {
@@ -205,19 +203,23 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         };
 
-        $scope.setScope = function (scope, node) {
-            var _hash = $scope.getHash(node);
+        $scope.deleteScope = function (scope, node) {
+            var _hash = node.__hashKey__;
+            if ($scope.$globals[_hash] && $scope.$globals[_hash] === scope) {
+                delete $scope.$globals[_hash];
+            }
+        };
 
+        $scope.setScope = function (scope, node) {
+            var _hash = node.__hashKey__;
             if ($scope.$globals[_hash] !== scope) {
-                //console.log(node, $scope.$globals);
                 $scope.$globals[_hash] = scope;
             }
         };
 
         $scope.getScope = function (node) {
-            //console.log(node, $scope.$globals);
+            var _hash = node.__hashKey__;
             if (node) {
-                var _hash = $scope.getHash(node);
                 return $scope.$globals[_hash];
             }
             return $scope;
@@ -252,7 +254,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                             }
 
                             event.target.reload_data();
-                            if (event.target !== event.drag && event.drag.enable) {
+                            if (event.target !== event.drag && event.drag.enabledMove) {
                                 event.drag.reload_data();
                             }
                         },
@@ -283,7 +285,8 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                                     _nodeAdd = info.drag.$callbacks.remove(
                                         _node,
                                         _parent,
-                                        info.drag.$callbacks
+                                        info.drag.$callbacks,
+                                        true // keep reload
                                     );
                                 } else {
                                     _nodeAdd = info.drag.$callbacks.clone(_node, info.drag.$callbacks);
@@ -849,6 +852,13 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 node.__uid__ = '' + Math.random();
             }
 
+
+            _hashKey = $scope.getHash(node);
+
+            if (angular.isUndefinedOrNull(node.__hashKey__) || node.__hashKey__ !== _hashKey) {
+                node.__hashKey__ = _hashKey;
+            }
+
             root.push(node);
 
             // Check node children
@@ -858,20 +868,13 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                     _dept += do_f(
                         root,
                         node.__children__[_i],
-                        $scope.primary_key === '__uid__' ? node.__uid__ : node[$scope.primary_key],
+                        node[$scope.primary_key],
                         _index_real,
                         level + 1,
                         visible && node.__expanded__,
                         _i
                     );
                 }
-            }
-
-            _hashKey = $scope.getHash(node);
-
-            if (angular.isUndefinedOrNull(node.__hashKey__) || node.__hashKey__ !== _hashKey) {
-                node.__hashKey__ = _hashKey;
-                // delete($scope.$globals[_hashKey]);
             }
 
             node.__dept__ = _dept;
@@ -928,25 +931,12 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             _len = _data.length;
             if (_len > 0) {
                 var _i,
-                    _offset, _max, _min, _keys,
                     _deptTotal = 0;
 
                 for (_i = 0; _i < _len; _i++) {
                     _deptTotal += do_f(_tree_nodes, _data[_i], null, null, 1, true, _i);
                 }
 
-                // clear Element Empty
-                _keys   = Object.keys($scope.$globals);
-                _len    = $scope.$globals.length;
-                _offset = _len - _deptTotal;
-
-                if (_offset !== 0) {
-                    _max = _len - _offset;
-                    _min = _max - Math.abs(_offset);
-                    for (_i = _min; _i < _max; _i++) {
-                        delete $scope.$globals[_keys[_i]];
-                    }
-                }
             }
 
             // clear memory

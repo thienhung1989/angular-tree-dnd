@@ -556,7 +556,6 @@ angular.module('ntt.TreeDnD')
                             }
                         } else {
                             _scope = _info.target.getScope(_drop || _move.parent);
-                            console.log(_info.target, _scope, _drop, _move.parent);
                             if (_drop) {
                                 _scope.$element.after($params.placeElm);
                             } else {
@@ -579,10 +578,10 @@ angular.module('ntt.TreeDnD')
             function _fnDragEnd(e, $params) {
                 e.preventDefault();
                 if ($params.dragElm) {
-                    var _passed     = false,
-                        _$scope     = $params.$scope,
-                        _scope      = _$scope.getScope($params.dragInfo.node),
-                        _element    = _scope.$element;
+                    var _passed                       = false,
+                        _$scope                       = $params.$scope,
+                        _scope                        = _$scope.getScope($params.dragInfo.node),
+                        _element                      = _scope.$element;
 
                     _$scope.$safeApply(
                         function () {
@@ -612,31 +611,32 @@ angular.module('ntt.TreeDnD')
                     }
 
                     $params.dragElm.remove();
-                    $params.dragElm = null;
+                    $params.dragElm                   = null;
 
                     if (_$scope.enabledStatus) {
                         _$scope.hideStatus();
                     }
 
-                    var _status                       = false;
                     if (_$scope.$$apply) {
+                        var _status = false;
                         _$scope.$safeApply(
                             function () {
                                 _status = _$scope.$callbacks.dropped(
                                     $params.dragInfo,
                                     _passed
                                 );
+
+                                _$scope.$callbacks.dragStop($params.dragInfo, _status);
                             }
                         );
                     } else {
                         _fnBindDrag($params);
+                        _$scope.$safeApply(
+                            function () {
+                                _$scope.$callbacks.dragStop($params.dragInfo, false);
+                            }
+                        );
                     }
-
-                    _$scope.$safeApply(
-                        function () {
-                            _$scope.$callbacks.dragStop($params.dragInfo, _status);
-                        }
-                    );
 
                     $params.dragInfo.target.hidePlace();
                     $params.dragInfo.target.targeting = false;

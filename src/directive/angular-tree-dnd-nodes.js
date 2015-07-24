@@ -4,7 +4,6 @@ angular.module('ntt.TreeDnD')
         return {
             restrict: 'A',
             replace:  true,
-            scope:    true,
             link:     function (scope, element/*, attrs*/) {
                 scope.$type = 'TreeDnDNodes';
 

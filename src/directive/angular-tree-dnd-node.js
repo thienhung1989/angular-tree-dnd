@@ -33,7 +33,6 @@ angular.module('ntt.TreeDnD')
                     return scope[keyNode];
                 };
             }
-            console.log('Create Node', scope[keyNode])
             scope.$element            = element;
             scope[keyNode].__inited__ = true;
 
@@ -46,17 +45,21 @@ angular.module('ntt.TreeDnD')
              }, 2000, false);
              }*/
 
-            scope.setScope(scope, scope[keyNode]);
-
             scope.getElementChilds = function () {
                 return angular.element(element[0].querySelector('[tree-dnd-nodes]'));
             };
+
+            scope.setScope(scope, scope[keyNode]);
 
             scope.getScopeNode = function () {
                 return scope;
             };
 
             scope.$watch(keyNode, fnWatchNode, true);
+
+            scope.$on('$destroy', function () {
+                scope.deleteScope(scope, scope[keyNode]);
+            });
 
             function fnWatchNode(newVal, oldVal, scope) {
                 if (!newVal.__visible__) {
