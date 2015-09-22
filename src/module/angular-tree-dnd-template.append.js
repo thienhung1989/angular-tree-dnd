@@ -28,14 +28,14 @@ angular.module('template/TreeDnD/TreeDnD.html', []).run(
              '                     class="tree-icon"></i>',
              '              </a>',
              '             {{node[expandingProperty.field] || node[expandingProperty]}}',
-             '       </td>',
+             '        </td>',
              '        <td ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"',
              '            compile="col.cellTemplate">',
              '            {{node[col.field]}}',
-             '       </td>',
+             '        </td>',
              '    </tr>',
              '    </tbody>',
-             '</table>'].join('')
+             '</table>'].join('\n')
         );
 
         $templateCache.put(
