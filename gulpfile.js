@@ -22,8 +22,8 @@ var gulp       = require('gulp'),
 $.karma = require('karma');
 
 gulp.task(
-    'build', ['min-css', 'jshint', 'min-js'], function () {
-        return gulp.start('jshint-dist', 'test');
+    'build', ['min-css', 'concat', 'jshint', 'min-js'], function () {
+        return gulp.start('jshint-dist');//, 'test'
     }
 );
 
