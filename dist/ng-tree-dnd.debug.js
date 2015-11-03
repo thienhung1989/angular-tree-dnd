@@ -3079,7 +3079,7 @@ angular.module('ntt.TreeDnD')
                     }
                 },
                 remove_node:                       function (node) {
-                    node = node || tree.selected_node;
+                    /*node = node || tree.selected_node;
                     if (typeof node === 'object') {
                         if (node.__parent_real__ !== null) {
                             _parent = tree.get_parent(node).__children__;
@@ -3090,6 +3090,28 @@ angular.module('ntt.TreeDnD')
                         _parent.splice(node.__index__, 1);
 
                         tree.reload_data();
+
+                        if (tree.selected_node === node) {
+                            tree.selected_node = null;
+                        }
+                    }*/
+                    var lastElement = false;
+                    node = node || tree.selected_node;
+                    if (node) {
+                        if (node.__parent_real__ !== null) { //!=null
+                            _parent = tree.get_parent(node).__children__;
+                        } else {
+                            _parent = scope.treeData;
+                            if(scope.treeData.length === 1) {
+                                lastElement = true;
+                            }
+                        }
+
+                        _parent.splice(node.__index__, 1);
+                        if(lastElement) {
+                            //delete(scope.tree_nodes);
+                            scope.tree_nodes = [];
+                        }
 
                         if (tree.selected_node === node) {
                             tree.selected_node = null;
