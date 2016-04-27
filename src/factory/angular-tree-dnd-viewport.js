@@ -116,7 +116,7 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
         $timeout.cancel(updateTimeout);
         updateTimeout = $timeout(function () {
             update();
-        }, 100);
+        }, 0);
     }
 
     /**
@@ -125,7 +125,6 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
      * @param callback
      */
     function add(scope, element) {
-        //console.log('call add');
         updateDelayed();
         items.push({
             element: element,

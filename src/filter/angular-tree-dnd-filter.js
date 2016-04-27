@@ -11,11 +11,13 @@ angular.module('ntt.TreeDnD')
 
                 var _i, _len, _nodes,
                     _nodePassed  = fnBefore(options, node),
-                    _childPassed = false;
+                    _childPassed = false,
+                    _filter_index = options.filter_index;
 
                 if (angular.isDefined(node[fieldChild])) {
                     _nodes = node[fieldChild];
                     _len   = _nodes.length;
+                    options.filter_index = 0;
                     for (_i = 0; _i < _len; _i++) {
                         _childPassed = for_all_descendants(
                                 options,
@@ -26,6 +28,9 @@ angular.module('ntt.TreeDnD')
                                        _nodePassed || parentPassed
                             ) || _childPassed;
                     }
+
+                    // restore filter_index of node
+                    options.filter_index = _filter_index;
                 }
 
                 if (angular.isFunction(fnAfter)) {
@@ -149,17 +154,20 @@ angular.module('ntt.TreeDnD')
                 if (isNodePassed === true) {
                     node.__filtered__         = true;
                     node.__filtered_visible__ = true;
+                    node.__filtered_index__ = options.filter_index++;
                     return; //jmp
                 } else if (isChildPassed === true && options.showParent === true
                            || isParentPassed === true && options.showChild === true) {
                     node.__filtered__         = false;
                     node.__filtered_visible__ = true;
+                    node.__filtered_index__ = options.filter_index++;
                     return; //jmp
                 }
 
                 // remove attr __filtered__
                 delete node.__filtered__;
                 delete node.__filtered_visible__;
+                delete node.__filtered_index__;
             }
 
             /**
@@ -177,6 +185,19 @@ angular.module('ntt.TreeDnD')
                 } else {
                     return _fnProccess(node, options.filter, options.beginAnd || false);
                 }
+            }
+
+            /**
+             * `fnBeforeClear` will called when `for_all_descendants` of `node` checking.
+             * Alway false to Clear Filter empty
+             *
+             * @param {object} options
+             * @param {object} node
+             * @returns {null|boolean}
+             * @private
+             */
+            function _fnBeforeClear(options, node) {
+                return false;
             }
 
             /**
@@ -234,9 +255,7 @@ angular.module('ntt.TreeDnD')
              */
             function fnInitFilter(treeData, filters, options, keyChild) {
                 if (!angular.isArray(treeData)
-                    || treeData.length === 0
-                    || !(angular.isArray(filters) || angular.isObject(filters))
-                    || filters.length === 0) {
+                    || treeData.length === 0) {
                     return treeData;
                 }
 
@@ -246,9 +265,19 @@ angular.module('ntt.TreeDnD')
                 _filter = _fnConvert(filters);
                 if (!(angular.isArray(_filter) || angular.isObject(_filter))
                     || _filter.length === 0) {
+                    for (_i = 0, _len = treeData.length; _i < _len; _i++) {
+                        for_all_descendants(
+                            options,
+                            treeData[_i],
+                            keyChild || '__children__',
+                            _fnBeforeClear, _fnAfter
+                        );
+                    }
                     return treeData;
                 }
+
                 options.filter = _filter;
+                options.filter_index = 0;
                 for (_i = 0, _len = treeData.length; _i < _len; _i++) {
                     for_all_descendants(
                         options,

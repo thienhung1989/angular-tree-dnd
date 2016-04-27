@@ -19,7 +19,7 @@ var gulp       = require('gulp'),
     }()
 );
 
-$.karma = require('karma');
+// $.karma = require('karma');
 
 gulp.task(
     'build', ['min-css', 'jshint', 'min-js'], function () {

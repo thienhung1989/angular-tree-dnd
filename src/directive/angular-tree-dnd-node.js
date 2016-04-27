@@ -18,8 +18,9 @@ angular.module('ntt.TreeDnD')
                 keyNode    = attrs.treeDndNode,
                 first      = true,
                 childsElem;
-
+			//removeIf(nodebug) 
             console.log('Created Node');
+			//endRemoveIf(nodebug)
             $TreeDnDViewport.add(scope, element);
 
             if (enabledDnD) {
@@ -89,7 +90,9 @@ angular.module('ntt.TreeDnD')
 
             function fnWatchNode(newVal, oldVal, scope) {
 
+				//removeIf(nodebug) 
                 console.time('Node_Changed');
+				//endRemoveIf(nodebug)
                 var nodeOf = scope[keyNode],
                     _icon;
 
@@ -140,7 +143,7 @@ angular.module('ntt.TreeDnD')
 
                     if (scope.isTable) {
                         for (_i = 0; _i < _len; _i++) {
-                            scope.for_all_descendants(_childs[_i], fnHiddenChild, nodeOf, true);
+                            scope.for_all_descendants(_childs[_i], scope.hiddenChild, nodeOf, true);
                         }
                     } else {
                         if (!childsElem) {
@@ -156,31 +159,11 @@ angular.module('ntt.TreeDnD')
 
                 }
 
+				//removeIf(nodebug) 
                 console.timeEnd('Node_Changed');
+				//endRemoveIf(nodebug) 
                 first      = false;
 
-                function fnHiddenChild(node, parent) {
-                    var nodeScope = scope.getScope(node);
-                    if (nodeScope) {
-                        if (parent && parent.__expanded__  && parent.__visible__) {
-                            nodeScope.$element.removeClass(scope.$class.hidden);
-                            node.__visible__ = true;
-                        } else {
-                            nodeScope.$element.addClass(scope.$class.hidden);
-                            node.__visible__ = false;
-                        }
-                    } else {
-                        // show node & init scope
-                        if (parent && parent.__expanded__  && parent.__visible__) {
-                            node.__visible__ = true;
-                        }else{
-                            node.__visible__ = false;
-                        }
-                    }
-
-                    // skip all child hiding... if not expaned
-                    return node.__expanded__ === false;
-                }
             }
         }
     }]
