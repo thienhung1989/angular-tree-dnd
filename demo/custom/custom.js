@@ -11,7 +11,7 @@
 
                 $scope.expandOn = {
                     displayName: 'Name',
-                    field:       "title"
+                    field: 'title'
                 };
 
                 $scope.defs = [
@@ -20,25 +20,25 @@
                         cellTemplate: '<p>{{ nameAttr[node.def] }}</p>'
                     },
                     {
-                        field:        "Init",
+                        field: 'Init',
                         titleStyle:   {
                             'width': '30pt'
                         },
                         titleClass:   'text-center',
                         cellClass:    'v-middle text-center',
                         displayName:  'Init',
-                        cellTemplate: "<input "
-                                      + "type=\"checkbox\" "
-                                      + "ng-checked=\"!!node.init\" "
-                                      + "ng-model=\"node.init\" />"
+                        cellTemplate: '<input '
+                                      + 'type="checkbox" '
+                                      + 'ng-checked="!!node.init" '
+                                      + 'ng-model="node.init" />'
                     }, {
                         displayName:  'Option',
-                        cellTemplate: "<input " +
-                                      " ng-if=\"node.type === 'checkbox' || node.type === 'text' \" " +
-                                      " type=\"{{ node.type }}\" " +
-                                      " ng-checked=\"!!node.value\" " +
-                                      " ng-model=\"node.value\" " +
-                                      " ng-click=\"node.init = false\" />"
+                        cellTemplate: '<input ' +
+                                      ' ng-if="node.type === \'checkbox\' || node.type === \'text\'" ' +
+                                      ' type="{{ node.type }}" ' +
+                                      ' ng-checked="!!node.value" ' +
+                                      ' ng-model="node.value" ' +
+                                      ' ng-click="node.init = false" />'
                     }, {
                         titleStyle:   {
                             'width': '30pt'
@@ -138,7 +138,7 @@
                                 init:       true,
                                 defaultTmp: '<p>3</p>',
                                 value:      3
-                            },
+                            }
                         ]
                     },
                     {
@@ -192,7 +192,7 @@
                                         type:  'text',
                                         init:  true,
                                         value: ''
-                                    },
+                                    }
                                 ]
                             },
                             {
@@ -201,7 +201,7 @@
                                 type:  'checkbox',
                                 init:  true,
                                 value: false
-                            },
+                            }
                         ]
                     },
 
@@ -247,12 +247,12 @@
                         value:      'px'
                     },
                     {
-                        def:   'horizontal',
+                        def: 'horizontal',
                         title: 'Horizontal',
-                        type:  'checkbox',
-                        init:  true,
+                        type: 'checkbox',
+                        init: true,
                         value: false
-                    },
+                    }
                 ];
 
                 $scope.data = {};
@@ -294,7 +294,7 @@
                         templateCopy: 'template-copy',
                         templateMove: 'template-move'
                     },
-                    _temp, _value,
+                    _temp,
                     key,
                     i, len,
                     tab = '\n\t\t',
@@ -334,7 +334,7 @@
 
                 $scope.expanding_property = {
                     /*template: "<td>OK All</td>",*/
-                    field:       "Name",
+                    field: 'Name',
                     titleClass:  'text-center',
                     cellClass:   'v-middle',
                     displayName: 'Name'
@@ -343,16 +343,16 @@
                 $scope.dataDemo = DataDemo.getDatas();
                 $scope.col_defs = [
                     {
-                        field: "Description"
+                        field: 'Description'
                     }, {
-                        field:        "Description",
+                        field: 'Description',
                         titleStyle:   {
                             'width': '80pt'
                         },
                         titleClass:   'text-center',
                         cellClass:    'v-middle text-center',
                         displayName:  'Description',
-                        cellTemplate: "<i class=\"fa {{ !node.Description ? 'fa-times text-danger-lter' : 'fa-check text-success' }} text\"></i>"
+                        cellTemplate: '<i class="fa {{ !node.Description ? \'fa-times text-danger-lter\' : \'fa-check text-success\' }} text"></i>'
                     }, {
                         displayName:  'Function',
                         cellTemplate: '<button ng-click="tree.addFunction(node)" class="btn btn-default btn-sm">Added Controller!</button>'
@@ -372,7 +372,7 @@
         }
     ).directive(
         'optionTree', [
-            '$compile', function ($compile, $parse) {
+            '$compile', function ($compile) {
                 return {
                     restrict: 'E',
                     scope:    true,

@@ -15,13 +15,24 @@
 ```
 angular: >=1.2.1
 ```
- 
+
+### Source (>= 3.0.4)
+
+```
+http://thienhung1989.github.io/angular-tree-dnd/3.0.4/ng-tree-dnd.css
+http://thienhung1989.github.io/angular-tree-dnd/3.0.4/ng-tree-dnd.js
+http://thienhung1989.github.io/angular-tree-dnd/3.0.4/ng-tree-dnd.min.js
+```
+
 ### Install bower:
 ```js
 bower install angular-tree-dnd
 
 npm install angular-tree-dnd
 ```
+
+## Problems
+* Big data not good (development with scrollInfinite, will update soon late).
 
 ## Feature
 * Display Data-Tree with 2 type: Table-Grid & List *(ul, ol)*.
@@ -39,3 +50,16 @@ npm install angular-tree-dnd
 
 ### Thank To:
 This product is the combination and optimization of 2: [JimLiu](https://github.com/https://github.com/jimliu)  (Drag2Drop) và [khan4019](https://github.com/khan4019) (Display Tree2Table).
+
+
+## Contact
+
+[git]: http://git-scm.com/
+[bower]: http://bower.io
+[npm]: https://www.npmjs.org/
+[node]: http://nodejs.org
+[protractor]: https://github.com/angular/protractor
+[jasmine]: http://jasmine.github.io
+[karma]: http://karma-runner.github.io
+[travis]: https://travis-ci.org/
+[http-server]: https://github.com/nodeapps/http-server

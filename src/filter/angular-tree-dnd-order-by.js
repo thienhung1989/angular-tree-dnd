@@ -25,12 +25,11 @@ angular.module('ntt.TreeDnD')
                     if (!angular.isArray(treeData)
                         || treeData.length === 0
                         || !(angular.isArray(orderBy) || angular.isObject(orderBy) || angular.isString(orderBy) || angular.isFunction(orderBy))
-                        || (orderBy.length === 0 && !angular.isFunction(orderBy))) {
+                        || orderBy.length === 0 && !angular.isFunction(orderBy)) {
                         return treeData;
                     }
 
-                    var _i, _len,
-                        _iF, _lenF, _keysF;
+                    var _i, _len;
 
                     for (_i = 0, _len = treeData.length; _i < _len; _i++) {
                         treeData[_i] = for_all_descendants(
@@ -41,8 +40,7 @@ angular.module('ntt.TreeDnD')
                         );
                     }
 
-                    treeData = _fnOrder(treeData, orderBy);
-                    return treeData;
+                    return _fnOrder(treeData, orderBy);
                 };
 
             return _fnMain;

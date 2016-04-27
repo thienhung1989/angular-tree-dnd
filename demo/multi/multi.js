@@ -10,10 +10,10 @@
                 $scope.my_tree.addFunction = function (node) {
                     console.log(node);
                     alert('Function added in Controller "App.js"');
-                }
+                };
 
                 $scope.expanding_property = {
-                    field:       "Name",
+                    field: 'Name',
                     titleClass:  'text-center',
                     cellClass:   'v-middle',
                     displayName: 'Name'
@@ -21,7 +21,7 @@
 
                 $scope.col_defs_table = [
                     {
-                        field:       "Description",
+                        field: 'Description',
                         titleStyle:  {
                             'width': '80pt'
                         },
@@ -42,7 +42,7 @@
                         cellTemplate: '<button ng-click="tree.addFunction(node)" class="btn btn-default btn-sm">Controller!</button>'
                     }, {
                         cellTemplate: '<button ng-click="tree.remove_node(node)" class="btn btn-default btn-sm">Remove</button>'
-                    }]
+                    }];
                 // DataDemo.getDatas() can see in 'Custom Option' -> Tab 'Data Demo'
                 $scope.tree_list = $TreeDnDConvert.line2tree(DataDemo.getDatas(), 'DemographicId', 'ParentId');
 
@@ -52,13 +52,13 @@
                 $scope.tree_clone = $TreeDnDConvert.line2tree(
                     [
                         {
-                            "DemographicId": -1,
-                            "ParentId":      null,
-                            "Name":          "United States of America",
-                            "Description":   "United States of America",
-                            "Area":          9826675,
-                            "Population":    318212000,
-                            "TimeZone":      "UTC -5 to -10"
+                            'DemographicId': -1,
+                            'ParentId': null,
+                            'Name': 'United States of America',
+                            'Description': 'United States of America',
+                            'Area': 9826675,
+                            'Population': 318212000,
+                            'TimeZone': 'UTC -5 to -10'
                         }], 'DemographicId', 'ParentId'
                 );
 

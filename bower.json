@@ -1,6 +1,6 @@
 {
   "name": "angular-tree-dnd",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "authors": ["Nguyễn Thiện Hùng"],
   "homepage": "https://github.com/thienhung1989/angular-tree-dnd",
   "description": "Display tree table (or list) & event DrapnDrop (allow drag multi tree-dnd include all type: table, ol, ul) by AngularJS, using CSS animation and Bootstrap style",

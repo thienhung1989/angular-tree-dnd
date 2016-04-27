@@ -31,15 +31,12 @@
  */
 (function () {
     'use strict';
-    angular.isUndefinedOrNull = function (val) {
-        return angular.isUndefined(val) || val === null;
-    }
+    angular.isUndefinedOrNull = isUndefinedOrNull;
 
-    angular.isDefined = function (val) {
-        return !(angular.isUndefined(val) || val === null);
-    }
+    angular.isDefined = isDefined;
 
-    angular.module('ntt.TreeDnD', ['template/TreeDnD/TreeDnD.html']).constant(
+    angular.module('ntt.TreeDnD', ['template/TreeDnD/TreeDnD.html'])
+        .constant(
         '$TreeDnDClass', {
             tree:   'tree-dnd',
             empty:  'tree-dnd-empty',
@@ -58,4 +55,11 @@
         }
     );//<!--Replace_Concat-->
 
-}).call(window);
+    function isUndefinedOrNull(val) {
+        return angular.isUndefined(val) || val === null;
+    }
+
+    function isDefined(val) {
+        return !(angular.isUndefined(val) || val === null);
+    }
+})();

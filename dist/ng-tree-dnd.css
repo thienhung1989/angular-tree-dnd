@@ -1,3 +1,4 @@
+
 .tree-dnd-animate-enter,
 .tree-dnd-node.ng-enter {
     -webkit-transition: 0 linear all;
@@ -30,7 +31,6 @@
     max-height: 30px;
     opacity: 1;
 }
-
 
 .tree-dnd-animate-leave.tree-dnd-animate-leave-active,
 .tree-dnd-node.ng-leave-active {
@@ -66,7 +66,11 @@
 }
 
 .tree-dnd-hidden {
-    display: none;
+    -webkit-animation: fadeOut 0s;
+    -moz-animation: fadeOut 0s;
+    -o-animation: fadeOut 0s;
+    animation: fadeOut 0s;
+    display: none !important;
 }
 
 .tree-dnd-placeholder {

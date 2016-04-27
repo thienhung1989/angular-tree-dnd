@@ -10,7 +10,7 @@
                 $scope._filter = {};
                 $scope.expanding_property = {
                     /*template: "<td>OK All</td>",*/
-                    field:       "Name",
+                    field:       'Name',
                     titleClass:  'text-center',
                     cellClass:   'v-middle',
                     displayName: 'Name'
@@ -18,13 +18,13 @@
 
                 $scope.col_defs = [
                     {
-                        field: "Description"
+                        field: 'Description'
                     },
                     {
-                        field: "Area"
+                        field: 'Area'
                     },
                     {
-                        field: "Population"
+                        field: 'Population'
                     }, {
                         titleStyle:    {
                             'width': '80pt'
@@ -37,7 +37,7 @@
 
                 $scope.expanding_property_inside = {
                     /*template: "<td>OK All</td>",*/
-                    field:       "Name",
+                    field:       'Name',
                     titleClass:  'text-center',
                     titleTemplate: '<label> {{expandingProperty.displayName || expandingProperty.field || expandingProperty}} <input class="form-control" ng-model="_filter.Name"></label>',
                     cellClass:   'v-middle',
@@ -45,17 +45,17 @@
                 };
                 $scope.col_defs_inside = [
                     {
-                        field:         "Description",
+                        field:         'Description',
                         titleClass:  'text-center',
                         titleTemplate: '<label> {{col.displayName || col.field}} <input class="form-control" ng-model="_filter.Description"></label>'
                     },
                     {
-                        field:         "Area",
+                        field:         'Area',
                         titleClass:  'text-center',
                         titleTemplate: '<label> {{col.displayName || col.field}} <input class="form-control" ng-model="_filter.Area"></label>'
                     },
                     {
-                        field:         "Population",
+                        field:         'Population',
                         titleClass:  'text-center',
                         titleTemplate: '<label> {{col.displayName || col.field}} <input class="form-control" ng-model="_filter.Population"></label>'
                     }, {

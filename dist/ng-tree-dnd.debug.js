@@ -117,7 +117,10 @@ angular.module('ntt.TreeDnD')
                 keyNode    = attrs.treeDndNode,
                 first      = true,
                 childsElem;
-			$TreeDnDViewport.add(scope, element);
+			//removeIf(nodebug) 
+            console.log('Created Node');
+			//endRemoveIf(nodebug)
+            $TreeDnDViewport.add(scope, element);
 
             if (enabledDnD) {
                 scope.$type = 'TreeDnDNode';
@@ -186,7 +189,10 @@ angular.module('ntt.TreeDnD')
 
             function fnWatchNode(newVal, oldVal, scope) {
 
-				var nodeOf = scope[keyNode],
+				//removeIf(nodebug) 
+                console.time('Node_Changed');
+				//endRemoveIf(nodebug)
+                var nodeOf = scope[keyNode],
                     _icon;
 
                 if (first) {
@@ -252,7 +258,10 @@ angular.module('ntt.TreeDnD')
 
                 }
 
-				first      = false;
+				//removeIf(nodebug) 
+                console.timeEnd('Node_Changed');
+				//endRemoveIf(nodebug) 
+                first      = false;
 
             }
         }
@@ -1220,6 +1229,10 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
         }
 
         function reload_data(oData) {
+            //removeIf(nodebug)
+            console.time('Reload_Data');
+            //endRemoveIf(nodebug)
+
             var _data,
                 _len,
                 _tree_nodes = [];
@@ -1276,6 +1289,9 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
 
             init_data(_tree_nodes);
 
+            //removeIf(nodebug)
+            console.timeEnd('Reload_Data');
+            //endRemoveIf(nodebug)
             return _tree_nodes;
         }
     }
