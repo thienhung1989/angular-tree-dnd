@@ -109,7 +109,7 @@ module.exports = function (gulp, $, pkg, through) {
 
     gulp.task(
         'test', function (cb) {
-            return $.karma.server.start(
+            return require('karma').server.start(
                 {
                     configFile: __dirname + '/../karma.conf.js',
                     singleRun:  true,

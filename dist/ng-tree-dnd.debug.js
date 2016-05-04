@@ -1152,6 +1152,11 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
         }
 
         function do_f(root, node, parent, parent_real, level, visible, index) {
+
+            if(typeof node !== 'object'){
+                return 0;
+            }
+
             var _i, _len, _icon, _index_real, _dept, _hashKey;
             if (!angular.isArray(node.__children__)) {
                 node.__children__ = [];
