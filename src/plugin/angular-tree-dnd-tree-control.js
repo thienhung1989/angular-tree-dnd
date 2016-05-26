@@ -215,7 +215,9 @@ angular.module('ntt.TreeDnD')
 
                     _parent = tree.get_parent(node);
                     if(_parent)
+                    {
                     	return tree.get_closest_ancestor_next_sibling(_parent);
+                    }
 
                     return null;
                 },
