@@ -214,7 +214,12 @@ angular.module('ntt.TreeDnD')
                     }
 
                     _parent = tree.get_parent(node);
-                    return tree.get_closest_ancestor_next_sibling(_parent);
+                    if(_parent)
+                    {
+                    	return tree.get_closest_ancestor_next_sibling(_parent);
+                    }
+
+                    return null;
                 },
                 get_next_node:                     function (node) {
                     node = node || tree.selected_node;
