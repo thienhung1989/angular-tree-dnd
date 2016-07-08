@@ -1,3 +1,5 @@
+// PVYV: Fixed reload_data to support empty data array.
+
 angular.module('ntt.TreeDnD')
        .directive(
            'treeDnd', fnInitTreeDnD);
