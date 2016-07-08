@@ -959,7 +959,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 } else {
                     _data = oData;
                 }
-            } else if (!angular.isArray($scope.treeData)) {
+            } else if (!angular.isArray($scope.treeData) || $scope.treeData.length === 0) {
                 return init_data([]);
             } else {
                 _data = $scope.treeData;
