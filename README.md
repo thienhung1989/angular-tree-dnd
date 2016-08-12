@@ -49,7 +49,7 @@ npm install angular-tree-dnd
 - https://github.com/thienhung1989/angular-tree-dnd/blob/master/CHANGELOG.md
 
 ### Thank To:
-This product is the combination and optimization of 2: [JimLiu](https://github.com/https://github.com/jimliu)  (Drag2Drop) và [khan4019](https://github.com/khan4019) (Display Tree2Table).
+This product is the combination and optimization of 2: [JimLiu](https://github.com/jimliu)  (Drag2Drop) và [khan4019](https://github.com/khan4019) (Display Tree2Table).
 
 
 ## Contact
