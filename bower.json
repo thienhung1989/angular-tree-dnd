@@ -6,10 +6,7 @@
   "description": "Display tree table (or list) & event DrapnDrop (allow drag multi tree-dnd include all type: table, ol, ul) by AngularJS, using CSS animation and Bootstrap style",
   "main": [
     "dist/ng-tree-dnd.css",
-    "dist/ng-tree-dnd.js",
-    "dist/ng-tree-dnd.min.css",
-    "dist/ng-tree-dnd.min.js",
-    "dist/ng-tree-dnd.min.js.map"
+    "dist/ng-tree-dnd.js"
   ],
   "licence": "MIT",
   "keywords": [
