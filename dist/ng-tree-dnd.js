@@ -1325,9 +1325,9 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                             return $http.get(
                                 treeInclude,
                                 {cache: $templateCache}
-                            ).success(
-                                function (data) {
-                                    data              = data.trim();
+                            ).then(
+                                function (httpResponse) {
+                                    var data          = httpResponse.data.trim();
                                     //scope.templateNode = data;
                                     var tempDiv       = document.createElement('div');
                                     tempDiv.innerHTML = data;
@@ -1411,9 +1411,9 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                     $http.get(
                         attrs.templateUrl || $TreeDnDTemplate.getPath(),
                         {cache: $templateCache}
-                    ).success(
-                        function (data) {
-                            data         = angular.element(data.trim());
+                    ).then(
+                        function (httpResponse) {
+                            var data     = angular.element(httpResponse.data.trim());
                             promiseCheck = checkTreeTable(data, scope);
                             if (typeof promiseCheck === 'object') {
                                 promiseCheck.then(function () {
@@ -3228,7 +3228,12 @@ angular.module('ntt.TreeDnD')
                     }
 
                     _parent = tree.get_parent(node);
-                    return tree.get_closest_ancestor_next_sibling(_parent);
+                    if(_parent)
+                    {
+                    	return tree.get_closest_ancestor_next_sibling(_parent);
+                    }
+
+                    return null;
                 },
                 get_next_node:                     function (node) {
                     node = node || tree.selected_node;
