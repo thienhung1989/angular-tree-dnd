@@ -1,0 +1,52 @@
+<script type="text/ng-template" id="group-template.html">
+    <div class="panel-heading">
+        <h4 class="panel-title" style="color:#fa39c3">
+            <a href tabindex="0" class="accordion-toggle" ng-click="toggleOpen()" uib-accordion-transclude="heading">
+          <span uib-accordion-header ng-class="{'text-muted': isDisabled}">
+            {{heading}}
+          </span>
+            </a>
+        </h4>
+    </div>
+    <div class="panel-collapse collapse" uib-collapse="!isOpen" ng-transclude></div>
+</script>
+
+<tabset>
+    <tab heading="Demo">
+        <div class="row">
+            <div class="col-xs-3" basic-toolbars>
+                <accordion close-others="true">
+                    <accordion-group
+                            class="panel-default"
+                            ng-repeat="toolbar in toolbars"
+                            heading="{{toolbar.title}}"
+                    >
+                        <div class="list-group">
+                            <a ng-repeat="item in toolbar.children"
+                               style="cursor: pointer"
+                               ng-disabled="!toolbar.click"
+                               ng-click="fnCall(item)"
+
+                               ng-class="item.class || 'list-group-item'">
+                                {{ item.click || item.title }} <i ng-if="item.log">(*)</i>
+                            </a>
+                        </div>
+                    </accordion-group>
+                </accordion>
+            </div>
+
+            <div class="col-xs-9">
+                <div class="row">
+                    <panel title="Only Tree-Control (Not drag & drop)">
+                        <div ng-include="'routers/basic/basic.html'"></div>
+                    </panel>
+                </div>
+            </div>
+        </div>
+    </tab>
+    <tab heading="Data Logs">
+        <panel>
+            <show-code source="log | json" type="javascript"></show-code>
+        </panel>
+    </tab>
+</tabset>

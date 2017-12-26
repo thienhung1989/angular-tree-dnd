@@ -36,8 +36,7 @@
     angular.isDefined = isDefined;
 
     angular.module('ntt.TreeDnD', ['template/TreeDnD/TreeDnD.html'])
-        .constant(
-        '$TreeDnDClass', {
+        .constant('$TreeDnDClass', {
             tree:   'tree-dnd',
             empty:  'tree-dnd-empty',
             hidden: 'tree-dnd-hidden',
@@ -52,8 +51,7 @@
                 '0':  'glyphicon glyphicon-plus',
                 '-1': 'glyphicon glyphicon-file'
             }
-        }
-    );//<!--Replace_Concat-->
+        });//<!--Replace_Concat-->
 
     function isUndefinedOrNull(val) {
         return angular.isUndefined(val) || val === null;

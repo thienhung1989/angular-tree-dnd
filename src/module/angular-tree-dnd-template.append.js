@@ -1,6 +1,5 @@
 angular.module('template/TreeDnD/TreeDnD.html', []).run(
-    [
-        '$templateCache', function ($templateCache) {
+    ['$templateCache', function ($templateCache) {
         $templateCache.put(
             'template/TreeDnD/TreeDnD.html',
             ['<table ng-class="$tree_class">',

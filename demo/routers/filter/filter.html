@@ -1,0 +1,134 @@
+<!-- Template Global using in two filter below-->
+
+<script type="text/ng-template" id="tree-dnd-template-render.html">
+    <table ng-class="$tree_class">
+        <thead>
+            <tr>
+                <th ng-class="expandingProperty.titleClass" ng-style="expandingProperty.titleStyle"
+
+                    compile="expandingProperty.titleTemplate">
+                    {{expandingProperty.displayName || expandingProperty.field || expandingProperty}}
+                </th>
+                <th ng-repeat="col in colDefinitions" ng-class="col.titleClass" ng-style="col.titleStyle"
+                    compile="col.titleTemplate">
+                    {{col.displayName || col.field}}
+                </th>
+            </tr>
+        </thead>
+        <tbody tree-dnd-nodes>
+            <tr tree-dnd-node="node" ng-repeat="node in tree_nodes track by node.__hashKey__ "
+                ng-show="enabledFilter ? node.__filtered_visible__ === true && node.__visible__ : node.__visible__"
+                ng-class="enabledFilter ? (node.__filtered__ === true? 'success': '') : (node.__selected__ ? ' active':'')"
+                ng-click="onSelect(node)">
+                <td tree-dnd-node-handle
+                    ng-style="expandingProperty.cellStyle ? expandingProperty.cellStyle : {'padding-left': $callbacks.calsIndent(node.__level__)}"
+                    ng-class="expandingProperty.cellClass" compile="expandingProperty.cellTemplate">
+                    <a data-nodrag> <i ng-class="node.__icon_class__"
+                                       ng-click="toggleExpand(node)"
+                                       class="tree-icon"></i>
+                    </a> {{node[expandingProperty.field] || node[expandingProperty]}}
+                </td>
+                <td ng-repeat="col in colDefinitions" ng-class="col.cellClass" ng-style="col.cellStyle"
+                    compile="col.cellTemplate">
+                    {{node[col.field]}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</script>
+
+
+<tabset>
+
+    <!-- Begin Filter Outside -->
+    <tab heading="Outside">
+        <div class="row">
+            <div class="col-xs-3">
+                <panel title="Filter for Table (Outside)">
+                    <div class="form-group">
+                        <label>Any: <input class="form-control" ng-model="_filter._$"></label>
+                    </div>
+                    <div class="form-group">
+                        <label>Name: <input class="form-control" ng-model="_filter.Name"></label>
+                    </div>
+                    <div class="form-group">
+                        <label>Description: <input class="form-control" ng-model="_filter.Description"></label>
+                    </div>
+                    <div class="form-group">
+                        <label>Area: <input class="form-control" ng-model="_filter.Area"></label>
+                    </div>
+                    <div class="form-group">
+                        <label>Population: <input class="form-control" ng-model="_filter.Population"></label>
+                    </div>
+                </panel>
+            </div>
+
+            <div class="col-xs-9">
+                <panel title="Table: Template Outside">
+                    <tree-dnd tree-class="table table-bordered table-hover table-striped"
+                              tree-data="tree_data"
+                              tree-control="my_tree"
+                              filter="_filter"
+                              primary-key="DemographicId"
+                              column-defs="col_defs"
+                              expand-on="expanding_property"
+
+                              template-url="tree-dnd-template-render.html"
+
+                              indent="30"
+                              indent-plus="20"
+                              indent-unit="px"
+                              enable-hotkey="true"
+                              enable-drag="true"
+                              enable-drop="true"
+                              enable-status="true"
+                              enable-move="true">
+                    </tree-dnd>
+                </panel>
+            </div>
+        </div>
+    </tab>
+    <!-- End init Filter-Outside -->
+
+
+    <!-- Begin init Filter-Inside -->
+    <tab heading="Inside">
+        <panel title="Table: Template Inside">
+            <div class="form-group form-inline clearfix ">
+                <label class="pull-right">Search: <input class="form-control" ng-model="_filter._$"></label>
+            </div>
+            <tree-dnd tree-class="table table-bordered table-hover table-striped"
+                      tree-data="tree_data"
+                      tree-control="my_tree"
+                      filter="_filter"
+                      primary-key="DemographicId"
+                      column-defs="col_defs_inside"
+                      expand-on="expanding_property_inside"
+
+                      template-url="tree-dnd-template-render.html"
+
+                      indent="30"
+                      indent-plus="20"
+                      indent-unit="px"
+                      enable-hotkey="true"
+                      enable-drag="true"
+                      enable-drop="true"
+                      enable-status="true"
+                      enable-move="true">
+            </tree-dnd>
+        </panel>
+    </tab>
+    <!-- End Init Filter-Inside -->
+
+    <tab heading="Custom">
+        <div class="row">
+            <div class="col-xs-7"  data-source="tree_data" view-source="filter"></div>
+
+            <div class="col-xs-5">
+                <panel title="Generated Model" type="success">
+                    <show-code source="tree_data | json" type="javascript"></show-code>
+                </panel>
+            </div>
+        </div>
+    </tab>
+</tabset>

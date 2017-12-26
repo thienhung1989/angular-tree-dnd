@@ -87,9 +87,9 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
      */
     function pointIsInsideBounds(x, y, bounds) {
         return x >= bounds.left &&
-               y >= bounds.top &&
-               x <= bounds.left + bounds.width &&
-               y <= bounds.top + bounds.height;
+            y >= bounds.top &&
+            x <= bounds.left + bounds.width &&
+            y <= bounds.top + bounds.height;
     }
 
     /**

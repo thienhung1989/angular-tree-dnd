@@ -1,0 +1,135 @@
+%extend_1 {
+    transition: 0 linear all;
+    position: relative;
+    display: block;
+    opacity: 0;
+}
+
+%extend_2 {
+    transition: 0 linear all;
+    position: relative;
+    display: block;
+    opacity: 1;
+}
+
+%extend_3 {
+    opacity: 0;
+}
+
+.tree-dnd-animate-enter {
+    @extend %extend_1;
+    &.tree-dnd-animate-enter-active {
+        opacity: 1;
+        max-height: 30px;
+    }
+}
+
+.tree-dnd-node {
+    min-height: 20px;
+    line-height: 20px;
+    &.ng-enter {
+        @extend %extend_1;
+    }
+    &.ng-enter-active {
+        opacity: 1;
+        max-height: 30px;
+    }
+    &.ng-leave {
+        @extend %extend_2;
+    }
+    &.ng-leave-active {
+        @extend %extend_3;
+    }
+    > td {
+        position: relative;
+    }
+}
+
+.tree-dnd-animate-leave {
+    @extend %extend_2;
+    &.tree-dnd-animate-leave-active {
+        @extend %extend_3;
+    }
+}
+
+.tree-dnd {
+    .tree-icon {
+        cursor: pointer;
+    }
+
+    > thead > tr > td,
+    > tbody > tr > td,
+    > tfoot > tr > td {
+        vertical-align: middle;
+    }
+}
+
+.tree-label {
+    cursor: pointer;
+}
+
+.tree-dnd-empty {
+    border: 2px dashed #72da67;
+    min-height: 100px;
+    background-color: #e5e5e5;
+}
+
+.indented {
+    position: relative;
+}
+
+.tree-dnd-hidden {
+    animation: fadeOut 0s;
+    display: none;
+}
+
+.tree-dnd-placeholder {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    min-height: 20px;
+    line-height: 20px;
+}
+
+.tree-dnd-handle {
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+    box-sizing: border-box;
+    min-height: 20px;
+    line-height: 20px;
+}
+
+.tree-dnd-drag {
+    position: absolute;
+    pointer-events: none;
+    z-index: 999;
+    opacity: .7;
+    background-color: #cdffdc;
+    border: 2px dashed #385736;
+}
+
+.tree-dnd-status {
+    position: absolute;
+    background-color: #ffffff;
+    border: 1px solid #92e5d3;
+    padding: 1px 4px;
+    opacity: .85;
+}
+
+.tree-dnd-nodes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    .tree-dnd-node {
+        border-radius: 0;
+    }
+
+    .tree-dnd-nodes {
+        padding-left: 20px;
+    }
+}
+
+.tree-dnd-animate.ng-enter {
+}

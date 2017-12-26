@@ -1,6 +1,5 @@
 angular.module('ntt.TreeDnD')
-    .directive(
-    'treeDndNodes', function () {
+    .directive('treeDndNodes', function () {
         return {
             restrict: 'A',
             replace:  true,
@@ -15,5 +14,4 @@ angular.module('ntt.TreeDnD')
                 }
             }
         };
-    }
-);
+    });

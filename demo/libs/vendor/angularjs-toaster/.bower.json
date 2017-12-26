@@ -1,0 +1,28 @@
+{
+  "name": "AngularJS-Toaster",
+  "version": "2.2.0",
+  "main": [
+    "toaster.js",
+    "toaster.css",
+    "toaster.scss"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ],
+  "dependencies": {
+    "angular": ">1.2.6",
+    "angular-animate": ">1.2.8"
+  },
+  "homepage": "https://github.com/jirikavi/AngularJS-Toaster",
+  "_release": "2.2.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.2.0",
+    "commit": "9cebfda56eedfe8fe41e378103b5d7c2e260c961"
+  },
+  "_source": "https://github.com/jirikavi/AngularJS-Toaster.git",
+  "_target": "*",
+  "_originalSource": "angularjs-toaster"
+}
