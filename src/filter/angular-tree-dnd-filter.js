@@ -1,6 +1,5 @@
 angular.module('ntt.TreeDnD')
-    .factory(
-    '$TreeDnDFilter', [
+    .factory('$TreeDnDFilter', [
         '$filter', function ($filter) {
             return fnInitFilter;
 
@@ -10,23 +9,24 @@ angular.module('ntt.TreeDnD')
                 }
 
                 var _i, _len, _nodes,
-                    _nodePassed  = fnBefore(options, node),
-                    _childPassed = false,
+                    _nodePassed   = fnBefore(options, node),
+                    _childPassed  = false,
                     _filter_index = options.filter_index;
 
                 if (angular.isDefined(node[fieldChild])) {
                     _nodes = node[fieldChild];
                     _len   = _nodes.length;
+
                     options.filter_index = 0;
                     for (_i = 0; _i < _len; _i++) {
                         _childPassed = for_all_descendants(
-                                options,
-                                _nodes[_i],
-                                fieldChild,
-                                fnBefore,
-                                fnAfter,
-                                       _nodePassed || parentPassed
-                            ) || _childPassed;
+                            options,
+                            _nodes[_i],
+                            fieldChild,
+                            fnBefore,
+                            fnAfter,
+                            _nodePassed || parentPassed
+                        ) || _childPassed;
                     }
 
                     // restore filter_index of node
@@ -154,13 +154,13 @@ angular.module('ntt.TreeDnD')
                 if (isNodePassed === true) {
                     node.__filtered__         = true;
                     node.__filtered_visible__ = true;
-                    node.__filtered_index__ = options.filter_index++;
+                    node.__filtered_index__   = options.filter_index++;
                     return; //jmp
                 } else if (isChildPassed === true && options.showParent === true
-                           || isParentPassed === true && options.showChild === true) {
+                    || isParentPassed === true && options.showChild === true) {
                     node.__filtered__         = false;
                     node.__filtered_visible__ = true;
-                    node.__filtered_index__ = options.filter_index++;
+                    node.__filtered_index__   = options.filter_index++;
                     return; //jmp
                 }
 
@@ -276,7 +276,7 @@ angular.module('ntt.TreeDnD')
                     return treeData;
                 }
 
-                options.filter = _filter;
+                options.filter       = _filter;
                 options.filter_index = 0;
                 for (_i = 0, _len = treeData.length; _i < _len; _i++) {
                     for_all_descendants(
@@ -291,4 +291,4 @@ angular.module('ntt.TreeDnD')
             }
 
         }]
-);
+    );

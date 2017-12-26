@@ -3,30 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Angular Tree Drag &amp; Drop</title>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.js"></script>
-    <!--<script src="framework/vendor/angular/angular.js"></script>-->
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular-route.min.js"></script>
-    <!--<script src="framework/vendor/angular-route/angular-route.js"></script>-->
-
-    <!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">-->
-    <link rel="stylesheet" href="framework/vendor/bootstrap-css/css/bootstrap.min.css">
-
-    <script src="../dist/ng-tree-dnd.debug.js"></script>
+    <link rel="stylesheet" href="libs/vendor/bootstrap-css/css/bootstrap.min.css">
+    <link rel="stylesheet" href="libs/vendor/angularjs-toaster/toaster.min.css">
+    <link rel="stylesheet" href="libs/vendor/prism.css">
     <link rel="stylesheet" href="../dist/ng-tree-dnd.min.css">
-    <link rel="stylesheet" href="framework/vendor/prism.css">
-    <link rel="stylesheet" href="framework/demo-framework.css">
-    <link rel="stylesheet" href="multi/multi.css">
-    <script src="framework/vendor/prism.js"></script>
-    <script src="framework/demo-framework.js"></script>
-    <script src="framework/view-source.js"></script>
+    <link rel="stylesheet" href="app.css">
 
-    <script src="filter/filter.js"></script>
-    <script src="custom/custom.js"></script>
-    <script src="basic/basic.js"></script>
-    <script src="list/list.js"></script>
-    <script src="multi/multi.js"></script>
+    <script src="libs/vendor/angular/angular.min.js"></script>
+    <script src="libs/vendor/angular-bootstrap/ui-bootstrap.min.js"></script>
+    <script src="libs/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script src="libs/vendor/angular-route/angular-route.min.js"></script>
+    <script src="libs/vendor/angular-animate/angular-animate.min.js"></script>
+    <script src="libs/vendor/angularjs-toaster/toaster.min.js"></script>
+    <script src="libs/vendor/prism.js"></script>
+    <script src="../dist/ng-tree-dnd.debug.js"></script>
 
-    <script src="basic/basic-toolbar.js"></script>
+    <script src="app.js"></script>
+
+    <!-- Begin load directives -->
+    <script src="libs/directive/view-source.js"></script>
+    <!-- End load directives -->
+
+    <!-- Begin load routers -->
+    <script src="routers/filter/filter.js"></script>
+    <script src="routers/custom/custom.js"></script>
+    <script src="routers/basic/basic.js"></script>
+    <script src="routers/list/list.js"></script>
+    <script src="routers/multi/multi.js"></script>
+    <script src="routers/basic/basic-toolbar.js"></script>
+    <!-- End load routers -->
 </head>
 <body ng-app="TreeDnDTest">
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -41,12 +46,12 @@
     </div>
     <div class="container">
 
+        <toaster-container toaster-options="{'time-out':{ 'toast-warning': 10, 'toast-error': 0 } }"></toaster-container>
         <div class="jumbotron">
             <h3>Angular Tree Drag & Drop</h3>
 
             <p>Tree DnD & Event DrapnDrop (allow drag multi tree-table include all type: table, ol, ul) Display data tree by AngularJS, using CSS animation and Bootstrap style </p>
-            <p><a class="btn btn-success" href="https://github.com/thienhung1989/angular-tree-dnd">Code on github</a>
-            </p>
+            <p><a class="btn btn-success" href="https://github.com/thienhung1989/angular-tree-dnd">Code on github</a></p>
         </div>
         <div ng-view></div>
         <footer>
@@ -58,8 +63,11 @@
     </div>
 
     <script type="text/javascript">
-        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        try {
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        } catch (err) {
+        }
     </script>
     <script type="text/javascript">
         try {

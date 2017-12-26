@@ -1,6 +1,5 @@
 angular.module('ntt.TreeDnD')
-    .factory(
-    '$TreeDnDControl', function () {
+    .factory('$TreeDnDControl', function () {
         var _target, _parent,
             i, len;
 
@@ -14,9 +13,9 @@ angular.module('ntt.TreeDnD')
 
         function _$init(scope) {
             var n, tree = {
-                selected_node:       null,
-                for_all_descendants: scope.for_all_descendants,
-                select_node:         function (node) {
+                selected_node:        null,
+                for_all_descendants:  scope.for_all_descendants,
+                select_node:          function (node) {
                     if (!node) {
                         if (tree.selected_node) {
                             delete tree.selected_node.__selected__;
@@ -36,9 +35,10 @@ angular.module('ntt.TreeDnD')
                             tree.on_select(node);
                         }
                     }
+
                     return node;
                 },
-                deselect_node:       function () {
+                deselect_node:        function () {
                     _target = null;
                     if (tree.selected_node) {
                         delete tree.selected_node.__selected__;
@@ -47,14 +47,16 @@ angular.module('ntt.TreeDnD')
                     }
                     return _target;
                 },
-                get_parent:          function (node) {
+                get_parent:           function (node) {
+                    node = node || tree.selected_node;
+
                     if (node && node.__parent_real__ !== null) {
                         return scope.tree_nodes[node.__parent_real__];
                     }
                     return null;
                 },
-                for_all_ancestors:   function (child, fn) {
-                    _parent = tree.get_parent(child);
+                for_all_ancestors:    function (node, fn) {
+                    _parent = tree.get_parent(node);
                     if (_parent) {
                         if (fn(_parent)) {
                             return false;
@@ -64,20 +66,17 @@ angular.module('ntt.TreeDnD')
                     }
                     return true;
                 },
-                expand_all_parents:  function (child) {
-                    child = child || tree.selected_node;
-                    if (typeof child === 'object') {
-                        tree.for_all_ancestors(
-                            child, fnSetExpand
-                        )
+                expand_all_parents:   function (node) {
+                    node = node || tree.selected_node;
+
+                    if (angular.isObject(node)) {
+                        tree.for_all_ancestors(node, fnSetExpand);
                     }
                 },
-                collapse_all_parents:               function (child) {
-                    child = child || tree.selected_node;
-                    if (typeof child === 'object') {
-                        tree.for_all_ancestors(
-                            child, fnSetCollapse
-                        )
+                collapse_all_parents: function (node) {
+                    node = node || tree.selected_node;
+                    if (angular.isObject(node)) {
+                        tree.for_all_ancestors(node, fnSetCollapse);
                     }
                 },
 
@@ -109,22 +108,19 @@ angular.module('ntt.TreeDnD')
                 expand_all:                        function () {
                     len = scope.treeData.length;
                     for (i = 0; i < len; i++) {
-                        tree.for_all_descendants(
-                            scope.treeData[i], fnSetExpand
-                        );
+                        tree.for_all_descendants(scope.treeData[i], fnSetExpand);
                     }
                 },
                 collapse_all:                      function () {
                     len = scope.treeData.length;
                     for (i = 0; i < len; i++) {
-                        tree.for_all_descendants(
-                            scope.treeData[i], fnSetCollapse
-                        );
+                        tree.for_all_descendants(scope.treeData[i], fnSetCollapse);
                     }
                 },
                 remove_node:                       function (node) {
                     node = node || tree.selected_node;
-                    if (typeof node === 'object') {
+
+                    if (angular.isObject(node)) {
                         if (node.__parent_real__ !== null) {
                             _parent = tree.get_parent(node).__children__;
                         } else {
@@ -142,14 +138,16 @@ angular.module('ntt.TreeDnD')
                 },
                 expand_node:                       function (node) {
                     node = node || tree.selected_node;
-                    if (typeof node === 'object' && node.__expanded__) {
+
+                    if (angular.isObject(node) && node.__expanded__) {
                         node.__expanded__ = true;
                         return node;
                     }
                 },
                 collapse_node:                     function (node) {
                     node = node || tree.selected_node;
-                    if (typeof node === 'object') {
+
+                    if (angular.isObject(node)) {
                         node.__expanded__ = false;
                         return node;
                     }
@@ -162,14 +160,17 @@ angular.module('ntt.TreeDnD')
                     if (len > 0) {
                         return scope.treeData[0];
                     }
+
                     return null;
                 },
                 get_children:                      function (node) {
+                    node = node || tree.selected_node;
+
                     return node.__children__;
                 },
                 get_siblings:                      function (node) {
                     node = node || tree.selected_node;
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _parent = tree.get_parent(node);
                         if (_parent) {
                             _target = _parent.__children__;
@@ -181,7 +182,7 @@ angular.module('ntt.TreeDnD')
                 },
                 get_next_sibling:                  function (node) {
                     node = node || tree.selected_node;
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_siblings(node);
                         n       = _target.length;
                         if (node.__index__ < n) {
@@ -198,7 +199,7 @@ angular.module('ntt.TreeDnD')
                 },
                 get_first_child:                   function (node) {
                     node = node || tree.selected_node;
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = node.__children__;
                         if (_target && _target.length > 0) {
                             return node.__children__[0];
@@ -214,12 +215,16 @@ angular.module('ntt.TreeDnD')
                     }
 
                     _parent = tree.get_parent(node);
-                    return tree.get_closest_ancestor_next_sibling(_parent);
+                    if (_parent) {
+                        return tree.get_closest_ancestor_next_sibling(_parent);
+                    }
+
+                    return null;
                 },
                 get_next_node:                     function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_first_child(node);
                         if (_target) {
                             return _target;
@@ -231,7 +236,7 @@ angular.module('ntt.TreeDnD')
                 get_prev_node:                     function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_prev_sibling(node);
                         if (_target) {
                             return tree.get_last_descendant(_target);
@@ -245,7 +250,7 @@ angular.module('ntt.TreeDnD')
                 select_parent_node:                function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _parent = tree.get_parent(node);
                         if (_parent) {
                             return tree.select_node(_parent);
@@ -259,7 +264,7 @@ angular.module('ntt.TreeDnD')
                 select_next_sibling:               function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_next_sibling(node);
                         if (_target) {
                             return tree.select_node(_target);
@@ -269,7 +274,7 @@ angular.module('ntt.TreeDnD')
                 select_prev_sibling:               function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_prev_sibling(node);
                         if (_target) {
                             return tree.select_node(_target);
@@ -279,7 +284,7 @@ angular.module('ntt.TreeDnD')
                 select_next_node:                  function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_next_node(node);
                         if (_target) {
                             return tree.select_node(_target);
@@ -289,7 +294,7 @@ angular.module('ntt.TreeDnD')
                 select_prev_node:                  function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_prev_node(node);
                         if (_target) {
                             return tree.select_node(_target);
@@ -302,5 +307,4 @@ angular.module('ntt.TreeDnD')
         }
 
         return _$init;
-    }
-);
+    });

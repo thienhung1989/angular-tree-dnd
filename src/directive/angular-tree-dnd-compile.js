@@ -1,7 +1,7 @@
 angular.module('ntt.TreeDnD')
-    .directive(
-    'compile', [
-        '$compile', function ($compile) {
+    .directive('compile', [
+        '$compile',
+        function ($compile) {
             return {
                 restrict: 'A',
                 link:     function (scope, element, attrs) {
@@ -21,10 +21,10 @@ angular.module('ntt.TreeDnD')
                 }
             };
         }]
-)
-    .directive(
-    'compileReplace', [
-        '$compile', function ($compile) {
+    )
+    .directive('compileReplace', [
+        '$compile',
+        function ($compile) {
             return {
                 restrict: 'A',
                 link:     function (scope, element, attrs) {
@@ -38,4 +38,4 @@ angular.module('ntt.TreeDnD')
                 }
             };
         }]
-);
+    );

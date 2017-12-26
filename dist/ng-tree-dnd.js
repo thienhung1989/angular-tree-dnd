@@ -25,7 +25,7 @@
  * Implementing TreeDnD & Event DrapnDrop (allow drag multi tree-table include all type: table, ol, ul)
  * Demo: http://thienhung1989.github.io/angular-tree-dnd
  * Github: https://github.com/thienhung1989/angular-tree-dnd
- * @version 3.0.5
+ * @version 3.0.6
  * @preserve
  * (c) 2015 Nguyuễn Thiện Hùng - <nguyenthienhung1989@gmail.com>
  */
@@ -36,8 +36,7 @@
     angular.isDefined = isDefined;
 
     angular.module('ntt.TreeDnD', ['template/TreeDnD/TreeDnD.html'])
-        .constant(
-        '$TreeDnDClass', {
+        .constant('$TreeDnDClass', {
             tree:   'tree-dnd',
             empty:  'tree-dnd-empty',
             hidden: 'tree-dnd-hidden',
@@ -52,11 +51,10 @@
                 '0':  'glyphicon glyphicon-plus',
                 '-1': 'glyphicon glyphicon-file'
             }
-        }
-    );angular.module('ntt.TreeDnD')
-    .directive(
-    'compile', [
-        '$compile', function ($compile) {
+        });angular.module('ntt.TreeDnD')
+    .directive('compile', [
+        '$compile',
+        function ($compile) {
             return {
                 restrict: 'A',
                 link:     function (scope, element, attrs) {
@@ -76,10 +74,10 @@
                 }
             };
         }]
-)
-    .directive(
-    'compileReplace', [
-        '$compile', function ($compile) {
+    )
+    .directive('compileReplace', [
+        '$compile',
+        function ($compile) {
             return {
                 restrict: 'A',
                 link:     function (scope, element, attrs) {
@@ -93,175 +91,176 @@
                 }
             };
         }]
-);
+    );
 
-angular.module('ntt.TreeDnD')    .directive(    'treeDndNodeHandle', function () {        return {            restrict: 'A',            scope:    true,            link:     function (scope, element, attrs) {                scope.$type = 'TreeDnDNodeHandle';                if (scope.$class.handle) {                    element.addClass(scope.$class.handle);                }            }        };    });
+angular.module('ntt.TreeDnD')    .directive('treeDndNodeHandle', function () {        return {            restrict: 'A',            scope:    true,            link:     function (scope, element/*, attrs*/) {                scope.$type = 'TreeDnDNodeHandle';                if (scope.$class.handle) {                    element.addClass(scope.$class.handle);                }            }        };    });
 
 angular.module('ntt.TreeDnD')
-    .directive(
-    'treeDndNode', ['$TreeDnDViewport', '$timeout', function ($TreeDnDViewport, $timeout) {
-        return {
-            restrict: 'A',
-            replace:  true,
-            link:     fnLink
-        };
-        function fnLink(scope, element, attrs) {
+    .directive('treeDndNode', [
+        '$TreeDnDViewport',
+        function ($TreeDnDViewport) {
+            return {
+                restrict: 'A',
+                replace:  true,
+                link:     fnLink
+            };
 
-            scope.$node_class = '';
+            function fnLink(scope, element, attrs) {
 
-            if (scope.$class.node) {
-                element.addClass(scope.$class.node);
-                scope.$node_class = scope.$class.node;
-            }
-            var enabledDnD = typeof scope.dragEnabled === 'boolean' || typeof scope.dropEnabled === 'boolean',
-                keyNode    = attrs.treeDndNode,
-                first      = true,
-                childsElem;
-			$TreeDnDViewport.add(scope, element);
+                scope.$node_class = '';
 
-            if (enabledDnD) {
-                scope.$type = 'TreeDnDNode';
+                if (scope.$class.node) {
+                    element.addClass(scope.$class.node);
+                    scope.$node_class = scope.$class.node;
+                }
+                var enabledDnD = typeof scope.dragEnabled === 'boolean' || typeof scope.dropEnabled === 'boolean',
+                    keyNode    = attrs.treeDndNode,
+                    first      = true,
+                    childsElem;
+                $TreeDnDViewport.add(scope, element);
 
-                scope.getData = function () {
-                    return scope[keyNode];
+                if (enabledDnD) {
+                    scope.$type = 'TreeDnDNode';
+
+                    scope.getData = function () {
+                        return scope[keyNode];
+                    };
+                }
+
+                scope.$element            = element;
+                scope[keyNode].__inited__ = true;
+
+                scope.getElementChilds = function () {
+                    return angular.element(element[0].querySelector('[tree-dnd-nodes]'));
                 };
-            }
 
-            scope.$element            = element;
-            scope[keyNode].__inited__ = true;
+                scope.setScope(scope, scope[keyNode]);
 
-            scope.getElementChilds = function () {
-                return angular.element(element[0].querySelector('[tree-dnd-nodes]'));
-            };
+                scope.getScopeNode = function () {
+                    return scope;
+                };
 
-            scope.setScope(scope, scope[keyNode]);
+                var objprops = [],
+                    objexpr,
+                    i, keyO  = Object.keys(scope[keyNode]),
+                    lenO     = keyO.length,
+                    hashKey  = scope[keyNode].__hashKey__,
+                    skipAttr = [
+                        '__visible__',
+                        '__children__',
+                        '__level__',
+                        '__index__',
+                        '__index_real__',
 
-            scope.getScopeNode = function () {
-                return scope;
-            };
+                        '__parent__',
+                        '__parent_real__',
+                        '__dept__',
+                        '__icon__',
+                        '__icon_class__'
+                    ],
+                    keepAttr = [
+                        '__expanded__'
+                    ],
+                    lenKeep  = keepAttr.length;
 
-            var objprops = [],
-                objexpr,
-                i, keyO  = Object.keys(scope[keyNode]),
-                lenO     = keyO.length,
-                hashKey  = scope[keyNode].__hashKey__,
-                skipAttr = [
-                    '__visible__',
-                    '__children__',
-                    '__level__',
-                    '__index__',
-                    '__index_real__',
-
-                    '__parent__',
-                    '__parent_real__',
-                    '__dept__',
-                    '__icon__',
-                    '__icon_class__'
-                ],
-                keepAttr = [
-                    '__expanded__'
-                ],
-                lenKeep  = keepAttr.length;
-
-            // skip __visible__
-            for (i = 0; i < lenO + lenKeep; i++) {
-                if (i < lenO) {
-                    if (skipAttr.indexOf(keyO[i]) === -1) {
-                        objprops.push(keyNode + '.' + keyO[i]);
-                    }
-                } else {
-                    if (keyO.indexOf(keepAttr[i - lenO]) === -1) {
-                        objprops.push(keyNode + '.' + keepAttr[i - lenO]);
+                // skip __visible__
+                for (i = 0; i < lenO + lenKeep; i++) {
+                    if (i < lenO) {
+                        if (skipAttr.indexOf(keyO[i]) === -1) {
+                            objprops.push(keyNode + '.' + keyO[i]);
+                        }
+                    } else {
+                        if (keyO.indexOf(keepAttr[i - lenO]) === -1) {
+                            objprops.push(keyNode + '.' + keepAttr[i - lenO]);
+                        }
                     }
                 }
-            }
 
-            objexpr = '[' + objprops.join(',') + ']';
+                objexpr = '[' + objprops.join(',') + ']';
 
-            scope.$watch(objexpr, fnWatchNode, true);
+                scope.$watch(objexpr, fnWatchNode, true);
 
-            scope.$on('$destroy', function () {
-                scope.deleteScope(scope, scope[keyNode]);
-            });
+                scope.$on('$destroy', function () {
+                    scope.deleteScope(scope, scope[keyNode]);
+                });
 
-            function fnWatchNode(newVal, oldVal, scope) {
+                function fnWatchNode(newVal, oldVal, scope) {
 
-				var nodeOf = scope[keyNode],
-                    _icon;
+                    var nodeOf = scope[keyNode],
+                        _icon;
 
-                if (first) {
-                    _icon                 = nodeOf.__icon__;
-                    nodeOf.__icon_class__ = scope.$class.icon[_icon];
-                } else {
-
-                    var parentReal = nodeOf.__parent_real__,
-                        parentNode = scope.tree_nodes[parentReal] || null,
-                        _childs    = nodeOf.__children__,
-                        _len       = _childs.length,
-                        _i;
-
-                    if (!nodeOf.__inited__) {
-                        nodeOf.__inited__ = true;
-                    }
-
-                    if (nodeOf.__hashKey__ !== hashKey) {
-                        // clear scope in $globals
-                        scope.deleteScope(scope, nodeOf);
-
-                        // add new scope into $globals
-                        scope.setScope(scope, nodeOf);
-                        hashKey = nodeOf.__hashKey__;
-                    }
-
-                    if (parentNode && (!parentNode.__expanded__ || !parentNode.__visible__)) {
-                        element.addClass(scope.$class.hidden);
-                        nodeOf.__visible__ = false;
+                    if (first) {
+                        _icon                 = nodeOf.__icon__;
+                        nodeOf.__icon_class__ = scope.$class.icon[_icon];
                     } else {
-                        element.removeClass(scope.$class.hidden);
-                        nodeOf.__visible__ = true;
-                    }
 
-                    if (_len === 0) {
-                        _icon = -1;
-                    } else {
-                        if (nodeOf.__expanded__) {
-                            _icon = 1;
+                        var parentReal = nodeOf.__parent_real__,
+                            parentNode = scope.tree_nodes[parentReal] || null,
+                            _childs    = nodeOf.__children__,
+                            _len       = _childs.length,
+                            _i;
+
+                        if (!nodeOf.__inited__) {
+                            nodeOf.__inited__ = true;
+                        }
+
+                        if (nodeOf.__hashKey__ !== hashKey) {
+                            // clear scope in $globals
+                            scope.deleteScope(scope, nodeOf);
+
+                            // add new scope into $globals
+                            scope.setScope(scope, nodeOf);
+                            hashKey = nodeOf.__hashKey__;
+                        }
+
+                        if (parentNode && (!parentNode.__expanded__ || !parentNode.__visible__)) {
+                            element.addClass(scope.$class.hidden);
+                            nodeOf.__visible__ = false;
                         } else {
-                            _icon = 0;
-                        }
-                    }
-
-                    nodeOf.__icon__       = _icon;
-                    nodeOf.__icon_class__ = scope.$class.icon[_icon];
-
-                    if (scope.isTable) {
-                        for (_i = 0; _i < _len; _i++) {
-                            scope.for_all_descendants(_childs[_i], scope.hiddenChild, nodeOf, true);
-                        }
-                    } else {
-                        if (!childsElem) {
-                            childsElem = scope.getElementChilds();
+                            element.removeClass(scope.$class.hidden);
+                            nodeOf.__visible__ = true;
                         }
 
-                        if (nodeOf.__expanded__) {
-                            childsElem.removeClass(scope.$class.hidden);
+                        if (_len === 0) {
+                            _icon = -1;
                         } else {
-                            childsElem.addClass(scope.$class.hidden);
+                            if (nodeOf.__expanded__) {
+                                _icon = 1;
+                            } else {
+                                _icon = 0;
+                            }
                         }
+
+                        nodeOf.__icon__       = _icon;
+                        nodeOf.__icon_class__ = scope.$class.icon[_icon];
+
+                        if (scope.isTable) {
+                            for (_i = 0; _i < _len; _i++) {
+                                scope.for_all_descendants(_childs[_i], scope.hiddenChild, nodeOf, true);
+                            }
+                        } else {
+                            if (!childsElem) {
+                                childsElem = scope.getElementChilds();
+                            }
+
+                            if (nodeOf.__expanded__) {
+                                childsElem.removeClass(scope.$class.hidden);
+                            } else {
+                                childsElem.addClass(scope.$class.hidden);
+                            }
+                        }
+
                     }
+
+                    first = false;
 
                 }
-
-				first      = false;
-
             }
-        }
-    }]
-);
+        }]
+    );
 
 angular.module('ntt.TreeDnD')
-    .directive(
-    'treeDndNodes', function () {
+    .directive('treeDndNodes', function () {
         return {
             restrict: 'A',
             replace:  true,
@@ -276,12 +275,11 @@ angular.module('ntt.TreeDnD')
                 }
             }
         };
-    }
-);
+    });
 
 angular.module('ntt.TreeDnD')
-       .directive(
-           'treeDnd', fnInitTreeDnD);
+    .directive(
+        'treeDnd', fnInitTreeDnD);
 
 fnInitTreeDnD.$inject = [
     '$timeout', '$http', '$compile', '$parse', '$window', '$document', '$templateCache',
@@ -289,8 +287,7 @@ fnInitTreeDnD.$inject = [
 ];
 
 function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $templateCache,
-                       $TreeDnDTemplate, $TreeDnDClass, $TreeDnDHelper, $TreeDnDPlugin, $TreeDnDViewport
-) {
+                       $TreeDnDTemplate, $TreeDnDClass, $TreeDnDHelper, $TreeDnDPlugin, $TreeDnDViewport) {
     return {
         restrict:   'E',
         scope:      true,
@@ -429,7 +426,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             /*expand:              function (node) {
              return true;
              },*/
-            accept:              function (dragInfo, moveTo, isChanged) {
+            accept:              function (/*dragInfo, moveTo, isChanged*/) {
                 return $scope.dropEnabled === true;
             },
             calsIndent:          function (level, skipUnit, skipEdge) {
@@ -451,7 +448,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             draggable:           function () {
                 return $scope.dragEnabled === true;
             },
-            beforeDrop:          function (event) {
+            beforeDrop:          function (/*event*/) {
                 return true;
             },
             changeKey:           function (node) {
@@ -469,7 +466,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 }
                 // delete(node.__hashKey__);
             },
-            clone:               function (node, _this) {
+            clone:               function (node/*, _this*/) {
                 _clone = angular.copy(node);
                 this.for_all_descendants(_clone, this.changeKey);
                 return _clone;
@@ -488,7 +485,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 // always changed after call reload_data
                 //delete node.__hashKey__;
             },
-            add:                 function (node, pos, parent, _this) {
+            add:                 function (node, pos, parent/*, _this*/) {
                 // clearInfo
                 this.for_all_descendants(node, this.clearInfo);
                 if (parent) {
@@ -548,7 +545,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
 
                 angular.extend(
                     $scope.$callbacks, {
-                        beforeDrag: function (scopeDrag) {
+                        beforeDrag: function (/*scopeDrag*/) {
                             return true;
                         },
                         dragStop:   function (info, passed) {
@@ -562,7 +559,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                                 info.drag.reload_data();
                             }
                         },
-                        dropped:    function (info, pass) {
+                        dropped:    function (info/*, pass*/) {
                             if (!info) {
                                 return null;
                             }
@@ -723,21 +720,21 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                         var _len_down   = $scope.colDefinitions.length;
                         $scope.placeElm.append(
                             angular.element($window.document.createElement('td'))
-                                   .addClass($scope.$class.empty)
-                                   .addClass('indented')
-                                   .addClass($scope.$class.place)
+                                .addClass($scope.$class.empty)
+                                .addClass('indented')
+                                .addClass($scope.$class.place)
                         );
                         while (_len_down-- > 0) {
                             $scope.placeElm.append(
                                 angular.element($window.document.createElement('td'))
-                                       .addClass($scope.$class.empty)
-                                       .addClass($scope.$class.place)
+                                    .addClass($scope.$class.empty)
+                                    .addClass($scope.$class.place)
                             );
                         }
                     } else {
                         $scope.placeElm = angular.element($window.document.createElement('li'))
-                                                 .addClass($scope.$class.empty)
-                                                 .addClass($scope.$class.place);
+                            .addClass($scope.$class.empty)
+                            .addClass($scope.$class.place);
                     }
 
                 }
@@ -775,7 +772,6 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
 
         $scope.$safeApply = $safeApply;
 
-
         $scope.hiddenChild       = function fnHiddenChild(node, parent) {
             var nodeScope = $scope.getScope(node);
             if (nodeScope) {
@@ -797,7 +793,8 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
 
             // skip all child hiding... if not expaned
             return node.__expanded__ === false;
-        }
+        };
+
         var _fnInitFilter,
             _fnInitOrderBy,
             _fnGetControl,
@@ -809,36 +806,33 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             tree,
             _watches             = [
                 [
-                    'enableDrag', [
-                    ['boolean', 'enableStatus', null, 'enabledStatus'],
-                    ['boolean', 'enableMove', null, 'enabledMove'],
-                    ['number', 'dragDelay', 0, null, 0],
-                    ['boolean', 'enableCollapse', null, 'enabledCollapse'],
+                    'enableDrag',
                     [
-                        'boolean', 'enableHotkey', null, 'enabledHotkey', null, function (isHotkey) {
-                        if (isHotkey) {
-                            $scope.enabledMove = false;
-                        } else {
-                            $scope.enabledMove = $scope.statusMove;
-                        }
-                    }]
-                ]],
-                [
-                    ['enableDrag', 'enableStatus'], [
-                    [
-                        'string', 'templateCopy', $attrs.templateCopy, 'templateCopy', null,
-                        function (_url) {
-                            if (_url && $templateCache.get(_url)) {
-                                $TreeDnDTemplate.setCopy(_url, $scope);
-                            }
-                        }],
-                    [
-                        'string', 'templateMove', $attrs.templateMove, 'templateMove', null,
-                        function (_url) {
-                            if (_url && $templateCache.get(_url)) {
-                                $TreeDnDTemplate.setMove(_url, $scope);
+                        ['boolean', 'enableStatus', null, 'enabledStatus'],
+                        ['boolean', 'enableMove', null, 'enabledMove'],
+                        ['number', 'dragDelay', 0, null, 0],
+                        ['boolean', 'enableCollapse', null, 'enabledCollapse'],
+                        ['boolean', 'enableHotkey', null, 'enabledHotkey', null, function (isHotkey) {
+                            if (isHotkey) {
+                                $scope.enabledMove = false;
+                            } else {
+                                $scope.enabledMove = $scope.statusMove;
                             }
                         }]
+                    ]
+                ],
+                [
+                    ['enableDrag', 'enableStatus'], [
+                    ['string', 'templateCopy', $attrs.templateCopy, 'templateCopy', null, function (_url) {
+                        if (_url && $templateCache.get(_url)) {
+                            $TreeDnDTemplate.setCopy(_url, $scope);
+                        }
+                    }],
+                    ['string', 'templateMove', $attrs.templateMove, 'templateMove', null, function (_url) {
+                        if (_url && $templateCache.get(_url)) {
+                            $TreeDnDTemplate.setMove(_url, $scope);
+                        }
+                    }]
                 ]],
                 [
                     [['enableDrag', 'enableDrop']], [
@@ -848,8 +842,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                     '*', [
                     ['boolean', 'treeTable', true, 'treeTable', null],
                     ['boolean', 'horizontal'],
-                    [
-                        'callback', 'treeClass', function (val) {
+                    ['callback', 'treeClass', function (val) {
                         switch (typeof val) {
                             case 'string':
                                 $scope.$tree_class = val;
@@ -877,9 +870,8 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                                 $scope.expandingProperty = $attrs.expandOn;
                             }
                         }],
-                    [
-                        'object', 'treeControl', angular.isDefined($scope.tree) ? $scope.tree : {},
-                        'tree', null, function ($tree) {
+                    ['object', 'treeControl', angular.isDefined($scope.tree) ? $scope.tree : {},
+                     'tree', null, function ($tree) {
 
                         if (!angular.isFunction(_fnGetControl)) {
                             _fnGetControl = $TreeDnDPlugin('$TreeDnDControl');
@@ -899,7 +891,9 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                                 $scope.colDefinitions = getColDefs();
                             }
                         }],
-                    [['object', 'string', 'array', 'function'], 'orderBy', $attrs.orderBy],
+                    [
+                        ['object', 'string', 'array', 'function'], 'orderBy', $attrs.orderBy
+                    ],
                     [
                         ['object', 'array'], 'filter', null, 'filter', null, function (filters) {
                         var _passed = false;
@@ -926,7 +920,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                     [
                         'object', 'filterOptions', _defaultFilterOption, 'filterOptions',
                         _defaultFilterOption, function (option) {
-                        if (typeof option === 'object') {
+                        if (angular.isObject(option)) {
                             $scope.filterOptions = angular.extend(_defaultFilterOption, option);
                         }
                     }],
@@ -934,24 +928,21 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                     ['string', 'indentUnit', $attrs.indentUnit, 'indent_unit'],
                     ['number', 'indent', 30, null, 30],
                     ['number', 'indentPlus', 20, null, 20],
-                    [
-                        'null', 'callbacks',
-                        function (optCallbacks) {
-                            angular.forEach(
-                                optCallbacks, function (value, key) {
-                                    if (typeof value === 'function') {
-                                        if ($scope.$callbacks[key]) {
-                                            $scope.$callbacks[key] = value;
-                                        }
+                    ['null', 'callbacks', function (optCallbacks) {
+                        angular.forEach(
+                            optCallbacks, function (value, key) {
+                                if (typeof value === 'function') {
+                                    if ($scope.$callbacks[key]) {
+                                        $scope.$callbacks[key] = value;
                                     }
                                 }
-                            );
-                            return $scope.$callbacks;
-                        },
-                        '$callbacks'
+                            }
+                        );
+                        return $scope.$callbacks;
+                    },
+                     '$callbacks'
                     ],
-                    [
-                        'number', 'expandLevel', 3, 'expandLevel', 3, function () {
+                    ['number', 'expandLevel', 3, 'expandLevel', 3, function () {
                         reload_data();
                     }],
                     ['number', 'treeLimit', 100, '$TreeLimit', 100],
@@ -1050,8 +1041,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
         }
 
         function generateWatch(type, nameAttr, valDefault, nameScope, fnNotExist, fnAfter,
-                               fnBefore
-        ) {
+                               fnBefore) {
             nameScope = nameScope || nameAttr;
             if (typeof type === 'string' || angular.isArray(type)) {
                 if (angular.isFunction(fnBefore) && fnBefore()) {
@@ -1143,6 +1133,11 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
         }
 
         function do_f(root, node, parent, parent_real, level, visible, index) {
+
+            if (typeof node !== 'object') {
+                return 0;
+            }
+
             var _i, _len, _icon, _index_real, _dept, _hashKey;
             if (!angular.isArray(node.__children__)) {
                 node.__children__ = [];
@@ -1395,7 +1390,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 var promiseCheck;
                 if ($_Template.length > 0) {
                     promiseCheck = checkTreeTable(angular.element($_Template.trim()), scope);
-                    if (typeof promiseCheck === 'object') {
+                    if (angular.isObject(promiseCheck)) {
                         promiseCheck.then(function () {
                             element.append($compile($_Template)(scope));
                         });
@@ -1410,7 +1405,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                         function (data) {
                             data         = angular.element(data.trim());
                             promiseCheck = checkTreeTable(data, scope);
-                            if (typeof promiseCheck === 'object') {
+                            if (angular.isObject(promiseCheck)) {
                                 promiseCheck.then(function () {
                                     element.append($compile(data)(scope));
                                 });
@@ -1427,8 +1422,420 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
 
 
 angular.module('ntt.TreeDnD')
-    .factory(
-    '$TreeDnDFilter', [
+    .factory('$TreeDnDConvert', function () {
+        var _$initConvert = {
+            line2tree: function (data, primaryKey, parentKey, callback) {
+                callback = typeof callback === 'function' ? callback : function () {
+                };
+                if (!data || data.length === 0 || !primaryKey || !parentKey) {
+                    return [];
+                }
+                var tree     = [],
+                    rootIds  = [],
+                    item     = data[0],
+                    _primary = item[primaryKey],
+                    treeObjs = {},
+                    parentId, parent,
+                    len      = data.length,
+                    i        = 0;
+
+                while (i < len) {
+                    item = data[i++];
+                    callback(item);
+                    _primary           = item[primaryKey];
+                    treeObjs[_primary] = item;
+                }
+                i = 0;
+                while (i < len) {
+                    item = data[i++];
+                    callback(item);
+                    _primary           = item[primaryKey];
+                    treeObjs[_primary] = item;
+                    parentId           = item[parentKey];
+                    if (parentId) {
+                        parent = treeObjs[parentId];
+                        if (parent) {
+                            if (parent.__children__) {
+                                parent.__children__.push(item);
+                            } else {
+                                parent.__children__ = [item];
+                            }
+                        }
+                    } else {
+                        rootIds.push(_primary);
+                    }
+                }
+                len = rootIds.length;
+                for (i = 0; i < len; i++) {
+                    tree.push(treeObjs[rootIds[i]]);
+                }
+                return tree;
+            },
+            tree2tree: function access_child(data, containKey, callback) {
+                callback  = typeof callback === 'function' ? callback : function () {
+                };
+                var _tree = [],
+                    _i,
+                    _len  = data ? data.length : 0,
+                    _copy, _child;
+                for (_i = 0; _i < _len; _i++) {
+                    _copy = angular.copy(data[_i]);
+                    callback(_copy);
+                    if (angular.isArray(_copy[containKey]) && _copy[containKey].length > 0) {
+                        _child = access_child(_copy[containKey], containKey, callback);
+                        delete _copy[containKey];
+                        _copy.__children__ = _child;
+                    }
+                    _tree.push(_copy);
+                }
+                return _tree;
+            }
+        };
+
+        return _$initConvert;
+    });
+
+angular.module('ntt.TreeDnD')
+    .factory('$TreeDnDHelper', [
+        '$document', '$window',
+        function ($document, $window) {
+            var _$helper = {
+                nodrag:          function (targetElm) {
+                    return typeof targetElm.attr('data-nodrag') !== 'undefined';
+                },
+                eventObj:        function (e) {
+                    var obj = e;
+                    if (e.targetTouches !== undefined) {
+                        obj = e.targetTouches.item(0);
+                    } else if (e.originalEvent !== undefined && e.originalEvent.targetTouches !== undefined) {
+                        obj = e.originalEvent.targetTouches.item(0);
+                    }
+                    return obj;
+                },
+                dragInfo:        function (scope) {
+                    var _node   = scope.getData(),
+                        _tree   = scope.getScopeTree(),
+                        _parent = scope.getNode(_node.__parent_real__);
+
+                    return {
+                        node:    _node,
+                        parent:  _parent,
+                        move:    {
+                            parent: _parent,
+                            pos:    _node.__index__
+                        },
+                        scope:   scope,
+                        target:  _tree,
+                        drag:    _tree,
+                        drop:    scope.getPrevSibling(_node),
+                        changed: false
+                    };
+                },
+                height:          function (element) {
+                    return element.prop('scrollHeight');
+                },
+                width:           function (element) {
+                    return element.prop('scrollWidth');
+                },
+                offset:          function (element) {
+                    var boundingClientRect = element[0].getBoundingClientRect();
+                    return {
+                        width:  element.prop('offsetWidth'),
+                        height: element.prop('offsetHeight'),
+                        top:    boundingClientRect.top + ($window.pageYOffset || $document[0].body.scrollTop || $document[0].documentElement.scrollTop),
+                        left:   boundingClientRect.left + ($window.pageXOffset || $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft)
+                    };
+                },
+                positionStarted: function (e, target) {
+                    return {
+                        offsetX:  e.pageX - this.offset(target).left,
+                        offsetY:  e.pageY - this.offset(target).top,
+                        startX:   e.pageX,
+                        lastX:    e.pageX,
+                        startY:   e.pageY,
+                        lastY:    e.pageY,
+                        nowX:     0,
+                        nowY:     0,
+                        distX:    0,
+                        distY:    0,
+                        dirAx:    0,
+                        dirX:     0,
+                        dirY:     0,
+                        lastDirX: 0,
+                        lastDirY: 0,
+                        distAxX:  0,
+                        distAxY:  0
+                    };
+                },
+                positionMoved:   function (e, pos, firstMoving) {
+                    // mouse position last events
+                    pos.lastX = pos.nowX;
+                    pos.lastY = pos.nowY;
+
+                    // mouse position this events
+                    pos.nowX = e.pageX;
+                    pos.nowY = e.pageY;
+
+                    // distance mouse moved between events
+                    pos.distX = pos.nowX - pos.lastX;
+                    pos.distY = pos.nowY - pos.lastY;
+
+                    // direction mouse was moving
+                    pos.lastDirX = pos.dirX;
+                    pos.lastDirY = pos.dirY;
+
+                    // direction mouse is now moving (on both axis)
+                    pos.dirX = pos.distX === 0 ? 0 : pos.distX > 0 ? 1 : -1;
+                    pos.dirY = pos.distY === 0 ? 0 : pos.distY > 0 ? 1 : -1;
+
+                    // axis mouse is now moving on
+                    var newAx = Math.abs(pos.distX) > Math.abs(pos.distY) ? 1 : 0;
+
+                    // do nothing on first move
+                    if (firstMoving) {
+                        pos.dirAx  = newAx;
+                        pos.moving = true;
+                        return;
+                    }
+
+                    // calc distance moved on this axis (and direction)
+                    if (pos.dirAx !== newAx) {
+                        pos.distAxX = 0;
+                        pos.distAxY = 0;
+                    } else {
+                        pos.distAxX += Math.abs(pos.distX);
+                        if (pos.dirX !== 0 && pos.dirX !== pos.lastDirX) {
+                            pos.distAxX = 0;
+                        }
+                        pos.distAxY += Math.abs(pos.distY);
+                        if (pos.dirY !== 0 && pos.dirY !== pos.lastDirY) {
+                            pos.distAxY = 0;
+                        }
+                    }
+                    pos.dirAx = newAx;
+                },
+                replaceIndent:   function (scope, element, indent, attr) {
+                    attr = attr || 'left';
+                    angular.element(element.children()[0]).css(attr, scope.$callbacks.calsIndent(indent));
+                }
+            };
+
+            return _$helper;
+        }]
+    );
+
+angular.module('ntt.TreeDnD')
+    .factory('$TreeDnDPlugin', [
+        '$injector',
+        function ($injector) {
+            var _fnget = function (name) {
+                if (angular.isDefined($injector) && $injector.has(name)) {
+                    return $injector.get(name);
+                }
+                return null;
+            };
+            return _fnget;
+        }]
+    );
+
+angular.module('ntt.TreeDnD')
+    .factory('$TreeDnDTemplate', [
+        '$templateCache',
+        function ($templateCache) {
+            var templatePath = 'template/TreeDnD/TreeDnD.html',
+                copyPath     = 'template/TreeDnD/TreeDnDStatusCopy.html',
+                movePath     = 'template/TreeDnD/TreeDnDStatusMove.html',
+                scopes       = {},
+                temp,
+                _$init       = {
+                    setMove: function (path, scope) {
+                        if (!scopes[scope.$id]) {
+                            scopes[scope.$id] = {};
+                        }
+                        scopes[scope.$id].movePath = path;
+                    },
+                    setCopy: function (path, scope) {
+                        if (!scopes[scope.$id]) {
+                            scopes[scope.$id] = {};
+                        }
+                        scopes[scope.$id].copyPath = path;
+                    },
+                    getPath: function () {
+                        return templatePath;
+                    },
+                    getCopy: function (scope) {
+                        if (scopes[scope.$id] && scopes[scope.$id].copyPath) {
+                            temp = $templateCache.get(scopes[scope.$id].copyPath);
+                            if (temp) {
+                                return temp;
+                            }
+                        }
+                        return $templateCache.get(copyPath);
+                    },
+                    getMove: function (scope) {
+                        if (scopes[scope.$id] && scopes[scope.$id].movePath) {
+                            temp = $templateCache.get(scopes[scope.$id].movePath);
+                            if (temp) {
+                                return temp;
+                            }
+                        }
+                        return $templateCache.get(movePath);
+                    }
+                };
+
+            return _$init;
+        }]
+    );
+
+angular.module('ntt.TreeDnD')
+    .factory('$TreeDnDViewport', fnInitTreeDnDViewport);
+
+fnInitTreeDnDViewport.$inject = ['$window', '$document', '$timeout', '$q', '$compile'];
+
+function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
+
+    var viewport      = null,
+        isUpdating    = false,
+        isRender      = false,
+        updateAgain   = false,
+        viewportRect,
+        items         = [],
+        nodeTemplate,
+        updateTimeout,
+        renderTime,
+        $initViewport = {
+            setViewport:   setViewport,
+            getViewport:   getViewport,
+            add:           add,
+            setTemplate:   setTemplate,
+            getItems:      getItems,
+            updateDelayed: updateDelayed
+        },
+        eWindow       = angular.element($window);
+
+    eWindow.on('load resize scroll', updateDelayed);
+
+    return $initViewport;
+
+    function update() {
+
+        viewportRect = {
+            width:  eWindow.prop('offsetWidth') || document.documentElement.clientWidth,
+            height: eWindow.prop('offsetHeight') || document.documentElement.clientHeight,
+            top:    $document[0].body.scrollTop || $document[0].documentElement.scrollTop,
+            left:   $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft
+        };
+
+        if (isUpdating || isRender) {
+            updateAgain = true;
+            return;
+        }
+        isUpdating = true;
+
+        recursivePromise();
+    }
+
+    function recursivePromise() {
+        if (isRender) {
+            return;
+        }
+
+        var number = number > 0 ? number : items.length, item;
+
+        if (number > 0) {
+            item = items[0];
+
+            isRender   = true;
+            renderTime = $timeout(function () {
+                //item.element.html(nodeTemplate);
+                //$compile(item.element.contents())(item.scope);
+
+                items.splice(0, 1);
+                isRender = false;
+                number--;
+                $timeout.cancel(renderTime);
+                recursivePromise();
+            }, 0);
+
+        } else {
+            isUpdating = false;
+            if (updateAgain) {
+                updateAgain = false;
+                update();
+            }
+        }
+
+    }
+
+    /**
+     * Check if a point is inside specified bounds
+     * @param x
+     * @param y
+     * @param bounds
+     * @returns {boolean}
+     */
+    function pointIsInsideBounds(x, y, bounds) {
+        return x >= bounds.left &&
+            y >= bounds.top &&
+            x <= bounds.left + bounds.width &&
+            y <= bounds.top + bounds.height;
+    }
+
+    /**
+     * @name setViewport
+     * @desciption Set the viewport element
+     * @param element
+     */
+    function setViewport(element) {
+        viewport = element;
+    }
+
+    /**
+     * Return the current viewport
+     * @returns {*}
+     */
+    function getViewport() {
+        return viewport;
+    }
+
+    /**
+     * trigger an update
+     */
+    function updateDelayed() {
+        $timeout.cancel(updateTimeout);
+        updateTimeout = $timeout(function () {
+            update();
+        }, 0);
+    }
+
+    /**
+     * Add listener for event
+     * @param element
+     * @param callback
+     */
+    function add(scope, element) {
+        updateDelayed();
+        items.push({
+            element: element,
+            scope:   scope
+        });
+    }
+
+    function setTemplate(scope, template) {
+        nodeTemplate = template;
+    }
+
+    /**
+     * Get list of items
+     * @returns {Array}
+     */
+    function getItems() {
+        return items;
+    }
+}
+
+angular.module('ntt.TreeDnD')
+    .factory('$TreeDnDFilter', [
         '$filter', function ($filter) {
             return fnInitFilter;
 
@@ -1438,23 +1845,24 @@ angular.module('ntt.TreeDnD')
                 }
 
                 var _i, _len, _nodes,
-                    _nodePassed  = fnBefore(options, node),
-                    _childPassed = false,
+                    _nodePassed   = fnBefore(options, node),
+                    _childPassed  = false,
                     _filter_index = options.filter_index;
 
                 if (angular.isDefined(node[fieldChild])) {
                     _nodes = node[fieldChild];
                     _len   = _nodes.length;
+
                     options.filter_index = 0;
                     for (_i = 0; _i < _len; _i++) {
                         _childPassed = for_all_descendants(
-                                options,
-                                _nodes[_i],
-                                fieldChild,
-                                fnBefore,
-                                fnAfter,
-                                       _nodePassed || parentPassed
-                            ) || _childPassed;
+                            options,
+                            _nodes[_i],
+                            fieldChild,
+                            fnBefore,
+                            fnAfter,
+                            _nodePassed || parentPassed
+                        ) || _childPassed;
                     }
 
                     // restore filter_index of node
@@ -1582,13 +1990,13 @@ angular.module('ntt.TreeDnD')
                 if (isNodePassed === true) {
                     node.__filtered__         = true;
                     node.__filtered_visible__ = true;
-                    node.__filtered_index__ = options.filter_index++;
+                    node.__filtered_index__   = options.filter_index++;
                     return; //jmp
                 } else if (isChildPassed === true && options.showParent === true
-                           || isParentPassed === true && options.showChild === true) {
+                    || isParentPassed === true && options.showChild === true) {
                     node.__filtered__         = false;
                     node.__filtered_visible__ = true;
-                    node.__filtered_index__ = options.filter_index++;
+                    node.__filtered_index__   = options.filter_index++;
                     return; //jmp
                 }
 
@@ -1704,7 +2112,7 @@ angular.module('ntt.TreeDnD')
                     return treeData;
                 }
 
-                options.filter = _filter;
+                options.filter       = _filter;
                 options.filter_index = 0;
                 for (_i = 0, _len = treeData.length; _i < _len; _i++) {
                     for_all_descendants(
@@ -1719,19 +2127,19 @@ angular.module('ntt.TreeDnD')
             }
 
         }]
-);
+    );
 
 angular.module('ntt.TreeDnD')
-    .factory(
-    '$TreeDnDOrderBy', [
-        '$filter', function ($filter) {
-            var _fnOrderBy = $filter('orderBy'),
+    .factory('$TreeDnDOrderBy', [
+        '$filter',
+        function ($filter) {
+            var _fnOrderBy          = $filter('orderBy'),
                 for_all_descendants = function for_all_descendants(options, node, name, fnOrderBy) {
                     var _i, _len, _nodes;
 
                     if (angular.isDefined(node[name])) {
                         _nodes = node[name];
-                        _len = _nodes.length;
+                        _len   = _nodes.length;
                         // OrderBy children
                         for (_i = 0; _i < _len; _i++) {
                             _nodes[_i] = for_all_descendants(options, _nodes[_i], name, fnOrderBy);
@@ -1741,10 +2149,10 @@ angular.module('ntt.TreeDnD')
                     }
                     return node;
                 },
-                _fnOrder = function _fnOrder(list, orderBy) {
+                _fnOrder            = function _fnOrder(list, orderBy) {
                     return _fnOrderBy(list, orderBy);
                 },
-                _fnMain = function _fnMain(treeData, orderBy) {
+                _fnMain             = function _fnMain(treeData, orderBy) {
                     if (!angular.isArray(treeData)
                         || treeData.length === 0
                         || !(angular.isArray(orderBy) || angular.isObject(orderBy) || angular.isString(orderBy) || angular.isFunction(orderBy))
@@ -1768,404 +2176,10 @@ angular.module('ntt.TreeDnD')
 
             return _fnMain;
         }]
-);
+    );
 
 angular.module('ntt.TreeDnD')
-       .factory(
-           '$TreeDnDConvert', function () {
-               var _$initConvert = {
-                   line2tree: function (data, primaryKey, parentKey, callback) {
-                       callback = typeof callback === 'function' ? callback : function () {
-                       };
-                       if (!data || data.length === 0 || !primaryKey || !parentKey) {
-                           return [];
-                       }
-                       var tree     = [],
-                           rootIds  = [],
-                           item     = data[0],
-                           _primary = item[primaryKey],
-                           treeObjs = {},
-                           parentId, parent,
-                           len      = data.length,
-                           i        = 0;
-                       while (i < len) {
-                           item = data[i++];
-                           callback(item);
-                           _primary           = item[primaryKey];
-                           treeObjs[_primary] = item;
-                       }
-                       i = 0;
-                       while (i < len) {
-                           item = data[i++];
-                           callback(item);
-                           _primary           = item[primaryKey];
-                           treeObjs[_primary] = item;
-                           parentId           = item[parentKey];
-                           if (parentId) {
-                               parent = treeObjs[parentId];
-                               if (parent) {
-                                   if (parent.__children__) {
-                                       parent.__children__.push(item);
-                                   } else {
-                                       parent.__children__ = [item];
-                                   }
-                               }
-                           } else {
-                               rootIds.push(_primary);
-                           }
-                       }
-                       len = rootIds.length;
-                       for (i = 0; i < len; i++) {
-                           tree.push(treeObjs[rootIds[i]]);
-                       }
-                       return tree;
-                   },
-                   tree2tree: function access_child(data, containKey, callback) {
-                       callback  = typeof callback === 'function' ? callback : function () {
-                       };
-                       var _tree = [],
-                           _i,
-                           _len  = data ? data.length : 0,
-                           _copy, _child;
-                       for (_i = 0; _i < _len; _i++) {
-                           _copy = angular.copy(data[_i]);
-                           callback(_copy);
-                           if (angular.isArray(_copy[containKey]) && _copy[containKey].length > 0) {
-                               _child = access_child(_copy[containKey], containKey, callback);
-                               delete _copy[containKey];
-                               _copy.__children__ = _child;
-                           }
-                           _tree.push(_copy);
-                       }
-                       return _tree;
-                   }
-               };
-
-               return _$initConvert;
-           }
-       );
-
-angular.module('ntt.TreeDnD')
-       .factory(
-           '$TreeDnDHelper', [
-               '$document', '$window', function ($document, $window) {
-                   var _$helper = {
-                       nodrag:          function (targetElm) {
-                           return typeof targetElm.attr('data-nodrag') !== 'undefined';
-                       },
-                       eventObj:        function (e) {
-                           var obj = e;
-                           if (e.targetTouches !== undefined) {
-                               obj = e.targetTouches.item(0);
-                           } else if (e.originalEvent !== undefined && e.originalEvent.targetTouches !== undefined) {
-                               obj = e.originalEvent.targetTouches.item(0);
-                           }
-                           return obj;
-                       },
-                       dragInfo:        function (scope) {
-                           var _node   = scope.getData(),
-                               _tree   = scope.getScopeTree(),
-                               _parent = scope.getNode(_node.__parent_real__);
-                           return {
-                               node:    _node,
-                               parent:  _parent,
-                               move:    {
-                                   parent: _parent,
-                                   pos:    _node.__index__
-                               },
-                               scope:   scope,
-                               target:  _tree,
-                               drag:    _tree,
-                               drop:    scope.getPrevSibling(_node),
-                               changed: false
-                           };
-                       },
-                       height:          function (element) {
-                           return element.prop('scrollHeight');
-                       },
-                       width:           function (element) {
-                           return element.prop('scrollWidth');
-                       },
-                       offset:          function (element) {
-                           var boundingClientRect = element[0].getBoundingClientRect();
-                           return {
-                               width:  element.prop('offsetWidth'),
-                               height: element.prop('offsetHeight'),
-                               top:    boundingClientRect.top + ($window.pageYOffset || $document[0].body.scrollTop || $document[0].documentElement.scrollTop),
-                               left:   boundingClientRect.left + ($window.pageXOffset || $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft)
-                           };
-                       },
-                       positionStarted: function (e, target) {
-                           var pos     = {};
-                           pos.offsetX = e.pageX - this.offset(target).left;
-                           pos.offsetY = e.pageY - this.offset(target).top;
-                           pos.startX  = pos.lastX = e.pageX;
-                           pos.startY = pos.lastY = e.pageY;
-                           pos.nowX = pos.nowY = pos.distX = pos.distY = pos.dirAx = 0;
-                           pos.dirX = pos.dirY = pos.lastDirX = pos.lastDirY = pos.distAxX = pos.distAxY = 0;
-                           return pos;
-                       },
-                       positionMoved:   function (e, pos, firstMoving) {
-                           // mouse position last events
-                           pos.lastX    = pos.nowX;
-                           pos.lastY    = pos.nowY;
-                           // mouse position this events
-                           pos.nowX     = e.pageX;
-                           pos.nowY     = e.pageY;
-                           // distance mouse moved between events
-                           pos.distX    = pos.nowX - pos.lastX;
-                           pos.distY    = pos.nowY - pos.lastY;
-                           // direction mouse was moving
-                           pos.lastDirX = pos.dirX;
-                           pos.lastDirY = pos.dirY;
-                           // direction mouse is now moving (on both axis)
-                           pos.dirX     = pos.distX === 0 ? 0 : pos.distX > 0 ? 1 : -1;
-                           pos.dirY     = pos.distY === 0 ? 0 : pos.distY > 0 ? 1 : -1;
-                           // axis mouse is now moving on
-                           var newAx    = Math.abs(pos.distX) > Math.abs(pos.distY) ? 1 : 0;
-                           // do nothing on first move
-                           if (firstMoving) {
-                               pos.dirAx  = newAx;
-                               pos.moving = true;
-                               return;
-                           }
-                           // calc distance moved on this axis (and direction)
-                           if (pos.dirAx !== newAx) {
-                               pos.distAxX = 0;
-                               pos.distAxY = 0;
-                           } else {
-                               pos.distAxX += Math.abs(pos.distX);
-                               if (pos.dirX !== 0 && pos.dirX !== pos.lastDirX) {
-                                   pos.distAxX = 0;
-                               }
-                               pos.distAxY += Math.abs(pos.distY);
-                               if (pos.dirY !== 0 && pos.dirY !== pos.lastDirY) {
-                                   pos.distAxY = 0;
-                               }
-                           }
-                           pos.dirAx = newAx;
-                       },
-                       replaceIndent:   function (scope, element, indent, attr) {
-                           attr = attr || 'left';
-                           angular.element(element.children()[0]).css(attr, scope.$callbacks.calsIndent(indent));
-                       }
-                   };
-                   return _$helper;
-               }]
-       );
-
-angular.module('ntt.TreeDnD')
-       .factory(
-           '$TreeDnDPlugin', ['$injector', function ($injector) {
-               var _fnget = function (name) {
-                   if (angular.isDefined($injector) && $injector.has(name)) {
-                       return $injector.get(name);
-                   }
-                   return null;
-               };
-               return _fnget;
-           }]
-       );
-
-angular.module('ntt.TreeDnD')
-       .factory(
-           '$TreeDnDTemplate', [
-               '$templateCache', function ($templateCache) {
-                   var templatePath = 'template/TreeDnD/TreeDnD.html',
-                       copyPath     = 'template/TreeDnD/TreeDnDStatusCopy.html',
-                       movePath     = 'template/TreeDnD/TreeDnDStatusMove.html',
-                       scopes       = {},
-                       temp,
-                       _$init       = {
-                           setMove: function (path, scope) {
-                               if (!scopes[scope.$id]) {
-                                   scopes[scope.$id] = {};
-                               }
-                               scopes[scope.$id].movePath = path;
-                           },
-                           setCopy: function (path, scope) {
-                               if (!scopes[scope.$id]) {
-                                   scopes[scope.$id] = {};
-                               }
-                               scopes[scope.$id].copyPath = path;
-                           },
-                           getPath: function () {
-                               return templatePath;
-                           },
-                           getCopy: function (scope) {
-                               if (scopes[scope.$id] && scopes[scope.$id].copyPath) {
-                                   temp = $templateCache.get(scopes[scope.$id].copyPath);
-                                   if (temp) {
-                                       return temp;
-                                   }
-                               }
-                               return $templateCache.get(copyPath);
-                           },
-                           getMove: function (scope) {
-                               if (scopes[scope.$id] && scopes[scope.$id].movePath) {
-                                   temp = $templateCache.get(scopes[scope.$id].movePath);
-                                   if (temp) {
-                                       return temp;
-                                   }
-                               }
-                               return $templateCache.get(movePath);
-                           }
-                       };
-
-                   return _$init;
-               }]
-       );
-
-angular.module('ntt.TreeDnD')
-    .factory('$TreeDnDViewport', fnInitTreeDnDViewport);
-
-fnInitTreeDnDViewport.$inject = ['$window', '$document', '$timeout', '$q', '$compile'];
-
-function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
-
-    var viewport      = null,
-        isUpdating    = false,
-        isRender      = false,
-        updateAgain   = false,
-        viewportRect,
-        items         = [],
-        nodeTemplate,
-        updateTimeout,
-        renderTime,
-        $initViewport = {
-            setViewport:   setViewport,
-            getViewport:   getViewport,
-            add:           add,
-            setTemplate:   setTemplate,
-            getItems:      getItems,
-            updateDelayed: updateDelayed
-        },
-        eWindow       = angular.element($window);
-
-    eWindow.on('load resize scroll', updateDelayed);
-
-    return $initViewport;
-
-    function update() {
-
-        viewportRect = {
-            width:  eWindow.prop('offsetWidth') || document.documentElement.clientWidth,
-            height: eWindow.prop('offsetHeight') || document.documentElement.clientHeight,
-            top:    $document[0].body.scrollTop || $document[0].documentElement.scrollTop,
-            left:   $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft
-        };
-
-        if (isUpdating || isRender) {
-            updateAgain = true;
-            return;
-        }
-        isUpdating = true;
-
-        recursivePromise();
-    }
-
-    function recursivePromise() {
-        if (isRender) {
-            return;
-        }
-
-        var number = number > 0 ? number : items.length, item;
-
-        if (number > 0) {
-            item = items[0];
-
-            isRender   = true;
-            renderTime = $timeout(function () {
-                //item.element.html(nodeTemplate);
-                //$compile(item.element.contents())(item.scope);
-
-                items.splice(0, 1);
-                isRender = false;
-                number--;
-                $timeout.cancel(renderTime);
-                recursivePromise();
-            }, 0);
-
-        } else {
-            isUpdating = false;
-            if (updateAgain) {
-                updateAgain = false;
-                update();
-            }
-        }
-
-    }
-
-    /**
-     * Check if a point is inside specified bounds
-     * @param x
-     * @param y
-     * @param bounds
-     * @returns {boolean}
-     */
-    function pointIsInsideBounds(x, y, bounds) {
-        return x >= bounds.left &&
-               y >= bounds.top &&
-               x <= bounds.left + bounds.width &&
-               y <= bounds.top + bounds.height;
-    }
-
-    /**
-     * @name setViewport
-     * @desciption Set the viewport element
-     * @param element
-     */
-    function setViewport(element) {
-        viewport = element;
-    }
-
-    /**
-     * Return the current viewport
-     * @returns {*}
-     */
-    function getViewport() {
-        return viewport;
-    }
-
-    /**
-     * trigger an update
-     */
-    function updateDelayed() {
-        $timeout.cancel(updateTimeout);
-        updateTimeout = $timeout(function () {
-            update();
-        }, 0);
-    }
-
-    /**
-     * Add listener for event
-     * @param element
-     * @param callback
-     */
-    function add(scope, element) {
-        updateDelayed();
-        items.push({
-            element: element,
-            scope:   scope
-        });
-    }
-
-    function setTemplate(scope, template) {
-        nodeTemplate = template;
-    }
-
-    /**
-     * Get list of items
-     * @returns {Array}
-     */
-    function getItems() {
-        return items;
-    }
-}
-
-angular.module('ntt.TreeDnD')
-    .factory(
-    '$TreeDnDDrag', [
+    .factory('$TreeDnDDrag', [
         '$timeout', '$TreeDnDHelper',
         function ($timeout, $TreeDnDHelper) {
             function _fnPlaceHolder(e, $params) {
@@ -2185,9 +2199,11 @@ angular.module('ntt.TreeDnD')
                     // disable right click
                     return;
                 }
+
                 if (e.uiTreeDragging || e.originalEvent && e.originalEvent.uiTreeDragging) { // event has already fired in other scope.
                     return;
                 }
+
                 // the element which is clicked.
                 var eventElm   = angular.element(e.target),
                     eventScope = eventElm.scope();
@@ -2326,9 +2342,9 @@ angular.module('ntt.TreeDnD')
                 $params.dragElm.css(
                     {
                         'left': eventObj.pageX - $params.pos.offsetX + _$scope.$callbacks.calsIndent(
-                                $params.offsetEdge + 1,
-                                true,
-                                true
+                            $params.offsetEdge + 1,
+                            true,
+                            true
                         ) + 'px',
                         'top':  eventObj.pageY - $params.pos.offsetY + 'px'
                     }
@@ -2346,7 +2362,7 @@ angular.module('ntt.TreeDnD')
                 }
 
                 _$scope.showPlace();
-                _$scope.targeting  = true;
+                _$scope.targeting = true;
 
                 if (_$scope.enabledStatus) {
                     _$scope.refreshStatus();
@@ -2426,9 +2442,9 @@ angular.module('ntt.TreeDnD')
                     $params.dragElm.css(
                         {
                             'left': leftElmPos + _$scope.$callbacks.calsIndent(
-                                    $params.offsetEdge + 1,
-                                    true,
-                                    true
+                                $params.offsetEdge + 1,
+                                true,
+                                true
                             ) + 'px',
                             'top':  topElmPos + 'px'
                         }
@@ -2648,10 +2664,10 @@ angular.module('ntt.TreeDnD')
                                     _target = _move.parent;
                                     if (_target &&
                                         (_target.__children__.length === 0 ||
-                                         _target.__children__.length - 1 < _move.pos ||
-                                         _info.drag === _info.target &&
-                                         _target.__index_real__ === _drag.__parent_real__ &&
-                                         _target.__children__.length - 1 === _drag.__index__ && _$scope.enabledMove)
+                                            _target.__children__.length - 1 < _move.pos ||
+                                            _info.drag === _info.target &&
+                                            _target.__index_real__ === _drag.__parent_real__ &&
+                                            _target.__children__.length - 1 === _drag.__index__ && _$scope.enabledMove)
                                     ) {
                                         _parent = treeScope.getNode(_target.__parent_real__);
 
@@ -2695,7 +2711,7 @@ angular.module('ntt.TreeDnD')
                             );
 
                             if (_drop) {
-                                _parent = (_move.parent ? _move.parent.__children__ : null ) || _info.target.treeData;
+                                _parent = (_move.parent ? _move.parent.__children__ : null) || _info.target.treeData;
 
                                 if (_drop.__index__ < _parent.length - 1) {
                                     // Find fast
@@ -2745,10 +2761,10 @@ angular.module('ntt.TreeDnD')
             function _fnDragEnd(e, $params) {
                 e.preventDefault();
                 if ($params.dragElm) {
-                    var _passed     = false,
-                        _$scope     = $params.$scope,
-                        _scope      = _$scope.getScope($params.dragInfo.node),
-                        _element    = _scope.$element;
+                    var _passed  = false,
+                        _$scope  = $params.$scope,
+                        _scope   = _$scope.getScope($params.dragInfo.node),
+                        _element = _scope.$element;
 
                     _$scope.$safeApply(
                         function () {
@@ -2836,7 +2852,7 @@ angular.module('ntt.TreeDnD')
                         $params.dragDelaying = true;
                         $params.dragStarted  = false;
                         _fnDragStartEvent(e, $params);
-                        $params.dragTimer    = $timeout(
+                        $params.dragTimer = $timeout(
                             function () {
                                 $params.dragDelaying = false;
                             }, $params.$scope.dragDelay
@@ -3004,12 +3020,10 @@ angular.module('ntt.TreeDnD')
 
             return _$init;
         }
-    ]
-);
+    ]);
 
 angular.module('ntt.TreeDnD')
-    .factory(
-    '$TreeDnDControl', function () {
+    .factory('$TreeDnDControl', function () {
         var _target, _parent,
             i, len;
 
@@ -3023,9 +3037,9 @@ angular.module('ntt.TreeDnD')
 
         function _$init(scope) {
             var n, tree = {
-                selected_node:       null,
-                for_all_descendants: scope.for_all_descendants,
-                select_node:         function (node) {
+                selected_node:        null,
+                for_all_descendants:  scope.for_all_descendants,
+                select_node:          function (node) {
                     if (!node) {
                         if (tree.selected_node) {
                             delete tree.selected_node.__selected__;
@@ -3045,9 +3059,10 @@ angular.module('ntt.TreeDnD')
                             tree.on_select(node);
                         }
                     }
+
                     return node;
                 },
-                deselect_node:       function () {
+                deselect_node:        function () {
                     _target = null;
                     if (tree.selected_node) {
                         delete tree.selected_node.__selected__;
@@ -3056,14 +3071,16 @@ angular.module('ntt.TreeDnD')
                     }
                     return _target;
                 },
-                get_parent:          function (node) {
+                get_parent:           function (node) {
+                    node = node || tree.selected_node;
+
                     if (node && node.__parent_real__ !== null) {
                         return scope.tree_nodes[node.__parent_real__];
                     }
                     return null;
                 },
-                for_all_ancestors:   function (child, fn) {
-                    _parent = tree.get_parent(child);
+                for_all_ancestors:    function (node, fn) {
+                    _parent = tree.get_parent(node);
                     if (_parent) {
                         if (fn(_parent)) {
                             return false;
@@ -3073,20 +3090,17 @@ angular.module('ntt.TreeDnD')
                     }
                     return true;
                 },
-                expand_all_parents:  function (child) {
-                    child = child || tree.selected_node;
-                    if (typeof child === 'object') {
-                        tree.for_all_ancestors(
-                            child, fnSetExpand
-                        )
+                expand_all_parents:   function (node) {
+                    node = node || tree.selected_node;
+
+                    if (angular.isObject(node)) {
+                        tree.for_all_ancestors(node, fnSetExpand);
                     }
                 },
-                collapse_all_parents:               function (child) {
-                    child = child || tree.selected_node;
-                    if (typeof child === 'object') {
-                        tree.for_all_ancestors(
-                            child, fnSetCollapse
-                        )
+                collapse_all_parents: function (node) {
+                    node = node || tree.selected_node;
+                    if (angular.isObject(node)) {
+                        tree.for_all_ancestors(node, fnSetCollapse);
                     }
                 },
 
@@ -3118,22 +3132,19 @@ angular.module('ntt.TreeDnD')
                 expand_all:                        function () {
                     len = scope.treeData.length;
                     for (i = 0; i < len; i++) {
-                        tree.for_all_descendants(
-                            scope.treeData[i], fnSetExpand
-                        );
+                        tree.for_all_descendants(scope.treeData[i], fnSetExpand);
                     }
                 },
                 collapse_all:                      function () {
                     len = scope.treeData.length;
                     for (i = 0; i < len; i++) {
-                        tree.for_all_descendants(
-                            scope.treeData[i], fnSetCollapse
-                        );
+                        tree.for_all_descendants(scope.treeData[i], fnSetCollapse);
                     }
                 },
                 remove_node:                       function (node) {
                     node = node || tree.selected_node;
-                    if (typeof node === 'object') {
+
+                    if (angular.isObject(node)) {
                         if (node.__parent_real__ !== null) {
                             _parent = tree.get_parent(node).__children__;
                         } else {
@@ -3151,14 +3162,16 @@ angular.module('ntt.TreeDnD')
                 },
                 expand_node:                       function (node) {
                     node = node || tree.selected_node;
-                    if (typeof node === 'object' && node.__expanded__) {
+
+                    if (angular.isObject(node) && node.__expanded__) {
                         node.__expanded__ = true;
                         return node;
                     }
                 },
                 collapse_node:                     function (node) {
                     node = node || tree.selected_node;
-                    if (typeof node === 'object') {
+
+                    if (angular.isObject(node)) {
                         node.__expanded__ = false;
                         return node;
                     }
@@ -3171,14 +3184,17 @@ angular.module('ntt.TreeDnD')
                     if (len > 0) {
                         return scope.treeData[0];
                     }
+
                     return null;
                 },
                 get_children:                      function (node) {
+                    node = node || tree.selected_node;
+
                     return node.__children__;
                 },
                 get_siblings:                      function (node) {
                     node = node || tree.selected_node;
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _parent = tree.get_parent(node);
                         if (_parent) {
                             _target = _parent.__children__;
@@ -3190,7 +3206,7 @@ angular.module('ntt.TreeDnD')
                 },
                 get_next_sibling:                  function (node) {
                     node = node || tree.selected_node;
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_siblings(node);
                         n       = _target.length;
                         if (node.__index__ < n) {
@@ -3207,7 +3223,7 @@ angular.module('ntt.TreeDnD')
                 },
                 get_first_child:                   function (node) {
                     node = node || tree.selected_node;
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = node.__children__;
                         if (_target && _target.length > 0) {
                             return node.__children__[0];
@@ -3223,12 +3239,16 @@ angular.module('ntt.TreeDnD')
                     }
 
                     _parent = tree.get_parent(node);
-                    return tree.get_closest_ancestor_next_sibling(_parent);
+                    if (_parent) {
+                        return tree.get_closest_ancestor_next_sibling(_parent);
+                    }
+
+                    return null;
                 },
                 get_next_node:                     function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_first_child(node);
                         if (_target) {
                             return _target;
@@ -3240,7 +3260,7 @@ angular.module('ntt.TreeDnD')
                 get_prev_node:                     function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_prev_sibling(node);
                         if (_target) {
                             return tree.get_last_descendant(_target);
@@ -3254,7 +3274,7 @@ angular.module('ntt.TreeDnD')
                 select_parent_node:                function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _parent = tree.get_parent(node);
                         if (_parent) {
                             return tree.select_node(_parent);
@@ -3268,7 +3288,7 @@ angular.module('ntt.TreeDnD')
                 select_next_sibling:               function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_next_sibling(node);
                         if (_target) {
                             return tree.select_node(_target);
@@ -3278,7 +3298,7 @@ angular.module('ntt.TreeDnD')
                 select_prev_sibling:               function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_prev_sibling(node);
                         if (_target) {
                             return tree.select_node(_target);
@@ -3288,7 +3308,7 @@ angular.module('ntt.TreeDnD')
                 select_next_node:                  function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_next_node(node);
                         if (_target) {
                             return tree.select_node(_target);
@@ -3298,7 +3318,7 @@ angular.module('ntt.TreeDnD')
                 select_prev_node:                  function (node) {
                     node = node || tree.selected_node;
 
-                    if (typeof node === 'object') {
+                    if (angular.isObject(node)) {
                         _target = tree.get_prev_node(node);
                         if (_target) {
                             return tree.select_node(_target);
@@ -3311,12 +3331,10 @@ angular.module('ntt.TreeDnD')
         }
 
         return _$init;
-    }
-);
+    });
 
 angular.module('template/TreeDnD/TreeDnD.html', []).run(
-    [
-        '$templateCache', function ($templateCache) {
+    ['$templateCache', function ($templateCache) {
         $templateCache.put(
             'template/TreeDnD/TreeDnD.html',
             ['<table ng-class="$tree_class">',

@@ -1,0 +1,38 @@
+<tabset>
+    <tab heading="Custom">
+        <show-code source="generated"></show-code>
+        <div>
+            <b>Note:</b>
+            <ul>
+                <li>Init: Keep init of Tree-DnD <i>(default not set, checked)</i>.</li>
+                <li>Scope: Ref Scope to run demo with Scope of the options is using.
+                    <ul>
+                        <li>After checked or uncheck 'scope', must press 'button' `reload data` to Init new
+                            Tree-DnD
+                        </li>
+                        <li>If checked and 'reload with scope new' then `Bind-Two` will `bind` all options have
+                            `scope`
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <tree-dnd
+                tree-class="table table-bordered table-hover table-striped"
+                tree-data="options"
+                tree-control="tree_Opt"
+                expand-on="expandOn"
+                expand-level="1"
+                column-defs="defs"
+                icon-leaf="none"
+                icon-expand="glyphicon glyphicon-chevron-down"
+                icon-collapse="glyphicon glyphicon-chevron-right"
+        ></tree-dnd>
+    </tab>
+    <tab heading="Run Demo">
+        <div ng-include="'routers/custom/custom.html'"></div>
+    </tab>
+    <tab heading="Example Data">
+        <show-code source="dataDemo | json" type="javascript"></show-code>
+    </tab>
+</tabset>

@@ -1,10 +1,6 @@
 
 .tree-dnd-animate-enter,
 .tree-dnd-node.ng-enter {
-    -webkit-transition: 0 linear all;
-    -moz-transition: 0 linear all;
-    -ms-transition: 0 linear all;
-    -o-transition: 0 linear all;
     transition: 0 linear all;
     position: relative;
     display: block;
@@ -20,10 +16,6 @@
 
 .tree-dnd-animate-leave,
 .tree-dnd-node.ng-leave {
-    -webkit-transition: 0 linear all;
-    -moz-transition: 0 linear all;
-    -ms-transition: 0 linear all;
-    -o-transition: 0 linear all;
     transition: 0 linear all;
     position: relative;
     display: block;
@@ -52,11 +44,11 @@
 }
 
 .tree-dnd > thead > tr > td, .tree-dnd > tbody > tr > td, .tree-dnd > tfoot > tr > td {
-    vertical-align: middle !important;
+    vertical-align: middle;
 }
 
 .tree-dnd-empty {
-    border: 2px dashed #72da67 !important;
+    border: 2px dashed #72da67;
     min-height: 100px;
     background-color: #e5e5e5;
 }
@@ -66,11 +58,8 @@
 }
 
 .tree-dnd-hidden {
-    -webkit-animation: fadeOut 0s;
-    -moz-animation: fadeOut 0s;
-    -o-animation: fadeOut 0s;
     animation: fadeOut 0s;
-    display: none !important;
+    display: none;
 }
 
 .tree-dnd-placeholder {
@@ -85,8 +74,6 @@
     cursor: pointer;
     text-decoration: none;
     font-weight: bold;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
     min-height: 20px;
     line-height: 20px;
@@ -116,7 +103,7 @@
 }
 
 .tree-dnd-nodes .tree-dnd-node {
-    border-radius: 0px !important;
+    border-radius: 0px;
 }
 
 .tree-dnd-nodes .tree-dnd-nodes {
