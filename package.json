@@ -21,7 +21,7 @@
   },
   "main": "dist/ng-tree-dnd.min.js",
   "dependencies": {
-    "angular": "~1.2"
+    "angular": ">=1.2.1"
   },
   "devDependencies": {
     "connect-livereload": ">=0.5.2",
