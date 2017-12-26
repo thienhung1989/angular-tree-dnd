@@ -781,7 +781,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
 
         $scope.$safeApply = $safeApply;
 
-        $scope.hiddenChild       = function fnHiddenChild(node, parent) {
+        $scope.hiddenChild = function fnHiddenChild(node, parent) {
             var nodeScope = $scope.getScope(node);
             if (nodeScope) {
                 if (parent && parent.__expanded__ && parent.__visible__) {
@@ -1331,8 +1331,8 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                             return $http.get(
                                 treeInclude,
                                 {cache: $templateCache}
-                            ).success(
-                                function (data) {
+                            ).then(function (response) {
+                                    var data          = response.data || '';
                                     data              = data.trim();
                                     //scope.templateNode = data;
                                     var tempDiv       = document.createElement('div');
@@ -1417,8 +1417,8 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                     $http.get(
                         attrs.templateUrl || $TreeDnDTemplate.getPath(),
                         {cache: $templateCache}
-                    ).success(
-                        function (data) {
+                    ).then(function (response) {
+                            var data     = response.data || '';
                             data         = angular.element(data.trim());
                             promiseCheck = checkTreeTable(data, scope);
                             if (angular.isObject(promiseCheck)) {
