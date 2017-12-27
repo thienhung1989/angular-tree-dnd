@@ -1,5 +1,5 @@
-<tabset>
-    <tab heading="{{type.label}}" ng-repeat="type in models.types">
+<uib-tabset>
+    <uib-tab heading="{{type.label}}" ng-repeat="type in models.types">
         <pre class="line-numbers" data-line="{{highlightLines[type.language]}}"><code class="language-{{type.language}}">{{type.source}}</code></pre>
-    </tab>
-</tabset>
+    </uib-tab>
+</uib-tabset>
