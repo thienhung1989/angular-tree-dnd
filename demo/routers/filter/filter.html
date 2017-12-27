@@ -38,10 +38,10 @@
 </script>
 
 
-<tabset>
+<uib-tabset>
 
     <!-- Begin Filter Outside -->
-    <tab heading="Outside">
+    <uib-tab heading="Outside">
         <div class="row">
             <div class="col-xs-3">
                 <panel title="Filter for Table (Outside)">
@@ -87,12 +87,12 @@
                 </panel>
             </div>
         </div>
-    </tab>
+    </uib-tab>
     <!-- End init Filter-Outside -->
 
 
     <!-- Begin init Filter-Inside -->
-    <tab heading="Inside">
+    <uib-tab heading="Inside">
         <panel title="Table: Template Inside">
             <div class="form-group form-inline clearfix ">
                 <label class="pull-right">Search: <input class="form-control" ng-model="_filter._$"></label>
@@ -117,10 +117,10 @@
                       enable-move="true">
             </tree-dnd>
         </panel>
-    </tab>
+    </uib-tab>
     <!-- End Init Filter-Inside -->
 
-    <tab heading="Custom">
+    <uib-tab heading="Custom">
         <div class="row">
             <div class="col-xs-7"  data-source="tree_data" view-source="filter"></div>
 
@@ -130,5 +130,5 @@
                 </panel>
             </div>
         </div>
-    </tab>
-</tabset>
+    </uib-tab>
+</uib-tabset>

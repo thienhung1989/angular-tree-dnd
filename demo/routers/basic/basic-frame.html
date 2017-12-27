@@ -11,8 +11,8 @@
     <div class="panel-collapse collapse" uib-collapse="!isOpen" ng-transclude></div>
 </script>
 
-<tabset>
-    <tab heading="Demo">
+<uib-tabset>
+    <uib-tab heading="Demo">
         <div class="row">
             <div class="col-xs-3" basic-toolbars>
                 <accordion close-others="true">
@@ -43,10 +43,10 @@
                 </div>
             </div>
         </div>
-    </tab>
-    <tab heading="Data Logs">
+    </uib-tab>
+    <uib-tab heading="Data Logs">
         <panel>
             <show-code source="log | json" type="javascript"></show-code>
         </panel>
-    </tab>
-</tabset>
+    </uib-tab>
+</uib-tabset>

@@ -36,24 +36,24 @@ app = angular.module('TreeDnDTest', deps)
                 scope.options = [
                     {
                         label: 'Table & Filter',
-                        href:  '#/table'
+                        href:  '#!table'
                     },
                     {
                         label: 'List Tree',
-                        href:  '#/list'
+                        href:  '#!list'
                     },
                     {
                         label: 'Advanced',
-                        href:  '#/multi'
+                        href:  '#!multi'
                     },
                     {
                         label: 'Events',
-                        href:  '#/event'
+                        href:  '#!event'
                     },
                     {
 
                         label: 'Custom',
-                        href:  '#/custom'
+                        href:  '#!custom'
                     },
                     {
                         label: 'Github',
@@ -122,12 +122,14 @@ app = angular.module('TreeDnDTest', deps)
     .directive('staticInclude', function ($http, $templateCache, $compile) {
         return function (scope, element, attrs) {
             var templatePath = attrs.staticInclude;
-            $http.get(templatePath, {cache: $templateCache}).success(function (response) {
-                var contents = element.html(response).contents();
-                // console.log(contents);
-                element.replaceWith(contents);
-                $compile(contents)(scope);
-            });
+            $http.get(templatePath, {cache: $templateCache})
+                .then(function (response) {
+                    var data     = response.data || '';
+                    var contents = element.html(data).contents();
+                    // console.log(contents);
+                    element.replaceWith(contents);
+                    $compile(contents)(scope);
+                });
         };
     })
     .factory('DataDemo', function () {

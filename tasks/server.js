@@ -30,7 +30,7 @@ module.exports = function (gulp, $) {
     gulp.task('dev::open', function () {
         require('open')('http://localhost:9000');
     });
-
+    gulp.task('dev::run', ['dev::connect', 'dev::open']);
 /*
     gulp.task('dev::test', function (cb) {
         return require('karma').server.start(
