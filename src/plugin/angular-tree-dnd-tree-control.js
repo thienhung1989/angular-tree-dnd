@@ -139,7 +139,7 @@ angular.module('ntt.TreeDnD')
                 expand_node:                       function (node) {
                     node = node || tree.selected_node;
 
-                    if (angular.isObject(node) && node.__expanded__) {
+                    if (angular.isObject(node)) {
                         node.__expanded__ = true;
                         return node;
                     }
