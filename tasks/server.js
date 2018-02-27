@@ -18,8 +18,8 @@ module.exports = function (gulp, $) {
                     }
 
                     return [
-                        mountFolder(connect, 'dist'),
-                        mountFolder(connect, 'demo'),
+                        // mountFolder(connect, 'dist'),
+                        // mountFolder(connect, 'demo'),
                         require('connect-livereload')({port: livereloadPort})
                     ];
                 }

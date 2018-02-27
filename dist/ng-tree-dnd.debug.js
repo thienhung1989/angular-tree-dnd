@@ -25,7 +25,7 @@
  * Implementing TreeDnD & Event DrapnDrop (allow drag multi tree-table include all type: table, ol, ul)
  * Demo: http://thienhung1989.github.io/angular-tree-dnd
  * Github: https://github.com/thienhung1989/angular-tree-dnd
- * @version 3.0.6
+ * @version 3.0.7
  * @preserve
  * (c) 2015 Nguyuễn Thiện Hùng - <nguyenthienhung1989@gmail.com>
  */
@@ -3179,7 +3179,7 @@ angular.module('ntt.TreeDnD')
                 expand_node:                       function (node) {
                     node = node || tree.selected_node;
 
-                    if (angular.isObject(node) && node.__expanded__) {
+                    if (angular.isObject(node)) {
                         node.__expanded__ = true;
                         return node;
                     }
