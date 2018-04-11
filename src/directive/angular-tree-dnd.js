@@ -1027,7 +1027,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
 
         return function fnPost(scope, element, attrs) {
 
-            if (attrs.enableDrag) {
+            if (typeof attrs === 'object' && attrs.enableDrag) {
                 var _fnInitDrag = $TreeDnDPlugin('$TreeDnDDrag');
                 if (angular.isFunction(_fnInitDrag)) {
                     _fnInitDrag(scope, element, $window, $document);
