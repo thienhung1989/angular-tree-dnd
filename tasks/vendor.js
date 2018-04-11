@@ -49,7 +49,7 @@ module.exports = function (gulp, $) {
 
             for (i; i < len; i++) {
                 path = arguments[i] || '';
-                result += '/' + path.replace(/\/+$/, '')
+                result += '/' + path.replace(/\/+$/, '');
             }
 
             return result
@@ -59,13 +59,15 @@ module.exports = function (gulp, $) {
         };
 
     var fnCopy = function (src, dst, opts) {
-        dst      = dst || '';
+        dst = dst || '';
+
         var base = getOpt(opts, 'base');
 
         if (Array.isArray(src)) {
             for (var i = 0; i < src.length; i++) {
                 fnCopy(src[i], dst, base);
             }
+
             return; // jmp out
         }
 
@@ -98,10 +100,10 @@ module.exports = function (gulp, $) {
                 }
             }))
             .pipe($.changed(dst))
-            .pipe(gulp.dest(dst))
+            .pipe(gulp.dest(dst));
     };
 
-    const tasks = [
+    var tasks = [
         {
             name: 'dev::vendor',
             src:  path.component.vendor,
@@ -111,7 +113,7 @@ module.exports = function (gulp, $) {
                 filter:    filter.vendor
             },
             do:   fnCopy
-        },
+        }
     ];
 
     for (var i = 0; i < tasks.length; i++) {

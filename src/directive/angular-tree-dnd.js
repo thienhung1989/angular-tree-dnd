@@ -718,7 +718,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             $scope.$watch(
                 $attrs.treeData, function (val) {
                     if (angular.equals(val, $scope.treeData)) {
-                        return;
+                        return; // jmp out
                     }
 
                     tmpTreeData = val;

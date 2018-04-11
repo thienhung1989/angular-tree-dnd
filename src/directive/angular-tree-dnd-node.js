@@ -101,10 +101,6 @@ angular.module('ntt.TreeDnD')
                         _icon                 = nodeOf.__icon__;
                         nodeOf.__icon_class__ = scope.$class.icon[_icon];
                     } else {
-
-                        var parentReal = nodeOf.__parent_real__,
-                            parentNode = scope.tree_nodes[parentReal] || undefined;
-
                         if (!nodeOf.__inited__) {
                             nodeOf.__inited__ = true;
                         }
@@ -118,6 +114,11 @@ angular.module('ntt.TreeDnD')
                             hashKey = nodeOf.__hashKey__;
                         }
 
+                        /*
+                        // remove to fix expand
+
+                        var parentReal = nodeOf.__parent_real__,
+                            parentNode = scope.tree_nodes[parentReal] || undefined;
                         if (parentNode && (!parentNode.__expanded__ || !parentNode.__visible__)) {
                             element.addClass(scope.$class.hidden);
                             nodeOf.__visible__ = false;
@@ -125,6 +126,7 @@ angular.module('ntt.TreeDnD')
                             element.removeClass(scope.$class.hidden);
                             nodeOf.__visible__ = true;
                         }
+                        */
 
                         var _childs = nodeOf.__children__,
                             _len    = _childs.length,
