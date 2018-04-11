@@ -20,3 +20,5 @@ demo/bower_components
 demo/source
 
 bower_components
+
+yarn.lock
