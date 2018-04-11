@@ -244,6 +244,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 //var _hash = typeof node === 'string' ? node : node.__hashKey__;
                 return $scope.$globals[_hash];
             }
+
             return $scope;
         };
 
@@ -1143,7 +1144,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                         }
                     );
                 }
-            })
+            });
         };
     }
 }

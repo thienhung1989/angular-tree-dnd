@@ -3,9 +3,10 @@ angular.module('ntt.TreeDnD')
         '$TreeDnDViewport',
         function ($TreeDnDViewport) {
             return {
-                restrict: 'A',
-                replace:  true,
-                link:     fnLink
+                restrict:   'A',
+                replace:    true,
+                controller: 'treeDndNodeController',
+                link:       fnLink
             };
 
             function fnLink(scope, element, attrs) {

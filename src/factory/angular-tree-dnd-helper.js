@@ -120,6 +120,16 @@ angular.module('ntt.TreeDnD')
                 replaceIndent:   function (scope, element, indent, attr) {
                     attr = attr || 'left';
                     angular.element(element.children()[0]).css(attr, scope.$callbacks.calsIndent(indent));
+                },
+
+                isTreeDndNode:       function (element) {
+                    return typeof element.attr('tree-dnd-node') !== 'undefined';
+                },
+                isTreeDndNodes:      function (element) {
+                    return typeof element.attr('tree-dnd-nodes') !== 'undefined';
+                },
+                isTreeDndNodeHandle: function (element) {
+                    return typeof element.attr('tree-dnd-node-handle') !== 'undefined';
                 }
             };
 

@@ -28,7 +28,7 @@ module.exports = function (gulp, $) {
     });
 
     gulp.task('dev::open', function () {
-        require('open')('http://localhost:9000');
+        require('open')('http://localhost:9000/demo');
     });
     gulp.task('dev::run', ['dev::connect', 'dev::open']);
 /*

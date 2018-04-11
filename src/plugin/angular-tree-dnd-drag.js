@@ -25,8 +25,13 @@ angular.module('ntt.TreeDnD')
                 }
 
                 // the element which is clicked.
-                var eventElm   = angular.element(e.target),
-                    eventScope = eventElm.scope();
+                var eventElm = angular.element(e.target),
+                    eventScope;
+
+                if ($TreeDnDHelper.isTreeDndNodeHandle(eventElm)) {
+                    eventScope = eventElm.controller('treeDndNodeHandle').scope;
+                }
+
                 if (!eventScope || !eventScope.$type) {
                     return;
                 }
@@ -327,7 +332,14 @@ angular.module('ntt.TreeDnD')
                             )
                         );
 
-                        targetScope = targetElm.scope();
+                        if ($TreeDnDHelper.isTreeDndNode(targetElm)) {
+                            targetScope = targetElm.controller('treeDndNode').scope;
+                        } else if ($TreeDnDHelper.isTreeDndNodes(targetElm)) {
+                            targetScope = targetElm.controller('treeDndNodes').scope;
+                        } else if ($TreeDnDHelper.isTreeDndNodeHandle(targetElm)) {
+                            targetScope = targetElm.controller('treeDndNodeHandle').scope;
+                        }
+
                         if (!targetScope || !targetScope.$callbacks || !targetScope.$callbacks.droppable()) {
                             // Not allowed Drop Item
                             return;
@@ -603,7 +615,7 @@ angular.module('ntt.TreeDnD')
                                         _element.removeClass(_$scope.$class.hidden);
                                     }
                                 }
-                                return _node.__visible__ === false || _node.__expanded__ === false
+                                return _node.__visible__ === false || _node.__expanded__ === false;
                             }, null, true
                         );
                     } else {
@@ -720,7 +732,7 @@ angular.module('ntt.TreeDnD')
                                             _element.addClass(_$scope.$class.hidden);
                                         }
                                     }
-                                    return _node.__visible__ === false || _node.__expanded__ === false
+                                    return _node.__visible__ === false || _node.__expanded__ === false;
 
                                 }, null, true
                             );
@@ -759,7 +771,7 @@ angular.module('ntt.TreeDnD')
                                         _element.removeClass(_$scope.$class.hidden);
                                     }
                                 }
-                                return _node.__visible__ === false || _node.__expanded__ === false
+                                return _node.__visible__ === false || _node.__expanded__ === false;
                             }, null, true
                         );
                     } else {
