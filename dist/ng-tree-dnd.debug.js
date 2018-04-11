@@ -434,9 +434,9 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         };
 
-        var passedExpand, _clone;
         $scope.toggleExpand = function (node, fnCallback) {
-            passedExpand = undefined;
+            var passedExpand;
+
             if (angular.isFunction(fnCallback)) {
                 passedExpand = !!fnCallback(node);
             } else if (typeof $scope.$callbacks === 'object' && angular.isFunction($scope.$callbacks.expand)) {
@@ -454,17 +454,21 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
         };
 
 
-        var _fnGetHash    = function (node) {
+        var _fnGetHash = function (node) {
                 return '#' + node.__parent__ + '#' + node[$scope.primary_key];
             },
-            _fnSetHash    = function (node) {
+            _fnSetHash = function (node) {
                 var _hashKey = _fnGetHash(node);
+
                 if (angular.isUndefinedOrNull(node.__hashKey__) || node.__hashKey__ !== _hashKey) {
                     node.__hashKey__ = _hashKey;
                 }
+
                 return node;
             };
-        $scope.getHash    = _fnGetHash;
+
+        $scope.getHash = _fnGetHash;
+
         $scope.$callbacks = {
             getHash:             _fnGetHash,
             setHash:             _fnSetHash,
@@ -513,8 +517,10 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 // delete(node.__hashKey__);
             },
             clone:               function (node/*, _this*/) {
-                _clone = angular.copy(node);
+                var _clone = angular.copy(node);
+
                 this.for_all_descendants(_clone, this.changeKey);
+
                 return _clone;
             },
             remove:              function (node, parent, _this, delayReload) {
