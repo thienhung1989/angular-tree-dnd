@@ -5,7 +5,7 @@ fnInitTreeDnDViewport.$inject = ['$window', '$document', '$timeout', '$q', '$com
 
 function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
 
-    var viewport      = null,
+    var viewport,
         isUpdating    = false,
         isRender      = false,
         updateAgain   = false,

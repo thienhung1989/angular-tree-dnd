@@ -6,8 +6,8 @@ angular.module('ntt.TreeDnD')
                 if (angular.isDefined($injector) && $injector.has(name)) {
                     return $injector.get(name);
                 }
-                return null;
             };
+
             return _fnget;
         }]
     );

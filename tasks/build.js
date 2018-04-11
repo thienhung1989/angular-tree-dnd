@@ -12,7 +12,7 @@ module.exports = function (gulp, $, pkg) {
     });
 
     gulp.task('build', function(e) {
-        return $.sequence('js::concat', ['js::min-js', 'css::min-css'], ['js::jshint-dist'/*, 'dev::test'*/])(e);
+        $.sequence('js::concat', ['js::min-js', 'css::min-css'], ['js::jshint-dist'/*, 'dev::test'*/])(e);
     });
 
     gulp.task('clean', function () {
