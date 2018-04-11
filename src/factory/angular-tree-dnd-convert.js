@@ -33,7 +33,12 @@ angular.module('ntt.TreeDnD')
                         parent = treeObjs[parentId];
                         if (parent) {
                             if (parent.__children__) {
-                                parent.__children__.push(item);
+                                if (angular.isArray(parent.__children__)) {
+                                    parent.__children__.push(item);
+                                } else {
+                                    console.error('Type of `parent.__children__` isn\'t array');
+                                    console.log(parent.__children__);
+                                }
                             } else {
                                 parent.__children__ = [item];
                             }
