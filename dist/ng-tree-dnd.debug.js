@@ -1679,13 +1679,58 @@ angular.module('ntt.TreeDnD')
                 },
 
                 isTreeDndNode:       function (element) {
-                    return typeof element.attr('tree-dnd-node') !== 'undefined';
+                    if (element) {
+                        var $element = angular.element(element);
+                        return $element && $element.length && typeof $element.attr('tree-dnd-node') !== 'undefined';
+                    }
+
+                    return false;
                 },
                 isTreeDndNodes:      function (element) {
-                    return typeof element.attr('tree-dnd-nodes') !== 'undefined';
+                    if (element) {
+                        var $element = angular.element(element);
+                        return $element && $element.length && typeof $element.attr('tree-dnd-nodes') !== 'undefined';
+                    }
+
+                    return false;
                 },
                 isTreeDndNodeHandle: function (element) {
-                    return typeof element.attr('tree-dnd-node-handle') !== 'undefined';
+                    if (element) {
+                        var $element = angular.element(element);
+
+                        return $element && $element.length && typeof $element.attr('tree-dnd-node-handle') !== 'undefined';
+                    }
+
+                    return false;
+                },
+                isTreeDndDroppable:  function (element) {
+                    return _$helper.isTreeDndNode(element)
+                        || _$helper.isTreeDndNodes(element)
+                        || _$helper.isTreeDndNodeHandle(element);
+                },
+                closestByAttr:       function fnClosestByAttr(element, attr) {
+                    if (element && attr) {
+                        var $element = angular.element(element),
+                            $parent  = $element.parent();
+                        if ($parent) {
+                            var isPassed = false;
+
+                            switch (typeof attr) {
+                                case 'function':
+                                    isPassed = attr($parent);
+                                    break;
+                                default:
+                                    isPassed = typeof $parent.attr(attr) !== 'undefined';
+                                    break;
+                            }
+
+                            if (isPassed) {
+                                return $parent;
+                            } else {
+                                return fnClosestByAttr($parent);
+                            }
+                        }
+                    }
                 }
             };
 
@@ -2279,6 +2324,11 @@ angular.module('ntt.TreeDnD')
 
                 if ($TreeDnDHelper.isTreeDndNodeHandle(eventElm)) {
                     eventScope = eventElm.controller('treeDndNodeHandle').scope;
+                } else {
+                    eventElm = $TreeDnDHelper.closestByAttr(eventElm, $TreeDnDHelper.isTreeDndNodeHandle);
+                    if (eventElm) {
+                        eventScope = eventElm.controller('treeDndNodeHandle').scope;
+                    }
                 }
 
                 if (!eventScope || !eventScope.$type) {
@@ -2580,6 +2630,10 @@ angular.module('ntt.TreeDnD')
                                 targetY
                             )
                         );
+
+                        if (!$TreeDnDHelper.isTreeDndDroppable(targetElm)) {
+                            targetElm = $TreeDnDHelper.closestByAttr(targetElm, $TreeDnDHelper.isTreeDndDroppable);
+                        }
 
                         if ($TreeDnDHelper.isTreeDndNode(targetElm)) {
                             targetScope = targetElm.controller('treeDndNode').scope;

@@ -30,6 +30,11 @@ angular.module('ntt.TreeDnD')
 
                 if ($TreeDnDHelper.isTreeDndNodeHandle(eventElm)) {
                     eventScope = eventElm.controller('treeDndNodeHandle').scope;
+                } else {
+                    eventElm = $TreeDnDHelper.closestByAttr(eventElm, $TreeDnDHelper.isTreeDndNodeHandle);
+                    if (eventElm) {
+                        eventScope = eventElm.controller('treeDndNodeHandle').scope;
+                    }
                 }
 
                 if (!eventScope || !eventScope.$type) {
@@ -331,6 +336,10 @@ angular.module('ntt.TreeDnD')
                                 targetY
                             )
                         );
+
+                        if (!$TreeDnDHelper.isTreeDndDroppable(targetElm)) {
+                            targetElm = $TreeDnDHelper.closestByAttr(targetElm, $TreeDnDHelper.isTreeDndDroppable);
+                        }
 
                         if ($TreeDnDHelper.isTreeDndNode(targetElm)) {
                             targetScope = targetElm.controller('treeDndNode').scope;
