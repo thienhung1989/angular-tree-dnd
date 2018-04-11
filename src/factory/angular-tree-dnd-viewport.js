@@ -5,7 +5,7 @@ fnInitTreeDnDViewport.$inject = ['$window', '$document', '$timeout', '$q', '$com
 
 function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
 
-    var viewport      = null,
+    var viewport,
         isUpdating    = false,
         isRender      = false,
         updateAgain   = false,
@@ -39,8 +39,10 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
 
         if (isUpdating || isRender) {
             updateAgain = true;
-            return;
+
+            return; // jmp out
         }
+
         isUpdating = true;
 
         recursivePromise();
@@ -114,9 +116,13 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
      */
     function updateDelayed() {
         $timeout.cancel(updateTimeout);
-        updateTimeout = $timeout(function () {
-            update();
-        }, 0);
+
+        updateTimeout = $timeout(
+            function () {
+                update();
+            },
+            0
+        );
     }
 
     /**
@@ -126,6 +132,7 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
      */
     function add(scope, element) {
         updateDelayed();
+
         items.push({
             element: element,
             scope:   scope

@@ -11,7 +11,9 @@ module.exports = function (gulp, $, pkg) {
         })
     });
 
-    gulp.task('build', $.sequence('js::concat', ['js::min-js', 'css::min-css'], ['js::jshint-dist'/*, 'dev::test'*/]));
+    gulp.task('build', function(e) {
+        $.sequence('js::concat', ['js::min-js', 'css::min-css'], ['js::jshint-dist'/*, 'dev::test'*/])(e);
+    });
 
     gulp.task('clean', function () {
         return gulp.src('dist', {read: false})

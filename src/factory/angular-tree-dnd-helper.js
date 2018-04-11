@@ -8,11 +8,13 @@ angular.module('ntt.TreeDnD')
                 },
                 eventObj:        function (e) {
                     var obj = e;
+
                     if (e.targetTouches !== undefined) {
                         obj = e.targetTouches.item(0);
                     } else if (e.originalEvent !== undefined && e.originalEvent.targetTouches !== undefined) {
                         obj = e.originalEvent.targetTouches.item(0);
                     }
+
                     return obj;
                 },
                 dragInfo:        function (scope) {
@@ -42,6 +44,7 @@ angular.module('ntt.TreeDnD')
                 },
                 offset:          function (element) {
                     var boundingClientRect = element[0].getBoundingClientRect();
+
                     return {
                         width:  element.prop('offsetWidth'),
                         height: element.prop('offsetHeight'),
@@ -98,7 +101,8 @@ angular.module('ntt.TreeDnD')
                     if (firstMoving) {
                         pos.dirAx  = newAx;
                         pos.moving = true;
-                        return;
+
+                        return; // jmp out
                     }
 
                     // calc distance moved on this axis (and direction)
@@ -115,11 +119,69 @@ angular.module('ntt.TreeDnD')
                             pos.distAxY = 0;
                         }
                     }
+
                     pos.dirAx = newAx;
                 },
                 replaceIndent:   function (scope, element, indent, attr) {
                     attr = attr || 'left';
                     angular.element(element.children()[0]).css(attr, scope.$callbacks.calsIndent(indent));
+                },
+
+                isTreeDndNode:       function (element) {
+                    if (element) {
+                        var $element = angular.element(element);
+                        return $element && $element.length && typeof $element.attr('tree-dnd-node') !== 'undefined';
+                    }
+
+                    return false;
+                },
+                isTreeDndNodes:      function (element) {
+                    if (element) {
+                        var $element = angular.element(element);
+
+                        return $element && $element.length && typeof $element.attr('tree-dnd-nodes') !== 'undefined';
+                    }
+
+                    return false;
+                },
+                isTreeDndNodeHandle: function (element) {
+                    if (element) {
+                        var $element = angular.element(element);
+
+                        return $element && $element.length && typeof $element.attr('tree-dnd-node-handle') !== 'undefined';
+                    }
+
+                    return false;
+                },
+                isTreeDndDroppable:  function (element) {
+                    return _$helper.isTreeDndNode(element)
+                        || _$helper.isTreeDndNodes(element)
+                        || _$helper.isTreeDndNodeHandle(element);
+                },
+                closestByAttr:       function fnClosestByAttr(element, attr) {
+                    if (element && attr) {
+                        var $element = angular.element(element),
+                            $parent  = $element.parent();
+
+                        if ($parent) {
+                            var isPassed = false;
+
+                            switch (typeof attr) {
+                                case 'function':
+                                    isPassed = attr($parent);
+                                    break;
+                                default:
+                                    isPassed = typeof $parent.attr(attr) !== 'undefined';
+                                    break;
+                            }
+
+                            if (isPassed) {
+                                return $parent;
+                            } else {
+                                return fnClosestByAttr($parent);
+                            }
+                        }
+                    }
                 }
             };
 

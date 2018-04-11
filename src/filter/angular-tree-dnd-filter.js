@@ -5,7 +5,7 @@ angular.module('ntt.TreeDnD')
 
             function for_all_descendants(options, node, fieldChild, fnBefore, fnAfter, parentPassed) {
                 if (!angular.isFunction(fnBefore)) {
-                    return null;
+                    return; // jmp out
                 }
 
                 var _i, _len, _nodes,
@@ -44,12 +44,12 @@ angular.module('ntt.TreeDnD')
              * Check data with callback
              * @param {string|object|function|regex} callback
              * @param {*} data
-             * @returns {null|boolean}
+             * @returns {undefined|boolean}
              * @private
              */
             function _fnCheck(callback, data) {
                 if (angular.isUndefinedOrNull(data) || angular.isArray(data)) {
-                    return null;
+                    return; // jmp out
                 }
 
                 if (angular.isFunction(callback)) {
@@ -67,11 +67,11 @@ angular.module('ntt.TreeDnD')
                             if (typeof data === 'string') {
                                 return data.indexOf(callback) > -1;
                             } else {
-                                return null;
+                                return; // jmp out
                             }
                         }
                     } else {
-                        return null;
+                        return; // jmp out
                     }
                 }
             }
@@ -106,7 +106,6 @@ angular.module('ntt.TreeDnD')
                         return _fnCheck(_callback, node[_key]);
                     }
                 }
-                return null;
             }
 
             /**
@@ -114,12 +113,12 @@ angular.module('ntt.TreeDnD')
              * @param {object} node
              * @param {array} conditions Array `conditions`
              * @param {boolean} isAnd check with condition `And`, if `And` then `return false` when all `false`
-             * @returns {null|boolean}
+             * @returns {undefined|boolean}
              */
             function for_each_filter(node, conditions, isAnd) {
                 var i, len = conditions.length || 0, passed = false;
                 if (len === 0) {
-                    return null;
+                    return; // jmp out
                 }
 
                 for (i = 0; i < len; i++) {
@@ -211,6 +210,7 @@ angular.module('ntt.TreeDnD')
                 var _iF, _lenF, _keysF,
                     _filter,
                     _state;
+
                 // convert filter object to array filter
                 if (angular.isObject(filters) && !angular.isArray(filters)) {
                     _keysF  = Object.keys(filters);
@@ -235,7 +235,7 @@ angular.module('ntt.TreeDnD')
                             _filter.push(_state);
                         }
                     }
-                    _state = null;
+
                     return _filter;
                 }
                 else {
@@ -273,6 +273,7 @@ angular.module('ntt.TreeDnD')
                             _fnBeforeClear, _fnAfter
                         );
                     }
+
                     return treeData;
                 }
 

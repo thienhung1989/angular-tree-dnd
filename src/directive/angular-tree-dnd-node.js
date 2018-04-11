@@ -3,9 +3,10 @@ angular.module('ntt.TreeDnD')
         '$TreeDnDViewport',
         function ($TreeDnDViewport) {
             return {
-                restrict: 'A',
-                replace:  true,
-                link:     fnLink
+                restrict:   'A',
+                replace:    true,
+                controller: 'treeDndNodeController',
+                link:       fnLink
             };
 
             function fnLink(scope, element, attrs) {
@@ -20,9 +21,7 @@ angular.module('ntt.TreeDnD')
                     keyNode    = attrs.treeDndNode,
                     first      = true,
                     childsElem;
-                //removeIf(nodebug)
-                console.log('Created Node');
-                //endRemoveIf(nodebug)
+
                 $TreeDnDViewport.add(scope, element);
 
                 if (enabledDnD) {
@@ -91,24 +90,17 @@ angular.module('ntt.TreeDnD')
                 });
 
                 function fnWatchNode(newVal, oldVal, scope) {
-
-                    //removeIf(nodebug)
-                    console.time('Node_Changed');
-                    //endRemoveIf(nodebug)
                     var nodeOf = scope[keyNode],
                         _icon;
+
+                    if (typeof nodeOf !== 'object') {
+                        return; // jmp out
+                    }
 
                     if (first) {
                         _icon                 = nodeOf.__icon__;
                         nodeOf.__icon_class__ = scope.$class.icon[_icon];
                     } else {
-
-                        var parentReal = nodeOf.__parent_real__,
-                            parentNode = scope.tree_nodes[parentReal] || null,
-                            _childs    = nodeOf.__children__,
-                            _len       = _childs.length,
-                            _i;
-
                         if (!nodeOf.__inited__) {
                             nodeOf.__inited__ = true;
                         }
@@ -122,6 +114,11 @@ angular.module('ntt.TreeDnD')
                             hashKey = nodeOf.__hashKey__;
                         }
 
+                        /*
+                        // remove to fix expand
+
+                        var parentReal = nodeOf.__parent_real__,
+                            parentNode = scope.tree_nodes[parentReal] || undefined;
                         if (parentNode && (!parentNode.__expanded__ || !parentNode.__visible__)) {
                             element.addClass(scope.$class.hidden);
                             nodeOf.__visible__ = false;
@@ -129,6 +126,12 @@ angular.module('ntt.TreeDnD')
                             element.removeClass(scope.$class.hidden);
                             nodeOf.__visible__ = true;
                         }
+                        */
+
+                        var _childs = nodeOf.__children__,
+                            _len    = _childs.length,
+                            _i;
+
 
                         if (_len === 0) {
                             _icon = -1;
@@ -143,11 +146,7 @@ angular.module('ntt.TreeDnD')
                         nodeOf.__icon__       = _icon;
                         nodeOf.__icon_class__ = scope.$class.icon[_icon];
 
-                        if (scope.isTable) {
-                            for (_i = 0; _i < _len; _i++) {
-                                scope.for_all_descendants(_childs[_i], scope.hiddenChild, nodeOf, true);
-                            }
-                        } else {
+                        if (!scope.isTable) {
                             if (!childsElem) {
                                 childsElem = scope.getElementChilds();
                             }
@@ -159,11 +158,12 @@ angular.module('ntt.TreeDnD')
                             }
                         }
 
+                        for (_i = 0; _i < _len; _i++) {
+                            scope.for_all_descendants(_childs[_i], scope.hiddenChild, nodeOf, true);
+                        }
+
                     }
 
-                    //removeIf(nodebug)
-                    console.timeEnd('Node_Changed');
-                    //endRemoveIf(nodebug)
                     first = false;
 
                 }

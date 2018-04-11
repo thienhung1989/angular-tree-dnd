@@ -16,6 +16,7 @@ angular.module('ntt.TreeDnD')
 
                         node[name] = fnOrderBy(node[name], options);
                     }
+
                     return node;
                 },
                 _fnOrder            = function _fnOrder(list, orderBy) {
@@ -25,7 +26,8 @@ angular.module('ntt.TreeDnD')
                     if (!angular.isArray(treeData)
                         || treeData.length === 0
                         || !(angular.isArray(orderBy) || angular.isObject(orderBy) || angular.isString(orderBy) || angular.isFunction(orderBy))
-                        || orderBy.length === 0 && !angular.isFunction(orderBy)) {
+                        || orderBy.length === 0 && !angular.isFunction(orderBy)
+                    ) {
                         return treeData;
                     }
 

@@ -3,6 +3,9 @@ var app, deps;
 deps = ['ntt.TreeDnD', 'ngRoute', 'toaster', 'ngAnimate', 'ui.bootstrap'];
 
 app = angular.module('TreeDnDTest', deps)
+    .config(['$compileProvider', function ($compileProvider) {
+        $compileProvider.debugInfoEnabled(false);
+    }])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/table', {
@@ -330,5 +333,5 @@ app = angular.module('TreeDnDTest', deps)
                 console.timeEnd('Generate_BigData');
                 return data;
             }
-        }
+        };
     });
