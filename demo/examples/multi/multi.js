@@ -53,7 +53,7 @@
                 [
                     {
                         'DemographicId': -1,
-                        'ParentId':      null,
+                        'ParentId':      undefined,
                         'Name':          'United States of America',
                         'Description':   'United States of America',
                         'Area':          9826675,

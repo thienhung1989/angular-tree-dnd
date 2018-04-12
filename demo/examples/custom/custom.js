@@ -303,7 +303,7 @@
                         parent = $scope.tree_Opt.get_parent(node);
                         key    = node.def;
                         if (key && angular.isDefined(node.value) && !node.init &&
-                            (parent === null || !!parent.value === true)) {
+                            (typeof parent !== 'object' || !!parent.value === true)) {
                             $scope.data[key] = node.value;
                             _temp += [
                                 tab,

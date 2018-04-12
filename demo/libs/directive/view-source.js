@@ -28,7 +28,7 @@ app.directive('viewSource', function ($http, $timeout) {
             };
 
             angular.forEach(scope.models.types, function (type) {
-                $http.get('routers/' + scope.demoName + '/' + scope.demoName + '.' + type.extension)
+                $http.get('examples/' + scope.demoName + '/' + scope.demoName + '.' + type.extension)
                     .then(function (httpResponse) {
                         type.source = httpResponse.data;
                         $timeout(Prism.highlightAll, 0);

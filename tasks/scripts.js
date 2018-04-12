@@ -109,13 +109,14 @@ module.exports = function (gulp, $, pkg, through) {
                             replace += after;
                         }
 
-                        streamSrc.pipe(
-                            $.replace(
-                                pattern, function (/*match*/) {
-                                    return replace;
-                                }
+                        streamSrc
+                            .pipe(
+                                $.replace(
+                                    pattern, function (/*match*/) {
+                                        return replace;
+                                    }
+                                )
                             )
-                        )
                             .pipe(
                                 through.obj(
                                     function (f, e, c) {
@@ -130,7 +131,8 @@ module.exports = function (gulp, $, pkg, through) {
                                         }
                                     }
                                 )
-                            ).on('end', cb);
+                            )
+                            .on('end', cb);
                     }
                 }
             )

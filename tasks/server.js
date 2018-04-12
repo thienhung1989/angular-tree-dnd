@@ -32,18 +32,4 @@ module.exports = function (gulp, $) {
     });
 
     gulp.task('dev::run', ['dev::connect', 'dev::open']);
-/*
-    gulp.task('dev::test', function (cb) {
-        return require('karma').server.start(
-            {
-                configFile: __dirname + '/../karma.conf.js',
-                singleRun:  true,
-                autoWatch:  true
-            }, function (exitCode) {
-                $.util.log('Karma has exited with ' + exitCode);
-                cb();
-            }
-        );
-    });
-*/
 };
