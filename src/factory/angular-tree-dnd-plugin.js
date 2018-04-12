@@ -2,12 +2,12 @@ angular.module('ntt.TreeDnD')
     .factory('$TreeDnDPlugin', [
         '$injector',
         function ($injector) {
-            var _fnget = function (name) {
+            return _fnget;
+
+            function _fnget(name) {
                 if (angular.isDefined($injector) && $injector.has(name)) {
                     return $injector.get(name);
                 }
-            };
-
-            return _fnget;
+            }
         }]
     );

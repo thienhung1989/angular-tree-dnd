@@ -19,7 +19,6 @@ angular.module('ntt.TreeDnD')
                 }
                 var enabledDnD = typeof scope.dragEnabled === 'boolean' || typeof scope.dropEnabled === 'boolean',
                     keyNode    = attrs.treeDndNode,
-                    first      = true,
                     childsElem;
 
                 $TreeDnDViewport.add(scope, element);
@@ -90,81 +89,58 @@ angular.module('ntt.TreeDnD')
                 });
 
                 function fnWatchNode(newVal, oldVal, scope) {
-                    var nodeOf = scope[keyNode],
-                        _icon;
+                    var nodeOf = scope[keyNode];
 
                     if (typeof nodeOf !== 'object') {
                         return; // jmp out
                     }
 
-                    if (first) {
-                        _icon                 = nodeOf.__icon__;
-                        nodeOf.__icon_class__ = scope.$class.icon[_icon];
-                    } else {
-                        if (!nodeOf.__inited__) {
-                            nodeOf.__inited__ = true;
-                        }
-
-                        if (nodeOf.__hashKey__ !== hashKey) {
-                            // clear scope in $globals
-                            scope.deleteScope(scope, nodeOf);
-
-                            // add new scope into $globals
-                            scope.setScope(scope, nodeOf);
-                            hashKey = nodeOf.__hashKey__;
-                        }
-
-                        /*
-                        // remove to fix expand
-
-                        var parentReal = nodeOf.__parent_real__,
-                            parentNode = scope.tree_nodes[parentReal] || undefined;
-                        if (parentNode && (!parentNode.__expanded__ || !parentNode.__visible__)) {
-                            element.addClass(scope.$class.hidden);
-                            nodeOf.__visible__ = false;
-                        } else {
-                            element.removeClass(scope.$class.hidden);
-                            nodeOf.__visible__ = true;
-                        }
-                        */
-
-                        var _childs = nodeOf.__children__,
-                            _len    = _childs.length,
-                            _i;
-
-
-                        if (_len === 0) {
-                            _icon = -1;
-                        } else {
-                            if (nodeOf.__expanded__) {
-                                _icon = 1;
-                            } else {
-                                _icon = 0;
-                            }
-                        }
-
-                        nodeOf.__icon__       = _icon;
-                        nodeOf.__icon_class__ = scope.$class.icon[_icon];
-
-                        if (!scope.isTable) {
-                            if (!childsElem) {
-                                childsElem = scope.getElementChilds();
-                            }
-
-                            if (nodeOf.__expanded__) {
-                                childsElem.removeClass(scope.$class.hidden);
-                            } else {
-                                childsElem.addClass(scope.$class.hidden);
-                            }
-                        }
-
-                        for (_i = 0; _i < _len; _i++) {
-                            scope.for_all_descendants(_childs[_i], scope.hiddenChild, nodeOf, true);
-                        }
-
+                    if (!nodeOf.__inited__) {
+                        nodeOf.__inited__ = true;
                     }
 
-                    first = false;
+                    if (nodeOf.__hashKey__ !== hashKey) {
+                        // clear scope in $globals
+                        scope.deleteScope(scope, nodeOf);
+
+                        // add new scope into $globals
+                        scope.setScope(scope, nodeOf);
+                        hashKey = nodeOf.__hashKey__;
+                    }
+
+                    var _childs = nodeOf.__children__,
+                        _len    = _childs.length,
+                        _i;
+
+                    var _icon;
+                    if (_len === 0) {
+                        _icon = -1;
+                    } else {
+                        if (nodeOf.__expanded__) {
+                            _icon = 1;
+                        } else {
+                            _icon = 0;
+                        }
+                    }
+
+                    nodeOf.__icon__       = _icon;
+                    nodeOf.__icon_class__ = scope.$class.icon[_icon];
+
+                    if (!scope.isTable) {
+                        if (!childsElem) {
+                            childsElem = scope.getElementChilds();
+                        }
+
+                        if (nodeOf.__expanded__) {
+                            childsElem.removeClass(scope.$class.hidden);
+                        } else {
+                            childsElem.addClass(scope.$class.hidden);
+                        }
+                    }
+
+                    for (_i = 0; _i < _len; _i++) {
+                        scope.for_all_descendants(_childs[_i], scope.hiddenChild, nodeOf, true);
+                    }
 
                 }
             }

@@ -863,6 +863,7 @@ angular.module('ntt.TreeDnD')
                 scope.$on('$destroy', function () {
                     angular.element($window.document.body).unbind('keydown', keydownHandler);
                     angular.element($window.document.body).unbind('keyup', keyupHandler);
+
                     if (scope.statusElm) {
                         scope.statusElm.remove();
                     }
