@@ -9,23 +9,23 @@ app = angular.module('TreeDnDTest', deps)
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/table', {
-                templateUrl: 'routers/filter/filter-frame.html',
+                templateUrl: 'libs/routers/filter-frame.html',
                 controller:  'FilterController'
             })
             .when('/list', {
-                templateUrl: 'routers/list/list-frame.html',
+                templateUrl: 'libs/routers/list-frame.html',
                 controller:  'ListController'
             })
             .when('/multi', {
-                templateUrl: 'routers/multi/multi-frame.html',
+                templateUrl: 'libs/routers/multi-frame.html',
                 controller:  'MultiController'
             })
             .when('/event', {
-                templateUrl: 'routers/basic/basic-frame.html',
+                templateUrl: 'libs/routers/basic-frame.html',
                 controller:  'BasicController'
             })
             .when('/custom', {
-                templateUrl: 'routers/custom/custom-frame.html',
+                templateUrl: 'libs/routers/custom-frame.html',
                 controller:  'CustomController'
             })
             .otherwise({redirectTo: '/table'});
@@ -141,7 +141,7 @@ app = angular.module('TreeDnDTest', deps)
                 return [
                     {
                         'DemographicId': 1,
-                        'ParentId':      null,
+                        'ParentId':      undefined,
                         'Name':          'United States of America',
                         'Description':   'United States of America',
                         'Area':          9826675,
@@ -253,7 +253,7 @@ app = angular.module('TreeDnDTest', deps)
                         'TimeZone':      0
                     }, {
                         'DemographicId': 201,
-                        'ParentId':      null,
+                        'ParentId':      undefined,
                         'Name':          'India',
                         'Description':   'Hydrabad tech city',
                         'Area':          9826675,
@@ -261,7 +261,7 @@ app = angular.module('TreeDnDTest', deps)
                         'TimeZone':      'IST'
                     }, {
                         'DemographicId': 301,
-                        'ParentId':      null,
+                        'ParentId':      undefined,
                         'Name':          'Bangladesh',
                         'Description':   'Country of love',
                         'Area':          9826675,
@@ -309,7 +309,7 @@ app = angular.module('TreeDnDTest', deps)
                         var keyO = Object.keys(cloned),
                             lenO = keyO.length;
                         if (keyParent) {
-                            cloned[keyParent] = parent && parent[keyId] || null;
+                            cloned[keyParent] = parent && parent[keyId] || undefined;
                         }
 
                         cloned[keyId] = _opt.amount;
@@ -326,7 +326,7 @@ app = angular.module('TreeDnDTest', deps)
 
                 while (opt.amount < number) {
                     opt.amount++;
-                    patern = fnGenerate(null, angular.copy(sample), opt);
+                    patern = fnGenerate(undefined, angular.copy(sample), opt);
                     data.push(forDept(patern, fnGenerate, opt, 1));
                 }
 

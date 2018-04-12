@@ -1,6 +1,5 @@
 angular.module('ntt.TreeDnD')
-    .directive(
-        'treeDnd', fnInitTreeDnD);
+    .directive('treeDnd', fnInitTreeDnD);
 
 fnInitTreeDnD.$inject = [
     '$timeout', '$http', '$compile', '$parse', '$window', '$document', '$templateCache',
@@ -71,11 +70,14 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             if (node === false) {
                 return false;
             }
+
             n = node.__children__.length;
+
             if (n === 0) {
                 return node;
             } else {
                 last_child = node.__children__[n - 1];
+
                 return $scope.getLastDescendant(last_child);
             }
         };
@@ -91,7 +93,8 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 setTimeout(
                     function () {
                         $scope.tree.on_click(node);
-                    }, 0
+                    },
+                    0
                 );
             }
         };
@@ -106,7 +109,8 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                     setTimeout(
                         function () {
                             $scope.tree.on_select(node);
-                        }, 0
+                        },
+                        0
                     );
                 }
             }
@@ -539,7 +543,6 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 showChild:  false,
                 beginAnd:   true
             },
-            tree,
             _watches             = [
                 [
                     'enableDrag',
@@ -558,135 +561,143 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                     ]
                 ],
                 [
-                    ['enableDrag', 'enableStatus'], [
-                    ['string', 'templateCopy', $attrs.templateCopy, 'templateCopy', undefined, function (_url) {
-                        if (_url && $templateCache.get(_url)) {
-                            $TreeDnDTemplate.setCopy(_url, $scope);
-                        }
-                    }],
-                    ['string', 'templateMove', $attrs.templateMove, 'templateMove', undefined, function (_url) {
-                        if (_url && $templateCache.get(_url)) {
-                            $TreeDnDTemplate.setMove(_url, $scope);
-                        }
-                    }]
-                ]],
-                [
-                    [['enableDrag', 'enableDrop']], [
-                    ['number', 'dragBorder', 30, 'dragBorder', 30]]
+                    ['enableDrag', 'enableStatus'],
+                    [
+                        ['string', 'templateCopy', $attrs.templateCopy, 'templateCopy', undefined, function (_url) {
+                            if (_url && $templateCache.get(_url)) {
+                                $TreeDnDTemplate.setCopy(_url, $scope);
+                            }
+                        }],
+                        ['string', 'templateMove', $attrs.templateMove, 'templateMove', undefined, function (_url) {
+                            if (_url && $templateCache.get(_url)) {
+                                $TreeDnDTemplate.setMove(_url, $scope);
+                            }
+                        }]
+                    ]
                 ],
                 [
-                    '*', [
-                    ['boolean', 'treeTable', true, 'treeTable', undefined],
-                    ['boolean', 'horizontal'],
-                    ['callback', 'treeClass', function (val) {
-                        switch (typeof val) {
-                            case 'string':
-                                $scope.$tree_class = val;
-                                break;
-                            case 'object':
-                                angular.extend($scope.$class, val);
-                                $scope.$tree_class = $scope.$class.tree;
-                                break;
-                            default:
-                                $scope.$tree_class = $attrs.treeClass;
-                                break;
-                        }
-                    }, 'treeClass', function () {
-                        $scope.$tree_class = $scope.$class.tree + ' table';
-                    }, undefined, function () {
-                        if (/^(\s+[\w\-]+){2,}$/g.test(' ' + $attrs.treeClass)) {
-                            $scope.$tree_class = $attrs.treeClass.trim();
-                            return true;
-                        }
-                    }],
+                    [['enableDrag', 'enableDrop']],
                     [
-                        ['object', 'string'], 'expandOn', getExpandOn, 'expandingProperty', getExpandOn,
-                        function (expandOn) {
+                        ['number', 'dragBorder', 30, 'dragBorder', 30]
+                    ]
+                ],
+                [
+                    '*',
+                    [
+                        ['boolean', 'treeTable', true, 'treeTable', undefined],
+                        ['boolean', 'horizontal'],
+                        [
+                            'callback',
+                            'treeClass',
+                            function (val) {
+                                switch (typeof val) {
+                                    case 'string':
+                                        $scope.$tree_class = val;
+                                        break;
+                                    case 'object':
+                                        angular.extend($scope.$class, val);
+                                        $scope.$tree_class = $scope.$class.tree;
+                                        break;
+                                    default:
+                                        $scope.$tree_class = $attrs.treeClass;
+                                        break;
+                                }
+                            },
+                            'treeClass',
+                            function () {
+                                $scope.$tree_class = $scope.$class.tree + ' table';
+                            },
+                            undefined,
+                            function () {
+                                if (/^(\s+[\w\-]+){2,}$/g.test(' ' + $attrs.treeClass)) {
+                                    $scope.$tree_class = $attrs.treeClass.trim();
+                                    return true;
+                                }
+                            }
+                        ],
+                        [['object', 'string'], 'expandOn', getExpandOn, 'expandingProperty', getExpandOn, function (expandOn) {
                             if (angular.isUndefinedOrNull(expandOn)) {
                                 $scope.expandingProperty = $attrs.expandOn;
                             }
                         }],
-                    ['object', 'treeControl', angular.isDefined($scope.tree) ? $scope.tree : {},
-                        'tree', undefined, function ($tree) {
+                        ['object', 'treeControl', angular.isDefined($scope.tree) ? $scope.tree : {}, 'tree', undefined, function (treeControl) {
+                            if (!angular.isFunction(_fnGetControl)) {
+                                _fnGetControl = $TreeDnDPlugin('$TreeDnDControl');
+                            }
 
-                        if (!angular.isFunction(_fnGetControl)) {
-                            _fnGetControl = $TreeDnDPlugin('$TreeDnDControl');
-                        }
-
-                        if (angular.isFunction(_fnGetControl)) {
-                            tree = angular.extend(
-                                $tree,
-                                _fnGetControl($scope)
-                            );
-                        }
-                    }],
-                    [
-                        ['array', 'object'], 'columnDefs', getColDefs, 'colDefinitions', getColDefs,
-                        function (colDefs) {
+                            if (angular.isFunction(_fnGetControl)) {
+                                angular.extend(
+                                    $scope.tree,
+                                    _fnGetControl($scope),
+                                    treeControl
+                                );
+                            }
+                        }],
+                        [['array', 'object'], 'columnDefs', getColDefs, 'colDefinitions', getColDefs, function (colDefs) {
                             if (angular.isUndefinedOrNull(colDefs) || !angular.isArray(colDefs)) {
                                 $scope.colDefinitions = getColDefs();
                             }
                         }],
-                    [
-                        ['object', 'string', 'array', 'function'], 'orderBy', $attrs.orderBy
-                    ],
-                    [
-                        ['object', 'array'], 'filter', undefined, 'filter', undefined, function (filters) {
-                        var _passed = false;
-                        if (angular.isDefined(filters) && !angular.isArray(filters)) {
-                            var _keysF = Object.keys(filters),
-                                _lenF  = _keysF.length, _iF;
+                        [['object', 'string', 'array', 'function'], 'orderBy', $attrs.orderBy],
+                        [['object', 'array'], 'filter', undefined, 'filter', undefined, function (filters) {
+                            var _passed = false;
+                            if (angular.isDefined(filters) && !angular.isArray(filters)) {
+                                var _keysF = Object.keys(filters),
+                                    _lenF  = _keysF.length, _iF;
 
-                            if (_lenF > 0) {
-                                for (_iF = 0; _iF < _lenF; _iF++) {
+                                if (_lenF > 0) {
+                                    for (_iF = 0; _iF < _lenF; _iF++) {
 
-                                    if (typeof filters[_keysF[_iF]] === 'string' &&
-                                        filters[_keysF[_iF]].length === 0) {
-                                        continue;
-                                    }
-                                    _passed = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        $scope.enabledFilter = _passed;
-                        reload_data();
-                    }],
-                    [
-                        'object', 'filterOptions', _defaultFilterOption, 'filterOptions',
-                        _defaultFilterOption, function (option) {
-                        if (angular.isObject(option)) {
-                            $scope.filterOptions = angular.extend(_defaultFilterOption, option);
-                        }
-                    }],
-                    ['string', 'primaryKey', $attrs.primaryKey, 'primary_key', '__uid__'],
-                    ['string', 'indentUnit', $attrs.indentUnit, 'indent_unit'],
-                    ['number', 'indent', 30, undefined, 30],
-                    ['number', 'indentPlus', 20, undefined, 20],
-                    ['null', 'callbacks', function (optCallbacks) {
-                        angular.forEach(
-                            optCallbacks, function (value, key) {
-                                if (typeof value === 'function') {
-                                    if ($scope.$callbacks[key]) {
-                                        $scope.$callbacks[key] = value;
+                                        if (typeof filters[_keysF[_iF]] === 'string' &&
+                                            filters[_keysF[_iF]].length === 0) {
+                                            continue;
+                                        }
+                                        _passed = true;
+                                        break;
                                     }
                                 }
                             }
-                        );
 
-                        return $scope.$callbacks;
-                    },
-                        '$callbacks'
-                    ],
-                    ['number', 'expandLevel', 3, 'expandLevel', 3, function () {
-                        reload_data();
-                    }],
-                    ['number', 'treeLimit', 100, '$TreeLimit', 100],
-                    ['boolean', 'enableDrag', undefined, 'dragEnabled'],
-                    ['boolean', 'enableDrop', undefined, 'dropEnabled']
-                ]]
+                            $scope.enabledFilter = _passed;
+                            reload_data();
+                        }],
+                        ['object', 'filterOptions', _defaultFilterOption, 'filterOptions', _defaultFilterOption, function (option) {
+                            if (angular.isObject(option)) {
+                                $scope.filterOptions = angular.extend(_defaultFilterOption, option);
+                            }
+                        }],
+                        ['string', 'primaryKey', $attrs.primaryKey, 'primary_key', '__uid__'],
+                        ['string', 'indentUnit', $attrs.indentUnit, 'indent_unit'],
+                        ['number', 'indent', 30, undefined, 30],
+                        ['number', 'indentPlus', 20, undefined, 20],
+                        [
+                            'null',
+                            'callbacks',
+                            function (optCallbacks) {
+                                angular.forEach(
+                                    optCallbacks, function (value, key) {
+                                        if (typeof value === 'function') {
+                                            if ($scope.$callbacks[key]) {
+                                                $scope.$callbacks[key] = value;
+                                            }
+                                        }
+                                    }
+                                );
+
+                                return $scope.$callbacks;
+                            },
+                            '$callbacks'
+                        ],
+                        ['number', 'expandLevel', 3, 'expandLevel', 3, function () {
+                            reload_data();
+                        }],
+                        ['number', 'treeLimit', 100, '$TreeLimit', 100],
+                        ['boolean', 'enableDrag', undefined, 'dragEnabled'],
+                        ['boolean', 'enableDrop', undefined, 'dropEnabled']
+                    ]
+                ]
             ],
+
             w, lenW              = _watches.length,
             i, len,
             _curW,
@@ -703,6 +714,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
 
             _curW = _watches[w][1];
             for (i = 0, len = _curW.length; i < len; i++) {
+
                 _typeW    = _curW[i][0];
                 _nameW    = _curW[i][1];
                 _defaultW = _curW[i][2];
@@ -710,6 +722,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 _NotW     = _curW[i][4];
                 _AfterW   = _curW[i][5];
                 _BeforeW  = _curW[i][6];
+
                 generateWatch(_typeW, _nameW, _defaultW, _scopeW, _NotW, _AfterW, _BeforeW);
             }
         }
@@ -1080,59 +1093,6 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                     //elemNode.html('');
                 }
 
-                //scope.$watch(tableDataLoaded, transformTable);
-                /*
-                 function tableDataLoaded(elem) {
-                 // first cell in the tbody exists when data is loaded but doesn't have a width
-                 // until after the table is transformed
-                 var firstCell = elem.querySelector('tbody tr:first-child td:first-child');
-                 return firstCell && !firstCell.style.width;
-                 }
-
-                 function transformTable(elem, attrs) {
-                 // reset display styles so column widths are correct when measured below
-                 angular.element(elem.querySelectorAll('thead, tbody, tfoot')).css('display', '');
-
-                 // wrap in $timeout to give table a chance to finish rendering
-                 $timeout(function () {
-                 // set widths of columns
-                 angular.forEach(elem.querySelectorAll('tr:first-child th'), function (thElem, i) {
-
-                 var tdElems = elem.querySelector('tbody tr:first-child td:nth-child(' + (i + 1) + ')');
-                 var tfElems = elem.querySelector('tfoot tr:first-child td:nth-child(' + (i + 1) + ')');
-
-                 var columnWidth = tdElems ? tdElems.offsetWidth : thElem.offsetWidth;
-                 if (tdElems) {
-                 tdElems.style.width = columnWidth + 'px';
-                 }
-                 if (thElem) {
-                 thElem.style.width = columnWidth + 'px';
-                 }
-                 if (tfElems) {
-                 tfElems.style.width = columnWidth + 'px';
-                 }
-                 });
-
-                 // set css styles on thead and tbody
-                 angular.element(elem.querySelectorAll('thead, tfoot')).css('display', 'block');
-
-                 angular.element(elem.querySelectorAll('tbody')).css({
-                 'display':  'block',
-                 'height':   attrs.tableHeight || 'inherit',
-                 'overflow': 'auto'
-                 });
-
-                 // reduce width of last column by width of scrollbar
-                 var tbody          = elem.querySelector('tbody');
-                 var scrollBarWidth = tbody.offsetWidth - tbody.clientWidth;
-                 if (scrollBarWidth > 0) {
-                 // for some reason trimming the width by 2px lines everything up better
-                 scrollBarWidth -= 2;
-                 var lastColumn         = elem.querySelector('tbody tr:first-child td:last-child');
-                 lastColumn.style.width = lastColumn.offsetWidth - scrollBarWidth + 'px';
-                 }
-                 });
-                 }*/
                 var promiseCheck;
                 if ($_Template.length > 0) {
                     promiseCheck = checkTreeTable(angular.element($_Template.trim()), scope);

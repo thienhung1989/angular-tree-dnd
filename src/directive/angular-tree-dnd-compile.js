@@ -6,7 +6,8 @@ angular.module('ntt.TreeDnD')
                 restrict: 'A',
                 link:     function (scope, element, attrs) {
                     scope.$watch(
-                        attrs.compile, function (new_val) {
+                        attrs.compile,
+                        function (new_val) {
                             if (new_val) {
                                 if (angular.isFunction(element.empty)) {
                                     element.empty();
@@ -29,7 +30,8 @@ angular.module('ntt.TreeDnD')
                 restrict: 'A',
                 link:     function (scope, element, attrs) {
                     scope.$watch(
-                        attrs.compileReplace, function (new_val) {
+                        attrs.compileReplace,
+                        function (new_val) {
                             if (new_val) {
                                 element.replaceWith($compile(new_val)(scope));
                             }

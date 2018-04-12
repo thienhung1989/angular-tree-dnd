@@ -41,13 +41,13 @@
             // DataDemo.getDatas() can see in 'Custom Option' -> Tab 'Data Demo'
             $scope.tree_data          = DataDemo.getBigData({
                 'DemographicId': 1,
-                'ParentId':      null,
+                'ParentId':      undefined,
                 'Name':          'United States of America',
                 'Description':   'United States of America',
                 'Area':          9826675,
                 'Population':    318212000,
                 'TimeZone':      'UTC -5 to -10'
-            }, 500, 7, null, 'DemographicId', 'ParentId');
+            }, 500, 7, undefined, 'DemographicId', 'ParentId');
             // $scope.tree_data = $TreeDnDConvert.line2tree(DataDemo.getDatas(), 'DemographicId', 'ParentId');
 
             // init for UI example

@@ -1,10 +1,7 @@
 angular.module('ntt.TreeDnD')
     .controller('treeDndNodesController', [
-        '$scope', '$element',
-        function ($scope, $element) {
+        '$scope',
+        function ($scope) {
             this.scope = $scope;
-
-            $scope.$element = $element;
-            $scope.$type    = 'treeDndNodeHandle';
         }
     ]);
