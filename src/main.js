@@ -28,15 +28,19 @@
  * @version //<!--Version-->
  * @preserve
  * (c) 2015 Nguyuễn Thiện Hùng - <nguyenthienhung1989@gmail.com>
+ * @license
+ * //<!--License-->
  */
 (function () {
     'use strict';
     angular.isUndefinedOrNull = isUndefinedOrNull;
 
     angular.isDefined = isDefined;
-
+    /**
+     * @const $TreeDnDClass
+     */
     angular.module('ntt.TreeDnD', ['template/TreeDnD/TreeDnD.html'])
-        .constant('$TreeDnDClass', {
+        .constant('$TreeDnDClass', /** @lends $TreeDnDClass# */{
             tree:   'tree-dnd',
             empty:  'tree-dnd-empty',
             hidden: 'tree-dnd-hidden',

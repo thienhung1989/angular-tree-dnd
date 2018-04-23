@@ -145,7 +145,7 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
 
     /**
      * Get list of items
-     * @returns {Array}
+     * @returns {Node[]}
      */
     function getItems() {
         return items;

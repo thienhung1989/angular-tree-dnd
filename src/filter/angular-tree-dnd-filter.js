@@ -83,7 +83,7 @@ angular.module('ntt.TreeDnD')
              * @param node
              * @param condition
              * @param isAnd
-             * @returns {null|boolean}
+             * @returns {undefined|boolean}
              * @private
              */
             function _fnProccess(node, condition, isAnd) {
@@ -175,7 +175,7 @@ angular.module('ntt.TreeDnD')
              *
              * @param {object} options
              * @param {object} node
-             * @returns {null|boolean}
+             * @returns {undefined|boolean}
              * @private
              */
             function _fnBefore(options, node) {
@@ -192,7 +192,7 @@ angular.module('ntt.TreeDnD')
              *
              * @param {object} options
              * @param {object} node
-             * @returns {null|boolean}
+             * @returns {undefined|boolean}
              * @private
              */
             function _fnBeforeClear(options, node) {
@@ -212,7 +212,7 @@ angular.module('ntt.TreeDnD')
                     _state;
 
                 // convert filter object to array filter
-                if (angular.isObject(filters) && !angular.isArray(filters)) {
+                if (typeof filters === 'object' && !angular.isArray(filters)) {
                     _keysF  = Object.keys(filters);
                     _lenF   = _keysF.length;
                     _filter = [];
@@ -224,7 +224,7 @@ angular.module('ntt.TreeDnD')
                                 continue;
                             } else if (angular.isArray(filters[_keysF[_iF]])) {
                                 _state = filters[_keysF[_iF]];
-                            } else if (angular.isObject(filters[_keysF[_iF]])) {
+                            } else if (typeof filters[_keysF[_iF]] === 'object') {
                                 _state = _fnConvert(filters[_keysF[_iF]]);
                             } else {
                                 _state = {
@@ -263,7 +263,7 @@ angular.module('ntt.TreeDnD')
                     _filter;
 
                 _filter = _fnConvert(filters);
-                if (!(angular.isArray(_filter) || angular.isObject(_filter))
+                if (!(angular.isArray(_filter) || typeof _filter === 'object')
                     || _filter.length === 0) {
                     for (_i = 0, _len = treeData.length; _i < _len; _i++) {
                         for_all_descendants(
