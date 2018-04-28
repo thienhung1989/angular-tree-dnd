@@ -38,6 +38,10 @@ app = angular.module('TreeDnDTest', deps)
             link:     function (scope, element, attr) {
                 scope.options = [
                     {
+                        label: 'Docs',
+                        href:  '../docs'
+                    },
+                    {
                         label: 'Table & Filter',
                         href:  '#!table'
                     },
