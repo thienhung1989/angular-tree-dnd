@@ -496,7 +496,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 $scope.dragging        = undefined;
 
                 angular.extend(
-                    $scope.$callbacks, {
+                    $scope.$callbacks, /** @lends $scope.$callbacks */ {
                         beforeDrag: function (/*scopeDrag*/) {
                             return true;
                         },
@@ -693,6 +693,11 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 }
             }
 
+            /**
+             * Status targeting when drag & drop
+             *
+             * @type {boolean}
+             */
             $scope.targeting = false;
 
             /**
@@ -730,6 +735,13 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 return $scope.tree_nodes[index];
             };
 
+            /**
+             * Init element place
+             *
+             * @param {DOMElement} element
+             * @param {DOMElement} dragElm
+             * @returns {*}
+             */
             $scope.initPlace = function (element, dragElm) {
 
                 if (!$scope.placeElm) {
@@ -773,26 +785,48 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 return $scope.placeElm;
             };
 
+            /**
+             * Hide element place
+             */
             $scope.hidePlace = function () {
                 if ($scope.placeElm) {
                     $scope.placeElm.addClass($scope.$class.hidden);
                 }
             };
 
+            /**
+             * Show element place
+             */
             $scope.showPlace = function () {
                 if ($scope.placeElm) {
                     $scope.placeElm.removeClass($scope.$class.hidden);
                 }
             };
 
+            /**
+             * Get scope tree
+             * @returns {$scope}
+             */
             $scope.getScopeTree = function () {
                 return $scope;
             };
 
         }
 
+        /**
+         * Function safe apply to avoid loop-depth
+         *
+         * @type {$safeApply}
+         */
         $scope.$safeApply = $safeApply;
 
+        /**
+         * Hide children
+         *
+         * @param {Node} node
+         * @param {Node} parent
+         * @returns {boolean}
+         */
         $scope.hiddenChild = function fnHiddenChild(node, parent) {
             var nodeScope = $scope.getScope(node);
             if (nodeScope) {
@@ -805,11 +839,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 }
             } else {
                 // show node & init scope
-                if (parent && parent.__expanded__ && parent.__visible__) {
-                    node.__visible__ = true;
-                } else {
-                    node.__visible__ = false;
-                }
+                node.__visible__ = !!(parent && parent.__expanded__ && parent.__visible__);
             }
 
             // skip all child hiding... if not expaned
@@ -1023,19 +1053,38 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             );
         }
 
+        /**
+         * Reload data with timeout
+         * @callback timeLoadData
+         */
         function timeLoadData() {
             $scope.treeData = tmpTreeData;
             reload_data();
             timeReloadData = undefined;
         }
 
+        /**
+         * Update limit
+         */
         $scope.updateLimit = function updateLimit() {
-            //console.log('Call fn UpdateLimit');
             $scope.$TreeLimit += 50;
         };
 
+        /**
+         * Reload data
+         * @type {reload_data}
+         */
         $scope.reload_data = reload_data;
 
+        /**
+         * Check attribute exist
+         * @callback check_exist_attr
+         *
+         * @param {object|array} attrs - Array attributes
+         * @param {Array|string} existAttr - Criteria condition
+         * @param {boolean} isAnd - Is condition AND
+         * @returns {*}
+         */
         function check_exist_attr(attrs, existAttr, isAnd) {
             if (angular.isUndefinedOrNull(existAttr)) {
                 return false;
@@ -1050,6 +1099,14 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         }
 
+        /**
+         * Foreach attributes with criteria
+         * @callback for_each_attrs
+         * @param {Object|Array} attrs - Array attributes
+         * @param {Array|string} exist - Criteria condition
+         * @param {boolean} isAnd  - Is condition AND
+         * @returns {boolean}
+         */
         function for_each_attrs(attrs, exist, isAnd) {
             var i, len = exist.length, passed = false;
 
@@ -1073,8 +1130,19 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             return passed;
         }
 
-        function generateWatch(type, nameAttr, valDefault, nameScope, fnNotExist, fnAfter,
-                               fnBefore) {
+        /**
+         * Function generate watch attribute by automatic
+         *
+         * @callback generateWatch
+         * @param {*} type
+         * @param {string} nameAttr - Name attribute
+         * @param {*} valDefault - Value default
+         * @param {string|undefined} nameScope - Name of attribute in $scope
+         * @param {function} fnNotExist - Callback when attribute not exist
+         * @param {function} fnAfter - Callback when attribute found
+         * @param {function} fnBefore - Callback before attribute found (to prepare data)
+         */
+        function generateWatch(type, nameAttr, valDefault, nameScope, fnNotExist, fnAfter, fnBefore) {
             nameScope = nameScope || nameAttr;
             if (typeof type === 'string' || angular.isArray(type)) {
                 if (angular.isFunction(fnBefore) && fnBefore()) {
@@ -1112,6 +1180,12 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         }
 
+        /**
+         * Call safeApply
+         *
+         * @param fn
+         * @callback $safeApply
+         */
         function $safeApply(fn) {
             var phase = this.$root.$$phase;
             if (phase === '$apply' || phase === '$digest') {
@@ -1178,17 +1252,25 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         }
 
+        /**
+         * do_f
+         *
+         * @callback do_f
+         *
+         * @param {Node[]} root
+         * @param {Node} node
+         * @param {Node} parent
+         * @param {int} parent_real
+         * @param {int} level
+         * @param {boolean|*} visible
+         * @param {int} index
+         * @returns {number}
+         */
         function do_f(root, node, parent, parent_real, level, visible, index) {
-            /**
-             * Data base
-             * @name NodeData
-             * @typedef {Object} NodeData
-             */
             /**
              * Node of tree
              * @name Node
-             * @typedef {NodeData} Node
-             * @extends NodeData
+             * @type {NodeBase}
              * @property {int} __parent_real__
              * @property {Node} __parent__
              * @property {boolean} __expanded__
@@ -1201,7 +1283,6 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
              * @property {string} __uid__
              * @property {string} __hashKey__
              * @property {int} __dept__
-             * @property {Node[]|undefined} [__children__]
              */
             if (typeof node !== 'object') {
                 return 0;
@@ -1296,19 +1377,19 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
          *
          * @callback reload_data
          *
-         * @param oData
+         * @param {Node[]|undefined} [data=undefined]
          * @returns {Node[]}
          */
-        function reload_data(oData) {
+        function reload_data(data) {
             var _data,
                 _len,
                 _tree_nodes = [];
 
-            if (angular.isDefined(oData)) {
-                if (!angular.isArray(oData) || oData.length === 0) {
+            if (angular.isDefined(data)) {
+                if (!angular.isArray(data) || data.length === 0) {
                     return init_data([]);
                 } else {
-                    _data = oData;
+                    _data = data;
                 }
             } else if (!angular.isArray($scope.treeData) || $scope.treeData.length === 0) {
                 return init_data([]);

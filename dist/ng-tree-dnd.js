@@ -54,14 +54,51 @@
  */
 (function () {
     'use strict';
-    angular.isUndefinedOrNull = isUndefinedOrNull;
-
-    angular.isDefined = isDefined;
     /**
-     * @const $TreeDnDClass
+     * @namespace angular
+     */
+
+    /**
+     * Is undefined or null
+     * @param {*} val - Value
+     * @returns {boolean}
+     */
+    angular.isUndefinedOrNull = function isUndefinedOrNull(val) {
+        return angular.isUndefined(val) || val === null;
+    };
+
+    /**
+     * Is defined
+     *
+     * @param {*} val - Value
+     * @returns {boolean}
+     */
+    angular.isDefined = function isDefined(val) {
+        return !(angular.isUndefined(val) || val === null);
+    };
+
+    /**
+     * @namespace Factory
+     * @type object
+     */
+
+    /**
+     * @constant $TreeDnDClass
+     * @type object
+     * @default
+     * @property {string} [tree=tree-dnd]           - Class tree
+     * @property {string} [empty=tree-dnd-empty]    - Class tree empty
+     * @property {string} [hidden=tree-dnd-hidden]  - Class tree hidden
+     * @property {string} [node=tree-dnd-node]      - Class tree node
+     * @property {string} [nodes=tree-dnd-nodes]    - Class tree nodes
+     * @property {string} [handle=tree-dnd-handle]  - Class tree handle
+     * @property {string} [place=tree-dnd-place]    - Class tree place
+     * @property {string} [drag=tree-dnd-drag]      - Class tree drag
+     * @property {string} [status=tree-dnd-status]  - Class tree status (coping, moving)
+     * @property {object} icon
      */
     angular.module('ntt.TreeDnD', ['template/TreeDnD/TreeDnD.html'])
-        .constant('$TreeDnDClass', /** @lends $TreeDnDClass# */{
+        .constant('$TreeDnDClass', {
             tree:   'tree-dnd',
             empty:  'tree-dnd-empty',
             hidden: 'tree-dnd-hidden',
@@ -823,7 +860,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 $scope.dragging        = undefined;
 
                 angular.extend(
-                    $scope.$callbacks, {
+                    $scope.$callbacks, /** @lends $scope.$callbacks */ {
                         beforeDrag: function (/*scopeDrag*/) {
                             return true;
                         },
@@ -1020,6 +1057,11 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 }
             }
 
+            /**
+             * Status targeting when drag & drop
+             *
+             * @type {boolean}
+             */
             $scope.targeting = false;
 
             /**
@@ -1057,6 +1099,13 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 return $scope.tree_nodes[index];
             };
 
+            /**
+             * Init element place
+             *
+             * @param {DOMElement} element
+             * @param {DOMElement} dragElm
+             * @returns {*}
+             */
             $scope.initPlace = function (element, dragElm) {
 
                 if (!$scope.placeElm) {
@@ -1100,26 +1149,48 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 return $scope.placeElm;
             };
 
+            /**
+             * Hide element place
+             */
             $scope.hidePlace = function () {
                 if ($scope.placeElm) {
                     $scope.placeElm.addClass($scope.$class.hidden);
                 }
             };
 
+            /**
+             * Show element place
+             */
             $scope.showPlace = function () {
                 if ($scope.placeElm) {
                     $scope.placeElm.removeClass($scope.$class.hidden);
                 }
             };
 
+            /**
+             * Get scope tree
+             * @returns {$scope}
+             */
             $scope.getScopeTree = function () {
                 return $scope;
             };
 
         }
 
+        /**
+         * Function safe apply to avoid loop-depth
+         *
+         * @type {$safeApply}
+         */
         $scope.$safeApply = $safeApply;
 
+        /**
+         * Hide children
+         *
+         * @param {Node} node
+         * @param {Node} parent
+         * @returns {boolean}
+         */
         $scope.hiddenChild = function fnHiddenChild(node, parent) {
             var nodeScope = $scope.getScope(node);
             if (nodeScope) {
@@ -1132,11 +1203,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 }
             } else {
                 // show node & init scope
-                if (parent && parent.__expanded__ && parent.__visible__) {
-                    node.__visible__ = true;
-                } else {
-                    node.__visible__ = false;
-                }
+                node.__visible__ = !!(parent && parent.__expanded__ && parent.__visible__);
             }
 
             // skip all child hiding... if not expaned
@@ -1350,19 +1417,38 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             );
         }
 
+        /**
+         * Reload data with timeout
+         * @callback timeLoadData
+         */
         function timeLoadData() {
             $scope.treeData = tmpTreeData;
             reload_data();
             timeReloadData = undefined;
         }
 
+        /**
+         * Update limit
+         */
         $scope.updateLimit = function updateLimit() {
-            //console.log('Call fn UpdateLimit');
             $scope.$TreeLimit += 50;
         };
 
+        /**
+         * Reload data
+         * @type {reload_data}
+         */
         $scope.reload_data = reload_data;
 
+        /**
+         * Check attribute exist
+         * @callback check_exist_attr
+         *
+         * @param {object|array} attrs - Array attributes
+         * @param {Array|string} existAttr - Criteria condition
+         * @param {boolean} isAnd - Is condition AND
+         * @returns {*}
+         */
         function check_exist_attr(attrs, existAttr, isAnd) {
             if (angular.isUndefinedOrNull(existAttr)) {
                 return false;
@@ -1377,6 +1463,14 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         }
 
+        /**
+         * Foreach attributes with criteria
+         * @callback for_each_attrs
+         * @param {Object|Array} attrs - Array attributes
+         * @param {Array|string} exist - Criteria condition
+         * @param {boolean} isAnd  - Is condition AND
+         * @returns {boolean}
+         */
         function for_each_attrs(attrs, exist, isAnd) {
             var i, len = exist.length, passed = false;
 
@@ -1400,8 +1494,19 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             return passed;
         }
 
-        function generateWatch(type, nameAttr, valDefault, nameScope, fnNotExist, fnAfter,
-                               fnBefore) {
+        /**
+         * Function generate watch attribute by automatic
+         *
+         * @callback generateWatch
+         * @param {*} type
+         * @param {string} nameAttr - Name attribute
+         * @param {*} valDefault - Value default
+         * @param {string|undefined} nameScope - Name of attribute in $scope
+         * @param {function} fnNotExist - Callback when attribute not exist
+         * @param {function} fnAfter - Callback when attribute found
+         * @param {function} fnBefore - Callback before attribute found (to prepare data)
+         */
+        function generateWatch(type, nameAttr, valDefault, nameScope, fnNotExist, fnAfter, fnBefore) {
             nameScope = nameScope || nameAttr;
             if (typeof type === 'string' || angular.isArray(type)) {
                 if (angular.isFunction(fnBefore) && fnBefore()) {
@@ -1439,6 +1544,12 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         }
 
+        /**
+         * Call safeApply
+         *
+         * @param fn
+         * @callback $safeApply
+         */
         function $safeApply(fn) {
             var phase = this.$root.$$phase;
             if (phase === '$apply' || phase === '$digest') {
@@ -1505,17 +1616,25 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         }
 
+        /**
+         * do_f
+         *
+         * @callback do_f
+         *
+         * @param {Node[]} root
+         * @param {Node} node
+         * @param {Node} parent
+         * @param {int} parent_real
+         * @param {int} level
+         * @param {boolean|*} visible
+         * @param {int} index
+         * @returns {number}
+         */
         function do_f(root, node, parent, parent_real, level, visible, index) {
-            /**
-             * Data base
-             * @name NodeData
-             * @typedef {Object} NodeData
-             */
             /**
              * Node of tree
              * @name Node
-             * @typedef {NodeData} Node
-             * @extends NodeData
+             * @type {NodeBase}
              * @property {int} __parent_real__
              * @property {Node} __parent__
              * @property {boolean} __expanded__
@@ -1528,7 +1647,6 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
              * @property {string} __uid__
              * @property {string} __hashKey__
              * @property {int} __dept__
-             * @property {Node[]|undefined} [__children__]
              */
             if (typeof node !== 'object') {
                 return 0;
@@ -1623,19 +1741,19 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
          *
          * @callback reload_data
          *
-         * @param oData
+         * @param {Node[]|undefined} [data=undefined]
          * @returns {Node[]}
          */
-        function reload_data(oData) {
+        function reload_data(data) {
             var _data,
                 _len,
                 _tree_nodes = [];
 
-            if (angular.isDefined(oData)) {
-                if (!angular.isArray(oData) || oData.length === 0) {
+            if (angular.isDefined(data)) {
+                if (!angular.isArray(data) || data.length === 0) {
                     return init_data([]);
                 } else {
-                    _data = oData;
+                    _data = data;
                 }
             } else if (!angular.isArray($scope.treeData) || $scope.treeData.length === 0) {
                 return init_data([]);
@@ -1781,9 +1899,36 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
 }
 
 
+/**
+ * Factory $TreeDnDConvert
+ *
+ * @name Factory.$TreeDnDConvert
+ * @type {$TreeDnDConvert}
+ */
 angular.module('ntt.TreeDnD')
     .factory('$TreeDnDConvert', function () {
-        var _$initConvert = {
+        /**
+         * NodeBase
+         * @name NodeBase
+         * @type object
+         * @property {NodeBase[]|undefined} [__children__]
+         */
+
+        /**
+         * @name $TreeDnDConvert
+         * @type object
+         * @default
+         */
+        var $TreeDnDConvert = {
+            /**
+             * Line to tree
+             *
+             * @param {Array|Object} data
+             * @param {string} primaryKey
+             * @param {string} parentKey
+             * @param {function} callback
+             * @returns {NodeBase[]}
+             */
             line2tree: function (data, primaryKey, parentKey, callback) {
                 callback = typeof callback === 'function' ? callback : function () {
                 };
@@ -1845,6 +1990,14 @@ angular.module('ntt.TreeDnD')
 
                 return tree;
             },
+            /**
+             * Convert tree to tree
+             *
+             * @param {array|object} data
+             * @param {string} containKey
+             * @param {function} callback
+             * @returns {NodeBase[]}
+             */
             tree2tree: function access_child(data, containKey, callback) {
                 callback = typeof callback === 'function' ? callback : function () {
                 };
@@ -1872,17 +2025,9 @@ angular.module('ntt.TreeDnD')
             }
         };
 
-        return _$initConvert;
+        return $TreeDnDConvert;
     });
 
-/**
- * Element position information (when drag & drop)
- *
- * @namespace ElementPosition
- * @name ElementPosition
- * @alias ElementPosition
- * @type {object}
- */
 /**
  * Factory $TreeDnDHelper
  * @namespace $TreeDnDHelper
@@ -1896,7 +2041,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Status is no draggable
                  *
-                 * @param {Element} targetElm
+                 * @param {DOMElement} targetElm
                  * @returns {boolean}
                  */
                 nodrag:   function (targetElm) {
@@ -1949,7 +2094,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Get element's height
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {number}
                  */
                 height: function (element) {
@@ -1959,7 +2104,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Get element's width
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {number}
                  */
                 width: function (element) {
@@ -1969,7 +2114,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Get element's offset
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {{width: *, height: *, top: *, left: *}}
                  */
                 offset: function (element) {
@@ -1987,11 +2132,33 @@ angular.module('ntt.TreeDnD')
                  * Get position started of element drag or drop
                  *
                  * @param {Event} e
-                 * @param {Element} target
+                 * @param {DOMElement} target
                  * @returns {ElementPosition}
                  */
                 positionStarted: function (e, target) {
-                    var ElementPosition = /** @lends ElementPosition */ {
+                    /**
+                     * Element position information (when drag & drop)
+                     *
+                     * @name ElementPosition
+                     * @type {object}
+                     * @property {number} offsetX
+                     * @property {number} offsetY
+                     * @property {number} startX
+                     * @property {number} lastX
+                     * @property {number} startY
+                     * @property {number} lastY
+                     * @property {number} nowX
+                     * @property {number} nowY
+                     * @property {number} distX - Distance of X
+                     * @property {number} distY - Distance of Y
+                     * @property {number} dirAX - Direct of Ax
+                     * @property {number} dirX - Direct of X
+                     * @property {number} dirY - Direct of Y
+                     * @property {number} LastDirX - Last direct of X
+                     * @property {number} distAxX - Distance of AxX
+                     * @property {number} distAxY - Distance of AxY
+                     */
+                    var ElementPosition = {
                         offsetX:  e.pageX - this.offset(target).left,
                         offsetY:  e.pageY - this.offset(target).top,
                         startX:   e.pageX,
@@ -2078,7 +2245,7 @@ angular.module('ntt.TreeDnD')
                  * Replace with indent
                  *
                  * @param {$scope} scope
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @param {number} indent
                  * @param {string} attr
                  */
@@ -2090,7 +2257,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Is type tree node
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {boolean}
                  */
                 isTreeDndNode: function (element) {
@@ -2105,7 +2272,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Is tree nodes (container)
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {boolean}
                  */
                 isTreeDndNodes: function (element) {
@@ -2121,7 +2288,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Is tree node handle (element to call event drag)
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {boolean}
                  */
                 isTreeDndNodeHandle: function (element) {
@@ -2137,7 +2304,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Is tree droppable
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {boolean}
                  */
                 isTreeDndDroppable: function (element) {
@@ -2149,9 +2316,9 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Find element closest by attribute
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @param {string|function} attr
-                 * @returns {Element}
+                 * @returns {DOMElement}
                  */
                 closestByAttr: function fnClosestByAttr(element, attr) {
                     if (element && attr) {
@@ -2200,103 +2367,111 @@ angular.module('ntt.TreeDnD')
 
 /**
  * Factory `$TreeDnDTemplate`
- * @namespace $TreeDnDTemplate
- * @name $TreeDnDTemplate
- * @type {object}
+ * @name Factory.$TreeDnDTemplate
+ * @type {TreeDnDTemplate}
  */
 angular.module('ntt.TreeDnD')
     .factory('$TreeDnDTemplate', [
         '$templateCache',
         function ($templateCache) {
             var templatePath = 'template/TreeDnD/TreeDnD.html',
+
                 /**
                  * @private
                  * @type {string}
                  */
                 copyPath     = 'template/TreeDnD/TreeDnDStatusCopy.html',
+
                 /**
                  * @private
                  * @type {string}
                  */
                 movePath     = 'template/TreeDnD/TreeDnDStatusMove.html',
+
                 /**
                  * @private
                  * @type {object}
                  */
-                scopes       = {},
+                scopes       = {};
 
-                _$init       = /** @lends $TreeDnDTemplate */{
-                    /**
-                     * Set path of template move
-                     *
-                     * @param {string} path
-                     * @param {$scope} scope
-                     */
-                    setMove: function (path, scope) {
-                        if (!scopes[scope.$id]) {
-                            scopes[scope.$id] = {};
-                        }
-                        scopes[scope.$id].movePath = path;
-                    },
-
-                    /**
-                     * Set path of template copy
-                     *
-                     * @param {string} path
-                     * @param {$scope} scope
-                     */
-                    setCopy: function (path, scope) {
-                        if (!scopes[scope.$id]) {
-                            scopes[scope.$id] = {};
-                        }
-                        scopes[scope.$id].copyPath = path;
-                    },
-
-                    /**
-                     * Get template's path
-                     *
-                     * @returns {string}
-                     */
-                    getPath: function () {
-                        return templatePath;
-                    },
-
-                    /**
-                     * Get template's copy
-                     *
-                     * @param {$scope} scope
-                     * @returns {string|html}
-                     */
-                    getCopy: function (scope) {
-                        if (scopes[scope.$id] && scopes[scope.$id].copyPath) {
-                            var temp = $templateCache.get(scopes[scope.$id].copyPath);
-                            if (temp) {
-                                return temp;
-                            }
-                        }
-
-                        return $templateCache.get(copyPath);
-                    },
-
-                    /**
-                     * Get template's move
-                     *
-                     * @param {$scope} scope
-                     * @returns {string|html}
-                     */
-                    getMove: function (scope) {
-                        if (scopes[scope.$id] && scopes[scope.$id].movePath) {
-                            var temp = $templateCache.get(scopes[scope.$id].movePath);
-                            if (temp) {
-                                return temp;
-                            }
-                        }
-
-                        return $templateCache.get(movePath);
+            /**
+             * TreeDnDTemplate
+             *
+             * @constructor TreeDnDTemplate
+             * @hideConstructor
+             */
+            var InitTreeDnDTemplate = /** @lends TreeDnDTemplate */ {
+                /**
+                 * Set path of template move
+                 *
+                 * @param {string} path - Path of template
+                 * @param {$scope} scope - Scope of tree
+                 */
+                setMove: function (path, scope) {
+                    if (!scopes[scope.$id]) {
+                        scopes[scope.$id] = {};
                     }
-                };
+                    scopes[scope.$id].movePath = path;
+                },
 
-            return _$init;
+                /**
+                 * Set path of template copy
+                 *
+                 * @param {string} path - Path of template
+                 * @param {$scope} scope - Scope of tree
+                 */
+                setCopy: function (path, scope) {
+                    if (!scopes[scope.$id]) {
+                        scopes[scope.$id] = {};
+                    }
+                    scopes[scope.$id].copyPath = path;
+                },
+
+                /**
+                 * Get template's path
+                 *
+                 * @returns {string}
+                 */
+                getPath: function () {
+                    return templatePath;
+                },
+
+                /**
+                 * Get template's copy
+                 *
+                 * @param {$scope} scope - Scope of tree
+                 * @returns {string|html}
+                 */
+                getCopy: function (scope) {
+                    if (scopes[scope.$id] && scopes[scope.$id].copyPath) {
+                        var temp = $templateCache.get(scopes[scope.$id].copyPath);
+                        if (temp) {
+                            return temp;
+                        }
+                    }
+
+                    return $templateCache.get(copyPath);
+                },
+
+                /**
+                 * Get template's move
+                 *
+                 * @param {$scope} scope - Scope of tree
+                 * @returns {string|html}
+                 */
+                getMove: function (scope) {
+                    if (scopes[scope.$id] && scopes[scope.$id].movePath) {
+                        var temp = $templateCache.get(scopes[scope.$id].movePath);
+                        if (temp) {
+                            return temp;
+                        }
+                    }
+
+                    return $templateCache.get(movePath);
+                }
+            };
+
+            return InitTreeDnDTemplate;
         }]
     );
 
@@ -2397,9 +2572,12 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
     }
 
     /**
+     * Set the viewport element
+     *
      * @name setViewport
-     * @desciption Set the viewport element
      * @param element
+     * @callback setViewport
+     * @private
      */
     function setViewport(element) {
         viewport = element;
@@ -2407,7 +2585,10 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
 
     /**
      * Return the current viewport
+     *
      * @returns {*}
+     * @callback getViewport
+     * @private
      */
     function getViewport() {
         return viewport;
@@ -2429,8 +2610,8 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
 
     /**
      * Add listener for event
-     * @param element
-     * @param callback
+     * @param {$scope} scope
+     * @param {DOMElement} element
      */
     function add(scope, element) {
         updateDelayed();
@@ -2441,6 +2622,14 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
         });
     }
 
+    /**
+     * 
+     *
+     * @param {$scope} scope
+     * @param {string} template
+     * @callback setTemplate
+     * @private
+     */
     function setTemplate(scope, template) {
         nodeTemplate = template;
     }
@@ -2454,11 +2643,31 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
     }
 }
 
+/**
+ * Factory $TreeDnDFilter
+ * @namespace $TreeDnDFilter
+ * @type function
+ * @function
+ */
 angular.module('ntt.TreeDnD')
     .factory('$TreeDnDFilter', [
-        '$filter', function ($filter) {
+        '$filter',
+        function ($filter) {
             return fnInitFilter;
 
+            /**
+             * Foreach all descendants
+             *
+             * @param {array|object} options
+             * @param {Node} node
+             * @param {string} fieldChild
+             * @param {Function} [fnBefore] - Callback before foreach descendants of node
+             * @param {Function} [fnAfter]  - Callback after foreach descendants of node
+             * @param {boolean} [parentPassed=false] - Parent is passed
+             * @returns {boolean|undefined}
+             * @callback for_all_descendants
+             * @private
+             */
             function for_all_descendants(options, node, fieldChild, fnBefore, fnAfter, parentPassed) {
                 if (!angular.isFunction(fnBefore)) {
                     return; // jmp out
@@ -2499,8 +2708,9 @@ angular.module('ntt.TreeDnD')
             /**
              * Check data with callback
              * @param {string|object|function|regex} callback
-             * @param {*} data
+             * @param {Node[]|Node|boolean|string|regex} data
              * @returns {undefined|boolean}
+             * @callback _fnCheck
              * @private
              */
             function _fnCheck(callback, data) {
@@ -2522,12 +2732,8 @@ angular.module('ntt.TreeDnD')
                         catch (err) {
                             if (typeof data === 'string') {
                                 return data.indexOf(callback) > -1;
-                            } else {
-                                return; // jmp out
                             }
                         }
-                    } else {
-                        return; // jmp out
                     }
                 }
             }
@@ -2538,11 +2744,11 @@ angular.module('ntt.TreeDnD')
              *
              * @param node
              * @param condition
-             * @param isAnd
+             * @param {boolean} isAnd
              * @returns {undefined|boolean}
              * @private
              */
-            function _fnProccess(node, condition, isAnd) {
+            function _fnProcess(node, condition, isAnd) {
                 if (angular.isArray(condition)) {
                     return for_each_filter(node, condition, isAnd);
                 } else {
@@ -2566,9 +2772,9 @@ angular.module('ntt.TreeDnD')
 
             /**
              *
-             * @param {object} node
-             * @param {array} conditions Array `conditions`
-             * @param {boolean} isAnd check with condition `And`, if `And` then `return false` when all `false`
+             * @param {Node} node
+             * @param {array} conditions - Array `conditions`
+             * @param {boolean} isAnd - Check with condition `And`, if `And` then `return false` when all `false`
              * @returns {undefined|boolean}
              */
             function for_each_filter(node, conditions, isAnd) {
@@ -2578,7 +2784,7 @@ angular.module('ntt.TreeDnD')
                 }
 
                 for (i = 0; i < len; i++) {
-                    if (_fnProccess(node, conditions[i], !isAnd)) {
+                    if (_fnProcess(node, conditions[i], !isAnd)) {
                         passed = true;
                         // if condition `or` then return;
                         if (!isAnd) {
@@ -2599,13 +2805,20 @@ angular.module('ntt.TreeDnD')
             /**
              * Will call _fnAfter to clear data no need
              * @param {object} options
-             * @param {object} node
+             * @param {NodeFilter} node
              * @param {boolean} isNodePassed
              * @param {boolean} isChildPassed
              * @param {boolean} isParentPassed
              * @private
              */
             function _fnAfter(options, node, isNodePassed, isChildPassed, isParentPassed) {
+                /**
+                 * @name NodeFilter
+                 * @extends Node
+                 * @property {boolean} __filtered__
+                 * @property {boolean} __filtered_visible__
+                 * @property {int} __filtered_index__
+                 */
                 if (isNodePassed === true) {
                     node.__filtered__         = true;
                     node.__filtered_visible__ = true;
@@ -2627,18 +2840,19 @@ angular.module('ntt.TreeDnD')
 
             /**
              * `fnBefore` will called when `for_all_descendants` of `node` checking.
-             * If `filter` empty then return `true` else result of function `_fnProccess` {@see _fnProccess}
+             * If `filter` empty then return `true` else result of function `_fnProcess` {@see _fnProcess}
              *
              * @param {object} options
-             * @param {object} node
+             * @param {NodeFilter} node
              * @returns {undefined|boolean}
+             * @callback _fnBefore
              * @private
              */
             function _fnBefore(options, node) {
                 if (options.filter.length === 0) {
                     return true;
                 } else {
-                    return _fnProccess(node, options.filter, options.beginAnd || false);
+                    return _fnProcess(node, options.filter, options.beginAnd || false);
                 }
             }
 
@@ -2647,8 +2861,9 @@ angular.module('ntt.TreeDnD')
              * Alway false to Clear Filter empty
              *
              * @param {object} options
-             * @param {object} node
+             * @param {NodeFilter} node
              * @returns {undefined|boolean}
+             * @callback _fnBeforeClear
              * @private
              */
             function _fnBeforeClear(options, node) {
@@ -2660,6 +2875,7 @@ angular.module('ntt.TreeDnD')
              *
              * @param {object|array} filters
              * @returns {array} Instead of `filter` or new array invaild *(converted from filter)*
+             * @callback _fnConvert
              * @private
              */
             function _fnConvert(filters) {
@@ -2701,13 +2917,11 @@ angular.module('ntt.TreeDnD')
 
             /**
              * `fnInitFilter` function is constructor of service `$TreeDnDFilter`.
-             * @constructor
-             * @param {object|array} treeData
+             * @param {NodeFilter|NodeFilter[]} treeData
              * @param {object|array} filters
              * @param {object} options
              * @param {string} keyChild
              * @returns {array} Return `treeData` or `treeData` with `filter`
-             * @private
              */
             function fnInitFilter(treeData, filters, options, keyChild) {
                 if (!angular.isArray(treeData)
@@ -2750,11 +2964,28 @@ angular.module('ntt.TreeDnD')
         }]
     );
 
+/**
+ * Factory $TreeDnDOrderBy
+ *
+ * @name Factory.$TreeDnDOrderBy
+ * @type {fnInitTreeOrderBy}
+ */
 angular.module('ntt.TreeDnD')
     .factory('$TreeDnDOrderBy', [
         '$filter',
         function ($filter) {
             var _fnOrderBy          = $filter('orderBy'),
+                /**
+                 * Foreach all descendants
+                 *
+                 * @param options
+                 * @param {Node} node          - Node
+                 * @param {string} name        - Name attribute
+                 * @param {function} fnOrderBy - Callback orderBy
+                 * @returns {Node}
+                 * @callback for_all_descendants
+                 * @private
+                 */
                 for_all_descendants = function for_all_descendants(options, node, name, fnOrderBy) {
                     var _i, _len, _nodes;
 
@@ -2771,10 +3002,28 @@ angular.module('ntt.TreeDnD')
 
                     return node;
                 },
+
+                /**
+                 * Function order
+                 * @param {Node[]} list
+                 * @param {string} orderBy
+                 * @returns {Node[]}
+                 * @private
+                 */
                 _fnOrder            = function _fnOrder(list, orderBy) {
                     return _fnOrderBy(list, orderBy);
                 },
-                _fnMain             = function _fnMain(treeData, orderBy) {
+
+                /**
+                 * Function tree orderBy
+                 *
+                 * @type {function}
+                 * @param {Node[]} treeData
+                 * @param {string} orderBy
+                 * @returns {Node[]}
+                 * @callback fnInitTreeOrderBy
+                 */
+                fnInitTreeOrderBy   = function fnInitTreeOrderBy(treeData, orderBy) {
                     if (!angular.isArray(treeData)
                         || treeData.length === 0
                         || !(angular.isArray(orderBy) || typeof orderBy === 'object' || angular.isString(orderBy) || angular.isFunction(orderBy))
@@ -2797,7 +3046,7 @@ angular.module('ntt.TreeDnD')
                     return _fnOrder(treeData, orderBy);
                 };
 
-            return _fnMain;
+            return fnInitTreeOrderBy;
         }]
     );
 
@@ -4370,12 +4619,4 @@ angular.module('template/TreeDnD/TreeDnD.html', []).run(
         );
     }]
 );
-
-    function isUndefinedOrNull(val) {
-        return angular.isUndefined(val) || val === null;
-    }
-
-    function isDefined(val) {
-        return !(angular.isUndefined(val) || val === null);
-    }
 })();

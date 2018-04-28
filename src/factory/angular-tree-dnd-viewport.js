@@ -95,9 +95,12 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
     }
 
     /**
+     * Set the viewport element
+     *
      * @name setViewport
-     * @desciption Set the viewport element
      * @param element
+     * @callback setViewport
+     * @private
      */
     function setViewport(element) {
         viewport = element;
@@ -105,7 +108,10 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
 
     /**
      * Return the current viewport
+     *
      * @returns {*}
+     * @callback getViewport
+     * @private
      */
     function getViewport() {
         return viewport;
@@ -127,8 +133,8 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
 
     /**
      * Add listener for event
-     * @param element
-     * @param callback
+     * @param {$scope} scope
+     * @param {DOMElement} element
      */
     function add(scope, element) {
         updateDelayed();
@@ -139,6 +145,14 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
         });
     }
 
+    /**
+     *
+     *
+     * @param {$scope} scope
+     * @param {string} template
+     * @callback setTemplate
+     * @private
+     */
     function setTemplate(scope, template) {
         nodeTemplate = template;
     }

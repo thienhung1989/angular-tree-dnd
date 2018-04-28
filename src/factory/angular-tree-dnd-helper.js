@@ -1,12 +1,4 @@
 /**
- * Element position information (when drag & drop)
- *
- * @namespace ElementPosition
- * @name ElementPosition
- * @alias ElementPosition
- * @type {object}
- */
-/**
  * Factory $TreeDnDHelper
  * @namespace $TreeDnDHelper
  * @name $TreeDnDHelper
@@ -19,7 +11,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Status is no draggable
                  *
-                 * @param {Element} targetElm
+                 * @param {DOMElement} targetElm
                  * @returns {boolean}
                  */
                 nodrag:   function (targetElm) {
@@ -72,7 +64,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Get element's height
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {number}
                  */
                 height: function (element) {
@@ -82,7 +74,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Get element's width
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {number}
                  */
                 width: function (element) {
@@ -92,7 +84,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Get element's offset
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {{width: *, height: *, top: *, left: *}}
                  */
                 offset: function (element) {
@@ -110,11 +102,33 @@ angular.module('ntt.TreeDnD')
                  * Get position started of element drag or drop
                  *
                  * @param {Event} e
-                 * @param {Element} target
+                 * @param {DOMElement} target
                  * @returns {ElementPosition}
                  */
                 positionStarted: function (e, target) {
-                    var ElementPosition = /** @lends ElementPosition */ {
+                    /**
+                     * Element position information (when drag & drop)
+                     *
+                     * @name ElementPosition
+                     * @type {object}
+                     * @property {number} offsetX
+                     * @property {number} offsetY
+                     * @property {number} startX
+                     * @property {number} lastX
+                     * @property {number} startY
+                     * @property {number} lastY
+                     * @property {number} nowX
+                     * @property {number} nowY
+                     * @property {number} distX - Distance of X
+                     * @property {number} distY - Distance of Y
+                     * @property {number} dirAX - Direct of Ax
+                     * @property {number} dirX - Direct of X
+                     * @property {number} dirY - Direct of Y
+                     * @property {number} LastDirX - Last direct of X
+                     * @property {number} distAxX - Distance of AxX
+                     * @property {number} distAxY - Distance of AxY
+                     */
+                    var ElementPosition = {
                         offsetX:  e.pageX - this.offset(target).left,
                         offsetY:  e.pageY - this.offset(target).top,
                         startX:   e.pageX,
@@ -201,7 +215,7 @@ angular.module('ntt.TreeDnD')
                  * Replace with indent
                  *
                  * @param {$scope} scope
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @param {number} indent
                  * @param {string} attr
                  */
@@ -213,7 +227,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Is type tree node
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {boolean}
                  */
                 isTreeDndNode: function (element) {
@@ -228,7 +242,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Is tree nodes (container)
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {boolean}
                  */
                 isTreeDndNodes: function (element) {
@@ -244,7 +258,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Is tree node handle (element to call event drag)
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {boolean}
                  */
                 isTreeDndNodeHandle: function (element) {
@@ -260,7 +274,7 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Is tree droppable
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @returns {boolean}
                  */
                 isTreeDndDroppable: function (element) {
@@ -272,9 +286,9 @@ angular.module('ntt.TreeDnD')
                 /**
                  * Find element closest by attribute
                  *
-                 * @param {Element} element
+                 * @param {DOMElement} element
                  * @param {string|function} attr
-                 * @returns {Element}
+                 * @returns {DOMElement}
                  */
                 closestByAttr: function fnClosestByAttr(element, attr) {
                     if (element && attr) {

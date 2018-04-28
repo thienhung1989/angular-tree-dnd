@@ -1,8 +1,28 @@
+/**
+ * Factory $TreeDnDFilter
+ * @namespace $TreeDnDFilter
+ * @type function
+ * @function
+ */
 angular.module('ntt.TreeDnD')
     .factory('$TreeDnDFilter', [
-        '$filter', function ($filter) {
+        '$filter',
+        function ($filter) {
             return fnInitFilter;
 
+            /**
+             * Foreach all descendants
+             *
+             * @param {array|object} options
+             * @param {Node} node
+             * @param {string} fieldChild
+             * @param {Function} [fnBefore] - Callback before foreach descendants of node
+             * @param {Function} [fnAfter]  - Callback after foreach descendants of node
+             * @param {boolean} [parentPassed=false] - Parent is passed
+             * @returns {boolean|undefined}
+             * @callback for_all_descendants
+             * @private
+             */
             function for_all_descendants(options, node, fieldChild, fnBefore, fnAfter, parentPassed) {
                 if (!angular.isFunction(fnBefore)) {
                     return; // jmp out
@@ -43,8 +63,9 @@ angular.module('ntt.TreeDnD')
             /**
              * Check data with callback
              * @param {string|object|function|regex} callback
-             * @param {*} data
+             * @param {Node[]|Node|boolean|string|regex} data
              * @returns {undefined|boolean}
+             * @callback _fnCheck
              * @private
              */
             function _fnCheck(callback, data) {
@@ -66,12 +87,8 @@ angular.module('ntt.TreeDnD')
                         catch (err) {
                             if (typeof data === 'string') {
                                 return data.indexOf(callback) > -1;
-                            } else {
-                                return; // jmp out
                             }
                         }
-                    } else {
-                        return; // jmp out
                     }
                 }
             }
@@ -82,11 +99,11 @@ angular.module('ntt.TreeDnD')
              *
              * @param node
              * @param condition
-             * @param isAnd
+             * @param {boolean} isAnd
              * @returns {undefined|boolean}
              * @private
              */
-            function _fnProccess(node, condition, isAnd) {
+            function _fnProcess(node, condition, isAnd) {
                 if (angular.isArray(condition)) {
                     return for_each_filter(node, condition, isAnd);
                 } else {
@@ -110,9 +127,9 @@ angular.module('ntt.TreeDnD')
 
             /**
              *
-             * @param {object} node
-             * @param {array} conditions Array `conditions`
-             * @param {boolean} isAnd check with condition `And`, if `And` then `return false` when all `false`
+             * @param {Node} node
+             * @param {array} conditions - Array `conditions`
+             * @param {boolean} isAnd - Check with condition `And`, if `And` then `return false` when all `false`
              * @returns {undefined|boolean}
              */
             function for_each_filter(node, conditions, isAnd) {
@@ -122,7 +139,7 @@ angular.module('ntt.TreeDnD')
                 }
 
                 for (i = 0; i < len; i++) {
-                    if (_fnProccess(node, conditions[i], !isAnd)) {
+                    if (_fnProcess(node, conditions[i], !isAnd)) {
                         passed = true;
                         // if condition `or` then return;
                         if (!isAnd) {
@@ -143,13 +160,20 @@ angular.module('ntt.TreeDnD')
             /**
              * Will call _fnAfter to clear data no need
              * @param {object} options
-             * @param {object} node
+             * @param {NodeFilter} node
              * @param {boolean} isNodePassed
              * @param {boolean} isChildPassed
              * @param {boolean} isParentPassed
              * @private
              */
             function _fnAfter(options, node, isNodePassed, isChildPassed, isParentPassed) {
+                /**
+                 * @name NodeFilter
+                 * @extends Node
+                 * @property {boolean} __filtered__
+                 * @property {boolean} __filtered_visible__
+                 * @property {int} __filtered_index__
+                 */
                 if (isNodePassed === true) {
                     node.__filtered__         = true;
                     node.__filtered_visible__ = true;
@@ -171,18 +195,19 @@ angular.module('ntt.TreeDnD')
 
             /**
              * `fnBefore` will called when `for_all_descendants` of `node` checking.
-             * If `filter` empty then return `true` else result of function `_fnProccess` {@see _fnProccess}
+             * If `filter` empty then return `true` else result of function `_fnProcess` {@see _fnProcess}
              *
              * @param {object} options
-             * @param {object} node
+             * @param {NodeFilter} node
              * @returns {undefined|boolean}
+             * @callback _fnBefore
              * @private
              */
             function _fnBefore(options, node) {
                 if (options.filter.length === 0) {
                     return true;
                 } else {
-                    return _fnProccess(node, options.filter, options.beginAnd || false);
+                    return _fnProcess(node, options.filter, options.beginAnd || false);
                 }
             }
 
@@ -191,8 +216,9 @@ angular.module('ntt.TreeDnD')
              * Alway false to Clear Filter empty
              *
              * @param {object} options
-             * @param {object} node
+             * @param {NodeFilter} node
              * @returns {undefined|boolean}
+             * @callback _fnBeforeClear
              * @private
              */
             function _fnBeforeClear(options, node) {
@@ -204,6 +230,7 @@ angular.module('ntt.TreeDnD')
              *
              * @param {object|array} filters
              * @returns {array} Instead of `filter` or new array invaild *(converted from filter)*
+             * @callback _fnConvert
              * @private
              */
             function _fnConvert(filters) {
@@ -245,13 +272,11 @@ angular.module('ntt.TreeDnD')
 
             /**
              * `fnInitFilter` function is constructor of service `$TreeDnDFilter`.
-             * @constructor
-             * @param {object|array} treeData
+             * @param {NodeFilter|NodeFilter[]} treeData
              * @param {object|array} filters
              * @param {object} options
              * @param {string} keyChild
              * @returns {array} Return `treeData` or `treeData` with `filter`
-             * @private
              */
             function fnInitFilter(treeData, filters, options, keyChild) {
                 if (!angular.isArray(treeData)
