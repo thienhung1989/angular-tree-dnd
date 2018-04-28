@@ -17,22 +17,68 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
     };
 
     function fnController($scope, $element, $attrs) {
-        $scope.indent      = 20;
+        /**
+         * Scope of tree
+         * @namespace $scope
+         */
+
+        /**
+         * Indent basic
+         *
+         * @type {number}
+         * @default 20
+         */
+        $scope.indent = 20;
+
+        /**
+         * Indent plus each level
+         *
+         * @type {number}
+         * @default 15
+         */
         $scope.indent_plus = 15;
+
+        /**
+         * Indent unit
+         *
+         * @type {string}
+         * @default 'px'
+         */
         $scope.indent_unit = 'px';
+
+        /**
+         * Tree's class
+         *
+         * @type {string}
+         * @default 'table'
+         */
         $scope.$tree_class = 'table';
+
+
+        /**
+         * Primary key
+         *
+         * @type {string}
+         * @default '__uid__'
+         */
         $scope.primary_key = '__uid__';
 
-        $scope.$type          = 'TreeDnD';
+        /**
+         * Type of Tree
+         *
+         * @type {string}
+         * @default 'TreeDnD'
+         */
+        $scope.$type = 'TreeDnD';
         // $scope.enabledFilter = undefined;
         $scope.colDefinitions = [];
         $scope.$globals       = {};
-        $scope.$class         = {};
-
-        $scope.treeData   = [];
-        $scope.tree_nodes = [];
-
+        /**
+         * Classes status
+         * @type {Object}
+         */
         $scope.$class = angular.copy($TreeDnDClass);
+
         angular.extend(
             $scope.$class.icon, {
                 '1':  $attrs.iconExpand || 'glyphicon glyphicon-minus',
@@ -41,6 +87,30 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         );
 
+        /**
+         * Tree data
+         * @type {Node[]}
+         * @default []
+         */
+        $scope.treeData = [];
+
+        /**
+         * Tree nodes
+         * @type {Node[]}
+         * @default []
+         */
+        $scope.tree_nodes = [];
+
+
+        /**
+         * Function foreach all descendants
+         * @callback $scope.for_all_descendants
+         * @param {Node} node
+         * @param {Function|$scope.for_all_descendants} fn
+         * @param {Node} [parent]
+         * @param {boolean} [checkSibling=false] Check sibling of node
+         * @returns {boolean}
+         */
         $scope.for_all_descendants = function (node, fn, parent, checkSibling) {
             if (angular.isFunction(fn)) {
                 var _i, _len, _nodes;
@@ -49,6 +119,11 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                     // have error or need ignore children
                     return false;
                 }
+
+                if (typeof node !== 'object') {
+                    return false;
+                }
+
                 _nodes = node.__children__;
                 _len   = _nodes ? _nodes.length : 0;
                 for (_i = 0; _i < _len; _i++) {
@@ -58,34 +133,55 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                     }
                 }
             }
+
             // succeed then continue
             return true;
         };
 
+        /**
+         * Get last descendant
+         *
+         * @param {Node|undefined} [node]
+         *
+         * @returns {Node|undefined}
+         */
         $scope.getLastDescendant = function (node) {
             var last_child, n;
-            if (!node) {
-                node = $scope.tree ? $scope.tree.selected_node : false;
-            }
-            if (node === false) {
-                return false;
+
+            if (!node && typeof $scope.tree === 'object') {
+                node = $scope.tree.selected_node;
             }
 
-            n = node.__children__.length;
+            if (typeof node === 'object') {
+                if (angular.isArray(node.__children__)) {
 
-            if (n === 0) {
-                return node;
-            } else {
-                last_child = node.__children__[n - 1];
+                    n = node.__children__.length;
 
-                return $scope.getLastDescendant(last_child);
+                    if (n === 0) {
+                        return node;
+                    } else {
+                        last_child = node.__children__[n - 1];
+
+                        return $scope.getLastDescendant(last_child);
+                    }
+                }
             }
         };
 
+        /**
+         * Get element children
+         *
+         * @returns {Object}
+         */
         $scope.getElementChilds = function () {
             return angular.element($element[0].querySelector('[tree-dnd-nodes]'));
         };
 
+        /**
+         * Event onClick, will call function [on_click]{@link $scope.tree.on_click}
+         *
+         * @param {Node|undefined} node - For node
+         */
         $scope.onClick = function (node) {
             if (angular.isDefined($scope.tree) && angular.isFunction($scope.tree.on_click)) {
                 // We want to detach from Angular's digest cycle so we can
@@ -99,6 +195,11 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         };
 
+        /**
+         * Event onSelect for node
+         *
+         * @param {Node|undefined} [node] - For node
+         */
         $scope.onSelect = function (node) {
             if (angular.isDefined($scope.tree)) {
                 if (node !== $scope.tree.selected_node) {
@@ -116,7 +217,16 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         };
 
+        /**
+         * Toggle Expand
+         *
+         * @param {Node|undefined} node - For node
+         * @param {Function} fnCallback
+         */
         $scope.toggleExpand = function (node, fnCallback) {
+            if (typeof node !== 'object') {
+                return; // jmp out
+            }
             var passedExpand;
 
             if (angular.isFunction(fnCallback)) {
@@ -136,9 +246,25 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
         };
 
 
+        /**
+         * Get hash
+         * @callback _fnGetHash
+         *
+         * @param {Node} node
+         *
+         * @returns {string}
+         *
+         * @private
+         */
         var _fnGetHash = function (node) {
-                return '#' + node.__parent__ + '#' + node[$scope.primary_key];
-            },
+            return '#' + node.__parent__ + '#' + node[$scope.primary_key];
+        },
+            /**
+             * Set hash
+             * @param {Node} node
+             * @returns {Node}
+             * @private
+             */
             _fnSetHash = function (node) {
                 var _hashKey = _fnGetHash(node);
 
@@ -149,8 +275,18 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 return node;
             };
 
+        /**
+         * Get hash of node
+         *
+         * @type {_fnGetHash}
+         */
         $scope.getHash = _fnGetHash;
 
+        /**
+         * Override callbacks
+         * @namespace $scope.$callbacks
+         * @type object
+         */
         $scope.$callbacks = {
             getHash:             _fnGetHash,
             setHash:             _fnSetHash,
@@ -161,7 +297,16 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             accept:              function (/*dragInfo, moveTo, isChanged*/) {
                 return $scope.dropEnabled === true;
             },
-            calsIndent:          function (level, skipUnit, skipEdge) {
+
+            /**
+             * Calc indent
+             *
+             * @param {int} level
+             * @param {boolean} skipUnit
+             * @param {boolean} skipEdge
+             * @returns {number|string}
+             */
+            calsIndent: function (level, skipUnit, skipEdge) {
                 var unit = 0,
                     edge = skipEdge ? 0 : $scope.indent_plus;
                 if (!skipUnit) {
@@ -174,16 +319,38 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                     return $scope.indent * (level - 1) + edge + unit;
                 }
             },
-            droppable:           function () {
+
+            /**
+             * Is droppable
+             *
+             * @returns {boolean}
+             */
+            droppable:  function () {
                 return $scope.dropEnabled === true;
             },
-            draggable:           function () {
+            /**
+             * Is draggable
+             *
+             * @returns {boolean}
+             */
+            draggable:  function () {
                 return $scope.dragEnabled === true;
             },
-            beforeDrop:          function (/*event*/) {
+            /**
+             * Before drop
+             *
+             * @returns {boolean}
+             */
+            beforeDrop: function (/*event*/) {
                 return true;
             },
-            changeKey:           function (node) {
+
+            /**
+             * Change key for node
+             *
+             * @param node
+             */
+            changeKey: function (node) {
                 var _key     = node.__uid__;
                 node.__uid__ = Math.random();
                 if (node.__selected__) {
@@ -198,28 +365,60 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 }
                 // delete(node.__hashKey__);
             },
-            clone:               function (node/*, _this*/) {
+
+            /**
+             * Clone node
+             *
+             * @param node
+             * @returns {*}
+             */
+            clone: function (node/*, _this*/) {
                 var _clone = angular.copy(node);
 
                 this.for_all_descendants(_clone, this.changeKey);
 
                 return _clone;
             },
-            remove:              function (node, parent, _this, delayReload) {
+
+            /**
+             * Remove node
+             *
+             * @param {Node} node
+             * @param {Node[]} parent
+             * @param {this} _this
+             * @param {boolean} delayReload
+             * @returns {Node[]}
+             */
+            remove: function (node, parent, _this, delayReload) {
                 var temp = parent.splice(node.__index__, 1)[0];
                 if (!delayReload) {
                     $scope.reload_data();
                 }
                 return temp;
             },
-            clearInfo:           function (node) {
+
+            /**
+             * Clear info
+             *
+             * @param {Node} node
+             */
+            clearInfo: function (node) {
                 delete node.__inited__;
                 delete node.__visible__;
 
                 // always changed after call reload_data
                 //delete node.__hashKey__;
             },
-            add:                 function (node, pos, parent/*, _this*/) {
+
+            /**
+             * Add node to
+             *
+             * @param {Node} node
+             * @param {int} pos
+             * @param {Node[]} parent
+             * @param {this} _this
+             */
+            add: function (node, pos, parent/*, _this*/) {
                 // clearInfo
                 this.for_all_descendants(node, this.clearInfo);
                 if (parent) {
@@ -237,6 +436,12 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         };
 
+        /**
+         * Delete scope by node
+         *
+         * @param {$scope} scope
+         * @param {Node} node
+         */
         $scope.deleteScope = function (scope, node) {
             var _hash = node.__hashKey__;
             if ($scope.$globals[_hash] && $scope.$globals[_hash] === scope) {
@@ -244,6 +449,12 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         };
 
+        /**
+         * Set scope for node
+         *
+         * @param {$scope} scope
+         * @param {Node} node
+         */
         $scope.setScope = function (scope, node) {
             var _hash = node.__hashKey__;
             if ($scope.$globals[_hash] !== scope) {
@@ -251,6 +462,12 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         };
 
+        /**
+         * Get scope of node
+         *
+         * @param {Node} node
+         * @returns {$scope}
+         */
         $scope.getScope = function (node) {
             if (node) {
                 var _hash = node.__hashKey__;
@@ -279,10 +496,16 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 $scope.dragging        = undefined;
 
                 angular.extend(
-                    $scope.$callbacks, {
+                    $scope.$callbacks, /** @lends $scope.$callbacks */ {
                         beforeDrag: function (/*scopeDrag*/) {
                             return true;
                         },
+                        /**
+                         * Callback when drag stop
+                         *
+                         * @param info
+                         * @param {boolean} passed
+                         */
                         dragStop:   function (info, passed) {
                             if (!info || !info.changed && info.drag.enabledMove || !passed) {
                                 return; // jmp out
@@ -294,7 +517,14 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                                 info.drag.reload_data();
                             }
                         },
-                        dropped:    function (info/*, pass*/) {
+
+                        /**
+                         * Callback when node dropped
+                         *
+                         * @param info
+                         * @returns {boolean}
+                         */
+                        dropped: function (info/*, pass*/) {
                             if (!info) {
                                 return; // jmp out
                             }
@@ -354,17 +584,39 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
 
                             return false;
                         },
-                        dragStart:  function (event) {
+
+                        /**
+                         * Callback when before drag start
+                         *
+                         * @param event
+                         */
+                        dragStart: function (event) {
                         },
-                        dragMove:   function (event) {
+
+                        /**
+                         * Callback when before drag move
+                         *
+                         * @param event
+                         */
+                        dragMove: function (event) {
                         }
                     }
                 );
 
+                /**
+                 * Set status dragging
+                 *
+                 * @param dragInfo
+                 */
                 $scope.setDragging = function (dragInfo) {
                     $scope.dragging = dragInfo;
                 };
 
+                /**
+                 * Get status node is enable move
+                 *
+                 * @param val
+                 */
                 $scope.enableMove = function (val) {
                     if (typeof val === 'boolean') {
                         $scope.enabledMove = val;
@@ -374,14 +626,25 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 };
 
                 if ($attrs.enableStatus) {
+                    /**
+                     * Enable status (moving, coping)
+                     *
+                     * @type {boolean}
+                     */
                     $scope.enabledStatus = false;
 
+                    /**
+                     * Hide status
+                     */
                     $scope.hideStatus = function () {
                         if ($scope.statusElm) {
                             $scope.statusElm.addClass($scope.$class.hidden);
                         }
                     };
 
+                    /**
+                     * Refresh Status
+                     */
                     $scope.refreshStatus = function () {
                         if (!$scope.dragging) {
                             return;
@@ -409,6 +672,11 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                         }
                     };
 
+                    /**
+                     * Set position status
+                     *
+                     * @param {Event} e
+                     */
                     $scope.setPositionStatus = function (e) {
                         if ($scope.statusElm) {
                             $scope.statusElm.css(
@@ -418,14 +686,26 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                                     'z-index': 9999
                                 }
                             );
+
                             $scope.statusElm.addClass($scope.$class.status);
                         }
                     };
                 }
             }
 
+            /**
+             * Status targeting when drag & drop
+             *
+             * @type {boolean}
+             */
             $scope.targeting = false;
 
+            /**
+             * Get node previous sibling
+             *
+             * @param node
+             * @returns {Node|undefined}
+             */
             $scope.getPrevSibling = function (node) {
                 if (node && node.__index__ > 0) {
                     var _parent, _index = node.__index__ - 1;
@@ -441,6 +721,12 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 }
             };
 
+            /**
+             * Get node by index
+             *
+             * @param {int} index
+             * @returns {Node|undefined}
+             */
             $scope.getNode = function (index) {
                 if (angular.isUndefinedOrNull(index)) {
                     return; // jmp out
@@ -449,6 +735,13 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 return $scope.tree_nodes[index];
             };
 
+            /**
+             * Init element place
+             *
+             * @param {DOMElement} element
+             * @param {DOMElement} dragElm
+             * @returns {*}
+             */
             $scope.initPlace = function (element, dragElm) {
 
                 if (!$scope.placeElm) {
@@ -492,26 +785,48 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 return $scope.placeElm;
             };
 
+            /**
+             * Hide element place
+             */
             $scope.hidePlace = function () {
                 if ($scope.placeElm) {
                     $scope.placeElm.addClass($scope.$class.hidden);
                 }
             };
 
+            /**
+             * Show element place
+             */
             $scope.showPlace = function () {
                 if ($scope.placeElm) {
                     $scope.placeElm.removeClass($scope.$class.hidden);
                 }
             };
 
+            /**
+             * Get scope tree
+             * @returns {$scope}
+             */
             $scope.getScopeTree = function () {
                 return $scope;
             };
 
         }
 
+        /**
+         * Function safe apply to avoid loop-depth
+         *
+         * @type {$safeApply}
+         */
         $scope.$safeApply = $safeApply;
 
+        /**
+         * Hide children
+         *
+         * @param {Node} node
+         * @param {Node} parent
+         * @returns {boolean}
+         */
         $scope.hiddenChild = function fnHiddenChild(node, parent) {
             var nodeScope = $scope.getScope(node);
             if (nodeScope) {
@@ -524,11 +839,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 }
             } else {
                 // show node & init scope
-                if (parent && parent.__expanded__ && parent.__visible__) {
-                    node.__visible__ = true;
-                } else {
-                    node.__visible__ = false;
-                }
+                node.__visible__ = !!(parent && parent.__expanded__ && parent.__visible__);
             }
 
             // skip all child hiding... if not expaned
@@ -662,7 +973,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                             reload_data();
                         }],
                         ['object', 'filterOptions', _defaultFilterOption, 'filterOptions', _defaultFilterOption, function (option) {
-                            if (angular.isObject(option)) {
+                            if (typeof option === 'object') {
                                 $scope.filterOptions = angular.extend(_defaultFilterOption, option);
                             }
                         }],
@@ -671,7 +982,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                         ['number', 'indent', 30, undefined, 30],
                         ['number', 'indentPlus', 20, undefined, 20],
                         [
-                            'null',
+                            'object',
                             'callbacks',
                             function (optCallbacks) {
                                 angular.forEach(
@@ -742,19 +1053,38 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             );
         }
 
+        /**
+         * Reload data with timeout
+         * @callback timeLoadData
+         */
         function timeLoadData() {
             $scope.treeData = tmpTreeData;
             reload_data();
             timeReloadData = undefined;
         }
 
+        /**
+         * Update limit
+         */
         $scope.updateLimit = function updateLimit() {
-            //console.log('Call fn UpdateLimit');
             $scope.$TreeLimit += 50;
         };
 
+        /**
+         * Reload data
+         * @type {reload_data}
+         */
         $scope.reload_data = reload_data;
 
+        /**
+         * Check attribute exist
+         * @callback check_exist_attr
+         *
+         * @param {object|array} attrs - Array attributes
+         * @param {Array|string} existAttr - Criteria condition
+         * @param {boolean} isAnd - Is condition AND
+         * @returns {*}
+         */
         function check_exist_attr(attrs, existAttr, isAnd) {
             if (angular.isUndefinedOrNull(existAttr)) {
                 return false;
@@ -769,6 +1099,14 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         }
 
+        /**
+         * Foreach attributes with criteria
+         * @callback for_each_attrs
+         * @param {Object|Array} attrs - Array attributes
+         * @param {Array|string} exist - Criteria condition
+         * @param {boolean} isAnd  - Is condition AND
+         * @returns {boolean}
+         */
         function for_each_attrs(attrs, exist, isAnd) {
             var i, len = exist.length, passed = false;
 
@@ -792,8 +1130,19 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             return passed;
         }
 
-        function generateWatch(type, nameAttr, valDefault, nameScope, fnNotExist, fnAfter,
-                               fnBefore) {
+        /**
+         * Function generate watch attribute by automatic
+         *
+         * @callback generateWatch
+         * @param {*} type
+         * @param {string} nameAttr - Name attribute
+         * @param {*} valDefault - Value default
+         * @param {string|undefined} nameScope - Name of attribute in $scope
+         * @param {function} fnNotExist - Callback when attribute not exist
+         * @param {function} fnAfter - Callback when attribute found
+         * @param {function} fnBefore - Callback before attribute found (to prepare data)
+         */
+        function generateWatch(type, nameAttr, valDefault, nameScope, fnNotExist, fnAfter, fnBefore) {
             nameScope = nameScope || nameAttr;
             if (typeof type === 'string' || angular.isArray(type)) {
                 if (angular.isFunction(fnBefore) && fnBefore()) {
@@ -831,6 +1180,12 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         }
 
+        /**
+         * Call safeApply
+         *
+         * @param fn
+         * @callback $safeApply
+         */
         function $safeApply(fn) {
             var phase = this.$root.$$phase;
             if (phase === '$apply' || phase === '$digest') {
@@ -842,6 +1197,10 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         }
 
+        /**
+         * Get Expand on
+         * @callback getExpandOn
+         */
         function getExpandOn() {
             if ($scope.treeData && $scope.treeData.length) {
                 var _firstNode = $scope.treeData[0], _keys = Object.keys(_firstNode),
@@ -865,6 +1224,11 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         }
 
+        /**
+         * Get col defs
+         *
+         * @callback getColDefs
+         */
         function getColDefs() {
             // Auto get Defs except attribute __level__ ....
             if ($scope.treeData.length) {
@@ -888,8 +1252,38 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             }
         }
 
+        /**
+         * do_f
+         *
+         * @callback do_f
+         *
+         * @param {Node[]} root
+         * @param {Node} node
+         * @param {Node} parent
+         * @param {int} parent_real
+         * @param {int} level
+         * @param {boolean|*} visible
+         * @param {int} index
+         * @returns {number}
+         */
         function do_f(root, node, parent, parent_real, level, visible, index) {
-
+            /**
+             * Node of tree
+             * @name Node
+             * @type {NodeBase}
+             * @property {int} __parent_real__
+             * @property {Node} __parent__
+             * @property {boolean} __expanded__
+             * @property {int} __index__
+             * @property {int} __index_real__
+             * @property {int} __level__
+             * @property {int} __icon__
+             * @property {string} __icon_class__
+             * @property {boolean} __visible__
+             * @property {string} __uid__
+             * @property {string} __hashKey__
+             * @property {int} __dept__
+             */
             if (typeof node !== 'object') {
                 return 0;
             }
@@ -960,6 +1354,12 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             return _dept;
         }
 
+        /**
+         * Init data for tree
+         *
+         * @param {Node[]|undefined} data - Data for tree
+         * @returns {Node[]|undefined}
+         */
         function init_data(data) {
 
             // clear memory
@@ -972,16 +1372,24 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
             return data;
         }
 
-        function reload_data(oData) {
+        /**
+         * Reload data of tree
+         *
+         * @callback reload_data
+         *
+         * @param {Node[]|undefined} [data=undefined]
+         * @returns {Node[]}
+         */
+        function reload_data(data) {
             var _data,
                 _len,
                 _tree_nodes = [];
 
-            if (angular.isDefined(oData)) {
-                if (!angular.isArray(oData) || oData.length === 0) {
+            if (angular.isDefined(data)) {
+                if (!angular.isArray(data) || data.length === 0) {
                     return init_data([]);
                 } else {
-                    _data = oData;
+                    _data = data;
                 }
             } else if (!angular.isArray($scope.treeData) || $scope.treeData.length === 0) {
                 return init_data([]);
@@ -1096,7 +1504,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                 var promiseCheck;
                 if ($_Template.length > 0) {
                     promiseCheck = checkTreeTable(angular.element($_Template.trim()), scope);
-                    if (angular.isObject(promiseCheck)) {
+                    if (typeof promiseCheck === 'object') {
                         promiseCheck.then(function () {
                             element.append($compile($_Template)(scope));
                         });
@@ -1111,7 +1519,7 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                             var data     = response.data || '';
                             data         = angular.element(data.trim());
                             promiseCheck = checkTreeTable(data, scope);
-                            if (angular.isObject(promiseCheck)) {
+                            if (typeof promiseCheck === 'object') {
                                 promiseCheck.then(function () {
                                     element.append($compile(data)(scope));
                                 });

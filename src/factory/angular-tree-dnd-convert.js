@@ -1,6 +1,33 @@
+/**
+ * Factory $TreeDnDConvert
+ *
+ * @name Factory.$TreeDnDConvert
+ * @type {$TreeDnDConvert}
+ */
 angular.module('ntt.TreeDnD')
     .factory('$TreeDnDConvert', function () {
-        var _$initConvert = {
+        /**
+         * NodeBase
+         * @name NodeBase
+         * @type object
+         * @property {NodeBase[]|undefined} [__children__]
+         */
+
+        /**
+         * @name $TreeDnDConvert
+         * @type object
+         * @default
+         */
+        var $TreeDnDConvert = {
+            /**
+             * Line to tree
+             *
+             * @param {Array|Object} data
+             * @param {string} primaryKey
+             * @param {string} parentKey
+             * @param {function} callback
+             * @returns {NodeBase[]}
+             */
             line2tree: function (data, primaryKey, parentKey, callback) {
                 callback = typeof callback === 'function' ? callback : function () {
                 };
@@ -62,6 +89,14 @@ angular.module('ntt.TreeDnD')
 
                 return tree;
             },
+            /**
+             * Convert tree to tree
+             *
+             * @param {array|object} data
+             * @param {string} containKey
+             * @param {function} callback
+             * @returns {NodeBase[]}
+             */
             tree2tree: function access_child(data, containKey, callback) {
                 callback = typeof callback === 'function' ? callback : function () {
                 };
@@ -89,5 +124,5 @@ angular.module('ntt.TreeDnD')
             }
         };
 
-        return _$initConvert;
+        return $TreeDnDConvert;
     });

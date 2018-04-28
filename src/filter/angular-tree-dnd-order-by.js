@@ -1,8 +1,25 @@
+/**
+ * Factory $TreeDnDOrderBy
+ *
+ * @name Factory.$TreeDnDOrderBy
+ * @type {fnInitTreeOrderBy}
+ */
 angular.module('ntt.TreeDnD')
     .factory('$TreeDnDOrderBy', [
         '$filter',
         function ($filter) {
             var _fnOrderBy          = $filter('orderBy'),
+                /**
+                 * Foreach all descendants
+                 *
+                 * @param options
+                 * @param {Node} node          - Node
+                 * @param {string} name        - Name attribute
+                 * @param {function} fnOrderBy - Callback orderBy
+                 * @returns {Node}
+                 * @callback for_all_descendants
+                 * @private
+                 */
                 for_all_descendants = function for_all_descendants(options, node, name, fnOrderBy) {
                     var _i, _len, _nodes;
 
@@ -19,13 +36,31 @@ angular.module('ntt.TreeDnD')
 
                     return node;
                 },
+
+                /**
+                 * Function order
+                 * @param {Node[]} list
+                 * @param {string} orderBy
+                 * @returns {Node[]}
+                 * @private
+                 */
                 _fnOrder            = function _fnOrder(list, orderBy) {
                     return _fnOrderBy(list, orderBy);
                 },
-                _fnMain             = function _fnMain(treeData, orderBy) {
+
+                /**
+                 * Function tree orderBy
+                 *
+                 * @type {function}
+                 * @param {Node[]} treeData
+                 * @param {string} orderBy
+                 * @returns {Node[]}
+                 * @callback fnInitTreeOrderBy
+                 */
+                fnInitTreeOrderBy   = function fnInitTreeOrderBy(treeData, orderBy) {
                     if (!angular.isArray(treeData)
                         || treeData.length === 0
-                        || !(angular.isArray(orderBy) || angular.isObject(orderBy) || angular.isString(orderBy) || angular.isFunction(orderBy))
+                        || !(angular.isArray(orderBy) || typeof orderBy === 'object' || angular.isString(orderBy) || angular.isFunction(orderBy))
                         || orderBy.length === 0 && !angular.isFunction(orderBy)
                     ) {
                         return treeData;
@@ -45,6 +80,6 @@ angular.module('ntt.TreeDnD')
                     return _fnOrder(treeData, orderBy);
                 };
 
-            return _fnMain;
+            return fnInitTreeOrderBy;
         }]
     );

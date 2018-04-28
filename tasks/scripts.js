@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (gulp, $, pkg, through) {
+module.exports = function (gulp, $, pkg, through, fs) {
     gulp.task('js::jshint', function () {
             return gulp.src(
                 [
@@ -26,51 +26,69 @@ module.exports = function (gulp, $, pkg, through) {
     });
 
     gulp.task('js::concat', function () {
-        // init files includ
-        var streamInject = gulp.src(
-            [
-                'src/**/*.js',
-                '!src/**/*.spec.js',
-                '!src/**/*.append.js',
-                '!src/main.js'
-            ]
-        )
-        //.pipe($.replace(/^\s*angular\.module\('ntt\.TreeDnD'\)\s*((.|\s)+\))[\s;]*/gm, '$1'))
-            .pipe($.concat('ng-tree-dnd.js', {newLine: '\n\n'}));
+        return fs.readFile(__dirname + '/../LICENSE', function (err, data) {
+            if (err) {
+                throw err;
+            }
 
-        // replace `version` by `version` of package.json in file `main.js`
-        var streamMain = gulp.src(['src/main.js'])
-            .pipe($.replace(/\/\/<!--Version-->/gi, pkg.version));
+            var copyright = data.toString();
 
-        // join all file `*.append.js` to  file `ng-tree-dnd.js`
-        var streamAppend = gulp.src(['src/**/*.append.js'])
-            .pipe($.concat('ng-tree-dnd.js'));
+            // copyright = copyright.replace('^', ' * ');
 
-        // replace
-        streamMain = fnReplace(
-            streamAppend, // stream insert
-            streamMain, // insert into stream
-            /\s*\/\/<!--Replace_Concat-->/gi, // parent to insert stream
-            '\/\/<!--Replace_Concat-->\n\n' // insert after place
-        );
+            // init files include
+            var streamInject = gulp.src(
+                [
+                    'src/**/*.js',
+                    '!src/**/*.spec.js',
+                    '!src/**/*.append.js',
+                    '!src/main.js'
+                ]
+            )
+            //.pipe($.replace(/^\s*angular\.module\('ntt\.TreeDnD'\)\s*((.|\s)+\))[\s;]*/gm, '$1'))
+                .pipe($.concat('ng-tree-dnd.js', {newLine: '\n\n'}));
 
-        var cloneSink = $.clone.sink();
-        // return stream final concated
-        return fnReplace(
-            streamInject,
-            streamMain,
-            /\s*\/\/<!--Replace_Concat-->/gi
-        )
-            .pipe($.concat('ng-tree-dnd.debug.js')) //<- rename file
-            .pipe($.removeCode({nodebug: false})) // keep debug
-            .pipe(cloneSink) //<- clone objects streaming through this point
+            // replace `version` by `version` of package.json in file `main.js`
+            var streamMain = gulp.src(['src/main.js'])
+                .pipe($.replace(/\/\/<!--Version-->/gi, pkg.version))
+                .pipe($.replace(/\n?(\s*\*\s*)?\/\/<!--License-->/gi, function (str, seq) {
+                    if (seq !== undefined) {
+                        copyright = copyright.replace(/(^|\n)/g, "\n" + seq);
+                    }
 
-            .pipe($.concat('ng-tree-dnd.js')) //<- restore file name
-            .pipe($.removeCode({nodebug: true})) // clear all debug in file main.
-            .pipe($.replace(/\$log.debug\([\]]*\);?\s*/gmi, ''))// remove all $log.debug();
+                    return copyright;
+                }));
 
-            .pipe(cloneSink.tap()) //<- output cloned objects + ng-tree-dnd.debug.js
-            .pipe(gulp.dest('dist')); // move to dist
+            // join all file `*.append.js` to  file `ng-tree-dnd.js`
+            var streamAppend = gulp.src(['src/**/*.append.js'])
+                .pipe($.concat('ng-tree-dnd.js'));
+
+            // replace
+            streamMain = fnReplace(
+                streamAppend, // stream insert
+                streamMain, // insert into stream
+                /\s*\/\/<!--Replace_Concat-->/gi, // parent to insert stream
+                '\/\/<!--Replace_Concat-->\n\n' // insert after place
+            );
+
+            var cloneSink = $.clone.sink();
+            // return stream final concated
+            return fnReplace(
+                streamInject,
+                streamMain,
+                /\s*\/\/<!--Replace_Concat-->/gi
+            )
+                .pipe($.concat('ng-tree-dnd.debug.js')) //<- rename file
+                .pipe($.removeCode({nodebug: false})) // keep debug
+                .pipe(cloneSink) //<- clone objects streaming through this point
+
+                .pipe($.concat('ng-tree-dnd.js')) //<- restore file name
+                .pipe($.removeCode({nodebug: true})) // clear all debug in file main.
+                .pipe($.replace(/\$log.debug\([\]]*\);?\s*/gmi, ''))// remove all $log.debug();
+
+                .pipe(cloneSink.tap()) //<- output cloned objects + ng-tree-dnd.debug.js
+                .pipe(gulp.dest('dist')); // move to dist
+        });
+
     });
 
     gulp.task('js::min-js', function fnUglify() {

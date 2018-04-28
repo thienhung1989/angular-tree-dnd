@@ -28,13 +28,54 @@
  * @version //<!--Version-->
  * @preserve
  * (c) 2015 Nguyuễn Thiện Hùng - <nguyenthienhung1989@gmail.com>
+ * @license
+ * //<!--License-->
  */
 (function () {
     'use strict';
-    angular.isUndefinedOrNull = isUndefinedOrNull;
+    /**
+     * @namespace angular
+     */
 
-    angular.isDefined = isDefined;
+    /**
+     * Is undefined or null
+     * @param {*} val - Value
+     * @returns {boolean}
+     */
+    angular.isUndefinedOrNull = function isUndefinedOrNull(val) {
+        return angular.isUndefined(val) || val === null;
+    };
 
+    /**
+     * Is defined
+     *
+     * @param {*} val - Value
+     * @returns {boolean}
+     */
+    angular.isDefined = function isDefined(val) {
+        return !(angular.isUndefined(val) || val === null);
+    };
+
+    /**
+     * @namespace Factory
+     * @type object
+     */
+
+    /**
+     * @constant $TreeDnDClass
+     * @type object
+     * @default
+     * @property {string} [tree=tree-dnd]           - Class tree
+     * @property {string} [empty=tree-dnd-empty]    - Class tree empty
+     * @property {string} [hidden=tree-dnd-hidden]  - Class tree hidden
+     * @property {string} [node=tree-dnd-node]      - Class tree node
+     * @property {string} [nodes=tree-dnd-nodes]    - Class tree nodes
+     * @property {string} [handle=tree-dnd-handle]  - Class tree handle
+     * @property {string} [place=tree-dnd-place]    - Class tree place
+     * @property {string} [drag=tree-dnd-drag]      - Class tree drag
+     * @property {string} [status=tree-dnd-status]  - Class tree status (coping, moving)
+     * @property {object} icon
+     */
     angular.module('ntt.TreeDnD', ['template/TreeDnD/TreeDnD.html'])
         .constant('$TreeDnDClass', {
             tree:   'tree-dnd',
@@ -52,12 +93,4 @@
                 '-1': 'glyphicon glyphicon-file'
             }
         });//<!--Replace_Concat-->
-
-    function isUndefinedOrNull(val) {
-        return angular.isUndefined(val) || val === null;
-    }
-
-    function isDefined(val) {
-        return !(angular.isUndefined(val) || val === null);
-    }
 })();
