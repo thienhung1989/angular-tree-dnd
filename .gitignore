@@ -21,4 +21,5 @@ demo/source
 
 bower_components
 
-yarn.lock
+!yarn.lock
+!package-lock.json

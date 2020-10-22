@@ -1,62 +1,72 @@
 {
-  "author": "https://github.com/thienhung1989/angular-tree-dnd/graphs/contributors",
-  "name": "angular-tree-dnd",
-  "version": "3.0.9",
-  "homepage": "http://thienhung1989.github.io/angular-tree-dnd/",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/thienhung1989/angular-tree-dnd.git"
-  },
-  "autoupdate": {
-    "source": "git",
-    "target": "git://github.com/thienhung1989/angular-tree-dnd.git",
-    "basePath": "dist/",
-    "files": [
-      "ng-tree-dnd.js",
-      "ng-tree-dnd.css",
-      "ng-tree-dnd.min.css",
-      "ng-tree-dnd.min.js",
-      "ng-tree-dnd.min.js.map"
-    ]
-  },
-  "main": "dist/ng-tree-dnd.min.js",
-  "dependencies": {
-    "angular": ">=1.2.1"
-  },
-  "devDependencies": {
-    "connect-livereload": ">=0.5.2",
-    "gulp": ">=3.8.10",
-    "gulp-autoprefixer": "*",
-    "gulp-changed": "*",
-    "gulp-clean": ">=0.3.1",
-    "gulp-clone": ">=1.0.0",
-    "gulp-concat": ">=2.4.3",
-    "gulp-connect": ">=2.2.0",
-    "gulp-filter": "*",
-    "gulp-jscs": ">=1.4.0",
-    "gulp-jsdoc3": "^2.0.0",
-    "gulp-jshint": ">=1.9.0",
-    "gulp-load-plugins": ">=0.8.0",
-    "gulp-minify-css": ">=1.1.0",
-    "gulp-remove-code": ">=1.0.0",
-    "gulp-rename": "*",
-    "gulp-replace": ">=0.0.0",
-    "gulp-sequence": "*",
-    "gulp-sourcemaps": ">=1.0.0",
-    "gulp-symlink": ">=2.1.0",
-    "gulp-uglify": ">=1.1.0",
-    "gulp-util": ">=0.0.5",
-    "jshint": ">=1.0.0",
-    "jshint-stylish": ">=1.0.0",
-    "open": ">=0.0.0",
-    "require-dir": ">=0.1.0",
-    "through2": ">=0.0.1"
-  },
-  "engines": {
-    "node": ">=0.8.0"
-  },
-  "scripts": {
-    "test": "gulp build"
-  },
-  "license": "MIT"
+    "author": "https://github.com/thienhung1989/angular-tree-dnd/graphs/contributors",
+    "name": "angular-tree-dnd",
+    "version": "3.0.10",
+    "homepage": "http://thienhung1989.github.io/angular-tree-dnd/",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/thienhung1989/angular-tree-dnd.git"
+    },
+    "autoupdate": {
+        "source": "git",
+        "target": "git://github.com/thienhung1989/angular-tree-dnd.git",
+        "basePath": "dist/",
+        "files": [
+            "ng-tree-dnd.js",
+            "ng-tree-dnd.css",
+            "ng-tree-dnd.min.css",
+            "ng-tree-dnd.min.js",
+            "ng-tree-dnd.min.js.map"
+        ]
+    },
+    "main": "dist/ng-tree-dnd.min.js",
+    "dependencies": {
+        "angular": ">=1.2.1"
+    },
+    "devDependencies": {
+        "connect-livereload": "*",
+        "gulp": "^4.0",
+        "gulp-autoprefixer": "*",
+        "gulp-changed": "*",
+        "gulp-clean": "*",
+        "gulp-clone": "*",
+        "gulp-concat": "*",
+        "gulp-connect": "*",
+        "gulp-filter": "*",
+        "gulp-jscs": "*",
+        "gulp-jsdoc3": "*",
+        "gulp-jshint": "*",
+        "gulp-load-plugins": "*",
+        "gulp-minify-css": "*",
+        "gulp-remove-code": "*",
+        "gulp-rename": "*",
+        "gulp-replace": "*",
+        "gulp-sequence": "*",
+        "gulp-sourcemaps": "*",
+        "gulp-symlink": "*",
+        "gulp-uglify": "*",
+        "gulp-util": "*",
+        "jshint": "*",
+        "jshint-stylish": "*",
+        "open": "*",
+        "require-dir": "*",
+        "through2": "*"
+    },
+    "browserslist": [
+        "last 2 version",
+        "> 1%",
+        "IE 10"
+    ],
+    "postcss": {
+        "plugins": {
+            "autoprefixer": { }
+        }
+    },
+    "engines": {
+        "node": ">=0.8.0"
+    },
+    "scripts": {
+        "test": "gulp build"
+    },
+    "license": "MIT"
 }

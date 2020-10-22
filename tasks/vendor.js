@@ -2,15 +2,15 @@
 
 module.exports = function (gulp, $) {
     var filter = {
-            view:                '**/*.twig',
-            sass:                ['**/*{.scss,.sass}'],
-            vendor:              ['**/@(*{.js,.css,.swf,.eot,.png,.svg,.ttf,.woff,.woff2,.less})'],
+            view: '**/*.twig',
+            sass: ['**/*{.scss,.sass}'],
+            vendor: ['**/@(*{.js,.css,.swf,.eot,.png,.svg,.ttf,.woff,.woff2,.less})'],
             // ext:                 '@(!(protractor*|server*|Gruntfile|example|examples|test|tests|karma*|package|index|*spec|*Spec|npm|grunt){.map,.png,.js,.swf,.css,.eot,.svg,.ttf,.woff,.woff2}|jsencrypt.js|Blob.js|sha.js|sha1.js|sha256.js|sha512.js|angular-debounce.js)',
-            ext:                 '@(!(protractor*|server*|Gruntfile|example|examples|test|tests|karma*|package|index|*spec|*Spec|npm|grunt).min{.js,.css}|*{.map,.swf,.eot,.png,.svg,.ttf,.woff,.woff2,.less}|jsencrypt.js|Blob.js|sha.js|sha1.js|sha256.js|sha512.js|angular-debounce.js)',
-            regexReplacePath:    [/[\/]+(release|bin|src|lib|dist|min|build|media|less)[\/]*$/gi, '$2'],
+            ext: '@(!(protractor*|server*|Gruntfile|example|examples|test|tests|karma*|package|index|*spec|*Spec|npm|grunt).min{.js,.css}|*{.map,.swf,.eot,.png,.svg,.ttf,.woff,.woff2,.less}|jsencrypt.js|Blob.js|sha.js|sha1.js|sha256.js|sha512.js|angular-debounce.js)',
+            regexReplacePath: [/[\/]+(release|bin|src|lib|dist|min|build|media|less)[\/]*$/gi, '$2'],
             regexReplaceObsPath: /\//
         },
-        path   = {
+        path = {
             component: {
                 vendor: [
                     {
@@ -27,13 +27,13 @@ module.exports = function (gulp, $) {
                     }
                 ]
             },
-            build:     {
-                base:   './demo/libs',
+            build: {
+                base: './demo/libs',
                 vendor: 'vendor'
             }
         };
 
-    var getOpt   = function (opts, type) {
+    var getOpt = function (opts, type) {
             switch (typeof opts) {
                 case 'string':
                     return opts;
@@ -42,8 +42,8 @@ module.exports = function (gulp, $) {
             }
         },
         makePath = function () {
-            var i      = 0,
-                len    = arguments.length || 0,
+            var i = 0,
+                len = arguments.length || 0,
                 result = '.',
                 path;
 
@@ -75,7 +75,7 @@ module.exports = function (gulp, $) {
         if (typeof opts !== 'object') {
             opts = {
                 clearPath: true,
-                filter:    '**'
+                filter: '**'
             };
         }
 
@@ -86,12 +86,15 @@ module.exports = function (gulp, $) {
                 break;
             case 'object':
                 _src = src.src;
-                dst  = makePath(src.dst, dst);
+                dst = makePath(src.dst, dst);
         }
 
         dst = dst.replace(/\/+$/, '') + '/';
 
-        return gulp.src(_src, {base: base})
+        return gulp.src(_src, {
+            base: base,
+            allowEmpty: true,
+        })
             .pipe($.filter(opts.filter || '**'))
             .pipe($.rename(function (path) {
                 console.log(path);
@@ -106,20 +109,20 @@ module.exports = function (gulp, $) {
     var tasks = [
         {
             name: 'dev::vendor',
-            src:  path.component.vendor,
-            dst:  makePath(path.build.base, path.build.vendor),
+            src: path.component.vendor,
+            dst: makePath(path.build.base, path.build.vendor),
             opts: {
                 clearPath: true,
-                filter:    filter.vendor
+                filter: filter.vendor
             },
-            do:   fnCopy
+            do: fnCopy
         }
     ];
 
     for (var i = 0; i < tasks.length; i++) {
         (function (task) {
             // wrapper
-            gulp.task(task.name, function () {
+            gulp.task(task.name, async () => {
                 return task.do(task.src, task.dst, task.opts);
             });
         })(tasks[i]);

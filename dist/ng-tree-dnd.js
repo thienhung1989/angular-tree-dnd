@@ -18,15 +18,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
- * @preserve
  */
 
 /**
  * Implementing TreeDnD & Event DrapnDrop (allow drag multi tree-table include all type: table, ol, ul)
  * Demo: http://thienhung1989.github.io/angular-tree-dnd
  * Github: https://github.com/thienhung1989/angular-tree-dnd
- * @version 3.0.9
- * @preserve
+ * @version 3.0.10
  * (c) 2015 Nguyuễn Thiện Hùng - <nguyenthienhung1989@gmail.com>
  * @license
  * The MIT License (MIT)
@@ -136,750 +134,6 @@ angular.module('ntt.TreeDnD')
             this.scope = $scope;
         }
     ]);
-
-/**
- * Factory $TreeDnDConvert
- *
- * @name Factory.$TreeDnDConvert
- * @type {$TreeDnDConvert}
- */
-angular.module('ntt.TreeDnD')
-    .factory('$TreeDnDConvert', function () {
-        /**
-         * NodeBase
-         * @name NodeBase
-         * @type object
-         * @property {NodeBase[]|undefined} [__children__]
-         */
-
-        /**
-         * @name $TreeDnDConvert
-         * @type object
-         * @default
-         */
-        var $TreeDnDConvert = {
-            /**
-             * Line to tree
-             *
-             * @param {Array|Object} data
-             * @param {string} primaryKey
-             * @param {string} parentKey
-             * @param {function} callback
-             * @returns {NodeBase[]}
-             */
-            line2tree: function (data, primaryKey, parentKey, callback) {
-                callback = typeof callback === 'function' ? callback : function () {
-                };
-
-                if (!data || data.length === 0 || !primaryKey || !parentKey) {
-                    return [];
-                }
-
-                var tree     = [],
-                    rootIds  = [],
-                    item     = data[0],
-                    _primary = item[primaryKey],
-                    treeObjs = {},
-                    parentId, parent,
-                    len      = data.length,
-                    i        = 0;
-
-                while (i < len) {
-                    item = data[i++];
-                    callback(item);
-                    _primary           = item[primaryKey];
-                    treeObjs[_primary] = item;
-                }
-
-
-                i = 0;
-                while (i < len) {
-                    item = data[i++];
-
-                    callback(item);
-
-                    _primary           = item[primaryKey];
-                    treeObjs[_primary] = item;
-                    parentId           = item[parentKey];
-
-                    if (parentId) {
-                        parent = treeObjs[parentId];
-                        if (parent) {
-                            if (parent.__children__) {
-                                if (angular.isArray(parent.__children__)) {
-                                    parent.__children__.push(item);
-                                } else {
-                                    console.error('Type of `parent.__children__` isn\'t array');
-                                    console.log(parent.__children__);
-                                }
-                            } else {
-                                parent.__children__ = [item];
-                            }
-                        }
-                    } else {
-                        rootIds.push(_primary);
-                    }
-                }
-
-                len = rootIds.length;
-                for (i = 0; i < len; i++) {
-                    tree.push(treeObjs[rootIds[i]]);
-                }
-
-                return tree;
-            },
-            /**
-             * Convert tree to tree
-             *
-             * @param {array|object} data
-             * @param {string} containKey
-             * @param {function} callback
-             * @returns {NodeBase[]}
-             */
-            tree2tree: function access_child(data, containKey, callback) {
-                callback = typeof callback === 'function' ? callback : function () {
-                };
-
-                var _tree = [],
-                    _i,
-                    _len  = data ? data.length : 0,
-                    _copy, _child;
-
-                for (_i = 0; _i < _len; _i++) {
-                    _copy = angular.copy(data[_i]);
-
-                    callback(_copy);
-
-                    if (angular.isArray(_copy[containKey]) && _copy[containKey].length > 0) {
-                        _child = access_child(_copy[containKey], containKey, callback);
-                        delete _copy[containKey];
-                        _copy.__children__ = _child;
-                    }
-
-                    _tree.push(_copy);
-                }
-
-                return _tree;
-            }
-        };
-
-        return $TreeDnDConvert;
-    });
-
-/**
- * Factory $TreeDnDHelper
- * @namespace $TreeDnDHelper
- * @name $TreeDnDHelper
- */
-angular.module('ntt.TreeDnD')
-    .factory('$TreeDnDHelper', [
-        '$document', '$window',
-        function ($document, $window) {
-            var _$helper = /** @lends $TreeDnDHelper */ {
-                /**
-                 * Status is no draggable
-                 *
-                 * @param {DOMElement} targetElm
-                 * @returns {boolean}
-                 */
-                nodrag:   function (targetElm) {
-                    return typeof targetElm.attr('data-nodrag') !== 'undefined';
-                },
-                /**
-                 *
-                 * Get event's object
-                 * @param {object} e
-                 * @returns {object|null}
-                 */
-                eventObj: function (e) {
-                    var obj = e;
-
-                    if (e.targetTouches !== undefined) {
-                        obj = e.targetTouches.item(0);
-                    } else if (e.originalEvent !== undefined && e.originalEvent.targetTouches !== undefined) {
-                        obj = e.originalEvent.targetTouches.item(0);
-                    }
-
-                    return obj;
-                },
-
-                /**
-                 * Get drag info
-                 *
-                 * @param {$scope} scope
-                 * @returns {object}
-                 */
-                dragInfo: function (scope) {
-                    var _node   = scope.getData(),
-                        _tree   = scope.getScopeTree(),
-                        _parent = scope.getNode(_node.__parent_real__);
-
-                    return {
-                        node:    _node,
-                        parent:  _parent,
-                        move:    {
-                            parent: _parent,
-                            pos:    _node.__index__
-                        },
-                        scope:   scope,
-                        target:  _tree,
-                        drag:    _tree,
-                        drop:    scope.getPrevSibling(_node),
-                        changed: false
-                    };
-                },
-
-                /**
-                 * Get element's height
-                 *
-                 * @param {DOMElement} element
-                 * @returns {number}
-                 */
-                height: function (element) {
-                    return element.prop('scrollHeight');
-                },
-
-                /**
-                 * Get element's width
-                 *
-                 * @param {DOMElement} element
-                 * @returns {number}
-                 */
-                width: function (element) {
-                    return element.prop('scrollWidth');
-                },
-
-                /**
-                 * Get element's offset
-                 *
-                 * @param {DOMElement} element
-                 * @returns {{width: *, height: *, top: *, left: *}}
-                 */
-                offset: function (element) {
-                    var boundingClientRect = element[0].getBoundingClientRect();
-
-                    return {
-                        width:  element.prop('offsetWidth'),
-                        height: element.prop('offsetHeight'),
-                        top:    boundingClientRect.top + ($window.pageYOffset || $document[0].body.scrollTop || $document[0].documentElement.scrollTop),
-                        left:   boundingClientRect.left + ($window.pageXOffset || $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft)
-                    };
-                },
-
-                /**
-                 * Get position started of element drag or drop
-                 *
-                 * @param {Event} e
-                 * @param {DOMElement} target
-                 * @returns {ElementPosition}
-                 */
-                positionStarted: function (e, target) {
-                    /**
-                     * Element position information (when drag & drop)
-                     *
-                     * @name ElementPosition
-                     * @type {object}
-                     * @property {number} offsetX
-                     * @property {number} offsetY
-                     * @property {number} startX
-                     * @property {number} lastX
-                     * @property {number} startY
-                     * @property {number} lastY
-                     * @property {number} nowX
-                     * @property {number} nowY
-                     * @property {number} distX - Distance of X
-                     * @property {number} distY - Distance of Y
-                     * @property {number} dirAX - Direct of Ax
-                     * @property {number} dirX - Direct of X
-                     * @property {number} dirY - Direct of Y
-                     * @property {number} LastDirX - Last direct of X
-                     * @property {number} distAxX - Distance of AxX
-                     * @property {number} distAxY - Distance of AxY
-                     */
-                    var ElementPosition = {
-                        offsetX:  e.pageX - this.offset(target).left,
-                        offsetY:  e.pageY - this.offset(target).top,
-                        startX:   e.pageX,
-                        lastX:    e.pageX,
-                        startY:   e.pageY,
-                        lastY:    e.pageY,
-                        nowX:     0,
-                        nowY:     0,
-                        distX:    0,
-                        distY:    0,
-                        dirAx:    0,
-                        dirX:     0,
-                        dirY:     0,
-                        lastDirX: 0,
-                        lastDirY: 0,
-                        distAxX:  0,
-                        distAxY:  0
-                    };
-
-                    return ElementPosition;
-                },
-
-                /**
-                 * Get position moved
-                 *
-                 * @param {Event} e
-                 * @param {ElementPosition} pos
-                 * @param {bool} firstMoving
-                 * @return {object}
-                 */
-                positionMoved: function (e, pos, firstMoving) {
-                    // mouse position last events
-                    pos.lastX = pos.nowX;
-                    pos.lastY = pos.nowY;
-
-                    // mouse position this events
-                    pos.nowX = e.pageX;
-                    pos.nowY = e.pageY;
-
-                    // distance mouse moved between events
-                    pos.distX = pos.nowX - pos.lastX;
-                    pos.distY = pos.nowY - pos.lastY;
-
-                    // direction mouse was moving
-                    pos.lastDirX = pos.dirX;
-                    pos.lastDirY = pos.dirY;
-
-                    // direction mouse is now moving (on both axis)
-                    pos.dirX = pos.distX === 0 ? 0 : pos.distX > 0 ? 1 : -1;
-                    pos.dirY = pos.distY === 0 ? 0 : pos.distY > 0 ? 1 : -1;
-
-                    // axis mouse is now moving on
-                    var newAx = Math.abs(pos.distX) > Math.abs(pos.distY) ? 1 : 0;
-
-                    // do nothing on first move
-                    if (firstMoving) {
-                        pos.dirAx  = newAx;
-                        pos.moving = true;
-
-                        return; // jmp out
-                    }
-
-                    // calc distance moved on this axis (and direction)
-                    if (pos.dirAx !== newAx) {
-                        pos.distAxX = 0;
-                        pos.distAxY = 0;
-                    } else {
-                        pos.distAxX += Math.abs(pos.distX);
-                        if (pos.dirX !== 0 && pos.dirX !== pos.lastDirX) {
-                            pos.distAxX = 0;
-                        }
-                        pos.distAxY += Math.abs(pos.distY);
-                        if (pos.dirY !== 0 && pos.dirY !== pos.lastDirY) {
-                            pos.distAxY = 0;
-                        }
-                    }
-
-                    pos.dirAx = newAx;
-
-                    return pos;
-                },
-
-                /**
-                 * Replace with indent
-                 *
-                 * @param {$scope} scope
-                 * @param {DOMElement} element
-                 * @param {number} indent
-                 * @param {string} attr
-                 */
-                replaceIndent: function (scope, element, indent, attr) {
-                    attr = attr || 'left';
-                    angular.element(element.children()[0]).css(attr, scope.$callbacks.calsIndent(indent));
-                },
-
-                /**
-                 * Is type tree node
-                 *
-                 * @param {DOMElement} element
-                 * @returns {boolean}
-                 */
-                isTreeDndNode: function (element) {
-                    if (element) {
-                        var $element = angular.element(element);
-                        return $element && $element.length && typeof $element.attr('tree-dnd-node') !== 'undefined';
-                    }
-
-                    return false;
-                },
-
-                /**
-                 * Is tree nodes (container)
-                 *
-                 * @param {DOMElement} element
-                 * @returns {boolean}
-                 */
-                isTreeDndNodes: function (element) {
-                    if (element) {
-                        var $element = angular.element(element);
-
-                        return $element && $element.length && typeof $element.attr('tree-dnd-nodes') !== 'undefined';
-                    }
-
-                    return false;
-                },
-
-                /**
-                 * Is tree node handle (element to call event drag)
-                 *
-                 * @param {DOMElement} element
-                 * @returns {boolean}
-                 */
-                isTreeDndNodeHandle: function (element) {
-                    if (element) {
-                        var $element = angular.element(element);
-
-                        return $element && $element.length && typeof $element.attr('tree-dnd-node-handle') !== 'undefined';
-                    }
-
-                    return false;
-                },
-
-                /**
-                 * Is tree droppable
-                 *
-                 * @param {DOMElement} element
-                 * @returns {boolean}
-                 */
-                isTreeDndDroppable: function (element) {
-                    return _$helper.isTreeDndNode(element)
-                        || _$helper.isTreeDndNodes(element)
-                        || _$helper.isTreeDndNodeHandle(element);
-                },
-
-                /**
-                 * Find element closest by attribute
-                 *
-                 * @param {DOMElement} element
-                 * @param {string|function} attr
-                 * @returns {DOMElement}
-                 */
-                closestByAttr: function fnClosestByAttr(element, attr) {
-                    if (element && attr) {
-                        var $element = angular.element(element),
-                            $parent  = $element.parent();
-
-                        if ($parent) {
-                            var isPassed = false;
-
-                            switch (typeof attr) {
-                                case 'function':
-                                    isPassed = attr($parent);
-                                    break;
-                                default:
-                                    isPassed = typeof $parent.attr(attr) !== 'undefined';
-                                    break;
-                            }
-
-                            if (isPassed) {
-                                return $parent;
-                            } else {
-                                return fnClosestByAttr($parent, attr);
-                            }
-                        }
-                    }
-                }
-            };
-
-            return _$helper;
-        }]
-    );
-
-angular.module('ntt.TreeDnD')
-    .factory('$TreeDnDPlugin', [
-        '$injector',
-        function ($injector) {
-            return _fnget;
-
-            function _fnget(name) {
-                if (angular.isDefined($injector) && $injector.has(name)) {
-                    return $injector.get(name);
-                }
-            }
-        }]
-    );
-
-/**
- * Factory `$TreeDnDTemplate`
- * @name Factory.$TreeDnDTemplate
- * @type {TreeDnDTemplate}
- */
-angular.module('ntt.TreeDnD')
-    .factory('$TreeDnDTemplate', [
-        '$templateCache',
-        function ($templateCache) {
-            var templatePath = 'template/TreeDnD/TreeDnD.html',
-
-                /**
-                 * @private
-                 * @type {string}
-                 */
-                copyPath     = 'template/TreeDnD/TreeDnDStatusCopy.html',
-
-                /**
-                 * @private
-                 * @type {string}
-                 */
-                movePath     = 'template/TreeDnD/TreeDnDStatusMove.html',
-
-                /**
-                 * @private
-                 * @type {object}
-                 */
-                scopes       = {};
-
-            /**
-             * TreeDnDTemplate
-             *
-             * @constructor TreeDnDTemplate
-             * @hideConstructor
-             */
-            var InitTreeDnDTemplate = /** @lends TreeDnDTemplate */ {
-                /**
-                 * Set path of template move
-                 *
-                 * @param {string} path - Path of template
-                 * @param {$scope} scope - Scope of tree
-                 */
-                setMove: function (path, scope) {
-                    if (!scopes[scope.$id]) {
-                        scopes[scope.$id] = {};
-                    }
-                    scopes[scope.$id].movePath = path;
-                },
-
-                /**
-                 * Set path of template copy
-                 *
-                 * @param {string} path - Path of template
-                 * @param {$scope} scope - Scope of tree
-                 */
-                setCopy: function (path, scope) {
-                    if (!scopes[scope.$id]) {
-                        scopes[scope.$id] = {};
-                    }
-                    scopes[scope.$id].copyPath = path;
-                },
-
-                /**
-                 * Get template's path
-                 *
-                 * @returns {string}
-                 */
-                getPath: function () {
-                    return templatePath;
-                },
-
-                /**
-                 * Get template's copy
-                 *
-                 * @param {$scope} scope - Scope of tree
-                 * @returns {string|html}
-                 */
-                getCopy: function (scope) {
-                    if (scopes[scope.$id] && scopes[scope.$id].copyPath) {
-                        var temp = $templateCache.get(scopes[scope.$id].copyPath);
-                        if (temp) {
-                            return temp;
-                        }
-                    }
-
-                    return $templateCache.get(copyPath);
-                },
-
-                /**
-                 * Get template's move
-                 *
-                 * @param {$scope} scope - Scope of tree
-                 * @returns {string|html}
-                 */
-                getMove: function (scope) {
-                    if (scopes[scope.$id] && scopes[scope.$id].movePath) {
-                        var temp = $templateCache.get(scopes[scope.$id].movePath);
-                        if (temp) {
-                            return temp;
-                        }
-                    }
-
-                    return $templateCache.get(movePath);
-                }
-            };
-
-            return InitTreeDnDTemplate;
-        }]
-    );
-
-angular.module('ntt.TreeDnD')
-    .factory('$TreeDnDViewport', fnInitTreeDnDViewport);
-
-fnInitTreeDnDViewport.$inject = ['$window', '$document', '$timeout', '$q', '$compile'];
-
-function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
-
-    var viewport,
-        isUpdating    = false,
-        isRender      = false,
-        updateAgain   = false,
-        viewportRect,
-        items         = [],
-        nodeTemplate,
-        updateTimeout,
-        renderTime,
-        $initViewport = {
-            setViewport:   setViewport,
-            getViewport:   getViewport,
-            add:           add,
-            setTemplate:   setTemplate,
-            getItems:      getItems,
-            updateDelayed: updateDelayed
-        },
-        eWindow       = angular.element($window);
-
-    eWindow.on('load resize scroll', updateDelayed);
-
-    return $initViewport;
-
-    function update() {
-
-        viewportRect = {
-            width:  eWindow.prop('offsetWidth') || document.documentElement.clientWidth,
-            height: eWindow.prop('offsetHeight') || document.documentElement.clientHeight,
-            top:    $document[0].body.scrollTop || $document[0].documentElement.scrollTop,
-            left:   $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft
-        };
-
-        if (isUpdating || isRender) {
-            updateAgain = true;
-
-            return; // jmp out
-        }
-
-        isUpdating = true;
-
-        recursivePromise();
-    }
-
-    function recursivePromise() {
-        if (isRender) {
-            return;
-        }
-
-        var number = number > 0 ? number : items.length, item;
-
-        if (number > 0) {
-            item = items[0];
-
-            isRender   = true;
-            renderTime = $timeout(function () {
-                //item.element.html(nodeTemplate);
-                //$compile(item.element.contents())(item.scope);
-
-                items.splice(0, 1);
-                isRender = false;
-                number--;
-                $timeout.cancel(renderTime);
-                recursivePromise();
-            }, 0);
-
-        } else {
-            isUpdating = false;
-            if (updateAgain) {
-                updateAgain = false;
-                update();
-            }
-        }
-
-    }
-
-    /**
-     * Check if a point is inside specified bounds
-     * @param x
-     * @param y
-     * @param bounds
-     * @returns {boolean}
-     */
-    function pointIsInsideBounds(x, y, bounds) {
-        return x >= bounds.left &&
-            y >= bounds.top &&
-            x <= bounds.left + bounds.width &&
-            y <= bounds.top + bounds.height;
-    }
-
-    /**
-     * Set the viewport element
-     *
-     * @name setViewport
-     * @param element
-     * @callback setViewport
-     * @private
-     */
-    function setViewport(element) {
-        viewport = element;
-    }
-
-    /**
-     * Return the current viewport
-     *
-     * @returns {*}
-     * @callback getViewport
-     * @private
-     */
-    function getViewport() {
-        return viewport;
-    }
-
-    /**
-     * trigger an update
-     */
-    function updateDelayed() {
-        $timeout.cancel(updateTimeout);
-
-        updateTimeout = $timeout(
-            function () {
-                update();
-            },
-            0
-        );
-    }
-
-    /**
-     * Add listener for event
-     * @param {$scope} scope
-     * @param {DOMElement} element
-     */
-    function add(scope, element) {
-        updateDelayed();
-
-        items.push({
-            element: element,
-            scope:   scope
-        });
-    }
-
-    /**
-     *
-     *
-     * @param {$scope} scope
-     * @param {string} template
-     * @callback setTemplate
-     * @private
-     */
-    function setTemplate(scope, template) {
-        nodeTemplate = template;
-    }
-
-    /**
-     * Get list of items
-     * @returns {Node[]}
-     */
-    function getItems() {
-        return items;
-    }
-}
 
 angular.module('ntt.TreeDnD')
     .directive('compile', [
@@ -2087,8 +1341,8 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                         }],
                         ['string', 'primaryKey', $attrs.primaryKey, 'primary_key', '__uid__'],
                         ['string', 'indentUnit', $attrs.indentUnit, 'indent_unit'],
-                        ['number', 'indent', 30, undefined, 30],
-                        ['number', 'indentPlus', 20, undefined, 20],
+                        ['number', 'indent', 30, 'indent', 30],
+                        ['number', 'indentPlus', 20, 'indent_plus', 20],
                         [
                             'object',
                             'callbacks',
@@ -2642,6 +1896,750 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
     }
 }
 
+
+/**
+ * Factory $TreeDnDConvert
+ *
+ * @name Factory.$TreeDnDConvert
+ * @type {$TreeDnDConvert}
+ */
+angular.module('ntt.TreeDnD')
+    .factory('$TreeDnDConvert', function () {
+        /**
+         * NodeBase
+         * @name NodeBase
+         * @type object
+         * @property {NodeBase[]|undefined} [__children__]
+         */
+
+        /**
+         * @name $TreeDnDConvert
+         * @type object
+         * @default
+         */
+        var $TreeDnDConvert = {
+            /**
+             * Line to tree
+             *
+             * @param {Array|Object} data
+             * @param {string} primaryKey
+             * @param {string} parentKey
+             * @param {function} callback
+             * @returns {NodeBase[]}
+             */
+            line2tree: function (data, primaryKey, parentKey, callback) {
+                callback = typeof callback === 'function' ? callback : function () {
+                };
+
+                if (!data || data.length === 0 || !primaryKey || !parentKey) {
+                    return [];
+                }
+
+                var tree     = [],
+                    rootIds  = [],
+                    item     = data[0],
+                    _primary = item[primaryKey],
+                    treeObjs = {},
+                    parentId, parent,
+                    len      = data.length,
+                    i        = 0;
+
+                while (i < len) {
+                    item = data[i++];
+                    callback(item);
+                    _primary           = item[primaryKey];
+                    treeObjs[_primary] = item;
+                }
+
+
+                i = 0;
+                while (i < len) {
+                    item = data[i++];
+
+                    callback(item);
+
+                    _primary           = item[primaryKey];
+                    treeObjs[_primary] = item;
+                    parentId           = item[parentKey];
+
+                    if (parentId) {
+                        parent = treeObjs[parentId];
+                        if (parent) {
+                            if (parent.__children__) {
+                                if (angular.isArray(parent.__children__)) {
+                                    parent.__children__.push(item);
+                                } else {
+                                    console.error('Type of `parent.__children__` isn\'t array');
+                                    console.log(parent.__children__);
+                                }
+                            } else {
+                                parent.__children__ = [item];
+                            }
+                        }
+                    } else {
+                        rootIds.push(_primary);
+                    }
+                }
+
+                len = rootIds.length;
+                for (i = 0; i < len; i++) {
+                    tree.push(treeObjs[rootIds[i]]);
+                }
+
+                return tree;
+            },
+            /**
+             * Convert tree to tree
+             *
+             * @param {array|object} data
+             * @param {string} containKey
+             * @param {function} callback
+             * @returns {NodeBase[]}
+             */
+            tree2tree: function access_child(data, containKey, callback) {
+                callback = typeof callback === 'function' ? callback : function () {
+                };
+
+                var _tree = [],
+                    _i,
+                    _len  = data ? data.length : 0,
+                    _copy, _child;
+
+                for (_i = 0; _i < _len; _i++) {
+                    _copy = angular.copy(data[_i]);
+
+                    callback(_copy);
+
+                    if (angular.isArray(_copy[containKey]) && _copy[containKey].length > 0) {
+                        _child = access_child(_copy[containKey], containKey, callback);
+                        delete _copy[containKey];
+                        _copy.__children__ = _child;
+                    }
+
+                    _tree.push(_copy);
+                }
+
+                return _tree;
+            }
+        };
+
+        return $TreeDnDConvert;
+    });
+
+/**
+ * Factory $TreeDnDHelper
+ * @namespace $TreeDnDHelper
+ * @name $TreeDnDHelper
+ */
+angular.module('ntt.TreeDnD')
+    .factory('$TreeDnDHelper', [
+        '$document', '$window',
+        function ($document, $window) {
+            var _$helper = /** @lends $TreeDnDHelper */ {
+                /**
+                 * Status is no draggable
+                 *
+                 * @param {DOMElement} targetElm
+                 * @returns {boolean}
+                 */
+                nodrag:   function (targetElm) {
+                    return typeof targetElm.attr('data-nodrag') !== 'undefined';
+                },
+                /**
+                 *
+                 * Get event's object
+                 * @param {object} e
+                 * @returns {object|null}
+                 */
+                eventObj: function (e) {
+                    var obj = e;
+
+                    if (e.targetTouches !== undefined) {
+                        obj = e.targetTouches.item(0);
+                    } else if (e.originalEvent !== undefined && e.originalEvent.targetTouches !== undefined) {
+                        obj = e.originalEvent.targetTouches.item(0);
+                    }
+
+                    return obj;
+                },
+
+                /**
+                 * Get drag info
+                 *
+                 * @param {$scope} scope
+                 * @returns {object}
+                 */
+                dragInfo: function (scope) {
+                    var _node   = scope.getData(),
+                        _tree   = scope.getScopeTree(),
+                        _parent = scope.getNode(_node.__parent_real__);
+
+                    return {
+                        node:    _node,
+                        parent:  _parent,
+                        move:    {
+                            parent: _parent,
+                            pos:    _node.__index__
+                        },
+                        scope:   scope,
+                        target:  _tree,
+                        drag:    _tree,
+                        drop:    scope.getPrevSibling(_node),
+                        changed: false
+                    };
+                },
+
+                /**
+                 * Get element's height
+                 *
+                 * @param {DOMElement} element
+                 * @returns {number}
+                 */
+                height: function (element) {
+                    return element.prop('scrollHeight');
+                },
+
+                /**
+                 * Get element's width
+                 *
+                 * @param {DOMElement} element
+                 * @returns {number}
+                 */
+                width: function (element) {
+                    return element.prop('scrollWidth');
+                },
+
+                /**
+                 * Get element's offset
+                 *
+                 * @param {DOMElement} element
+                 * @returns {{width: *, height: *, top: *, left: *}}
+                 */
+                offset: function (element) {
+                    var boundingClientRect = element[0].getBoundingClientRect();
+
+                    return {
+                        width:  element.prop('offsetWidth'),
+                        height: element.prop('offsetHeight'),
+                        top:    boundingClientRect.top + ($window.pageYOffset || $document[0].body.scrollTop || $document[0].documentElement.scrollTop),
+                        left:   boundingClientRect.left + ($window.pageXOffset || $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft)
+                    };
+                },
+
+                /**
+                 * Get position started of element drag or drop
+                 *
+                 * @param {Event} e
+                 * @param {DOMElement} target
+                 * @returns {ElementPosition}
+                 */
+                positionStarted: function (e, target) {
+                    /**
+                     * Element position information (when drag & drop)
+                     *
+                     * @name ElementPosition
+                     * @type {object}
+                     * @property {number} offsetX
+                     * @property {number} offsetY
+                     * @property {number} startX
+                     * @property {number} lastX
+                     * @property {number} startY
+                     * @property {number} lastY
+                     * @property {number} nowX
+                     * @property {number} nowY
+                     * @property {number} distX - Distance of X
+                     * @property {number} distY - Distance of Y
+                     * @property {number} dirAX - Direct of Ax
+                     * @property {number} dirX - Direct of X
+                     * @property {number} dirY - Direct of Y
+                     * @property {number} LastDirX - Last direct of X
+                     * @property {number} distAxX - Distance of AxX
+                     * @property {number} distAxY - Distance of AxY
+                     */
+                    var ElementPosition = {
+                        offsetX:  e.pageX - this.offset(target).left,
+                        offsetY:  e.pageY - this.offset(target).top,
+                        startX:   e.pageX,
+                        lastX:    e.pageX,
+                        startY:   e.pageY,
+                        lastY:    e.pageY,
+                        nowX:     0,
+                        nowY:     0,
+                        distX:    0,
+                        distY:    0,
+                        dirAx:    0,
+                        dirX:     0,
+                        dirY:     0,
+                        lastDirX: 0,
+                        lastDirY: 0,
+                        distAxX:  0,
+                        distAxY:  0
+                    };
+
+                    return ElementPosition;
+                },
+
+                /**
+                 * Get position moved
+                 *
+                 * @param {Event} e
+                 * @param {ElementPosition} pos
+                 * @param {bool} firstMoving
+                 * @return {object}
+                 */
+                positionMoved: function (e, pos, firstMoving) {
+                    // mouse position last events
+                    pos.lastX = pos.nowX;
+                    pos.lastY = pos.nowY;
+
+                    // mouse position this events
+                    pos.nowX = e.pageX;
+                    pos.nowY = e.pageY;
+
+                    // distance mouse moved between events
+                    pos.distX = pos.nowX - pos.lastX;
+                    pos.distY = pos.nowY - pos.lastY;
+
+                    // direction mouse was moving
+                    pos.lastDirX = pos.dirX;
+                    pos.lastDirY = pos.dirY;
+
+                    // direction mouse is now moving (on both axis)
+                    pos.dirX = pos.distX === 0 ? 0 : pos.distX > 0 ? 1 : -1;
+                    pos.dirY = pos.distY === 0 ? 0 : pos.distY > 0 ? 1 : -1;
+
+                    // axis mouse is now moving on
+                    var newAx = Math.abs(pos.distX) > Math.abs(pos.distY) ? 1 : 0;
+
+                    // do nothing on first move
+                    if (firstMoving) {
+                        pos.dirAx  = newAx;
+                        pos.moving = true;
+
+                        return; // jmp out
+                    }
+
+                    // calc distance moved on this axis (and direction)
+                    if (pos.dirAx !== newAx) {
+                        pos.distAxX = 0;
+                        pos.distAxY = 0;
+                    } else {
+                        pos.distAxX += Math.abs(pos.distX);
+                        if (pos.dirX !== 0 && pos.dirX !== pos.lastDirX) {
+                            pos.distAxX = 0;
+                        }
+                        pos.distAxY += Math.abs(pos.distY);
+                        if (pos.dirY !== 0 && pos.dirY !== pos.lastDirY) {
+                            pos.distAxY = 0;
+                        }
+                    }
+
+                    pos.dirAx = newAx;
+
+                    return pos;
+                },
+
+                /**
+                 * Replace with indent
+                 *
+                 * @param {$scope} scope
+                 * @param {DOMElement} element
+                 * @param {number} indent
+                 * @param {string} attr
+                 */
+                replaceIndent: function (scope, element, indent, attr) {
+                    attr = attr || 'left';
+                    angular.element(element.children()[0]).css(attr, scope.$callbacks.calsIndent(indent));
+                },
+
+                /**
+                 * Is type tree node
+                 *
+                 * @param {DOMElement} element
+                 * @returns {boolean}
+                 */
+                isTreeDndNode: function (element) {
+                    if (element) {
+                        var $element = angular.element(element);
+                        return $element && $element.length && typeof $element.attr('tree-dnd-node') !== 'undefined';
+                    }
+
+                    return false;
+                },
+
+                /**
+                 * Is tree nodes (container)
+                 *
+                 * @param {DOMElement} element
+                 * @returns {boolean}
+                 */
+                isTreeDndNodes: function (element) {
+                    if (element) {
+                        var $element = angular.element(element);
+
+                        return $element && $element.length && typeof $element.attr('tree-dnd-nodes') !== 'undefined';
+                    }
+
+                    return false;
+                },
+
+                /**
+                 * Is tree node handle (element to call event drag)
+                 *
+                 * @param {DOMElement} element
+                 * @returns {boolean}
+                 */
+                isTreeDndNodeHandle: function (element) {
+                    if (element) {
+                        var $element = angular.element(element);
+
+                        return $element && $element.length && typeof $element.attr('tree-dnd-node-handle') !== 'undefined';
+                    }
+
+                    return false;
+                },
+
+                /**
+                 * Is tree droppable
+                 *
+                 * @param {DOMElement} element
+                 * @returns {boolean}
+                 */
+                isTreeDndDroppable: function (element) {
+                    return _$helper.isTreeDndNode(element)
+                        || _$helper.isTreeDndNodes(element)
+                        || _$helper.isTreeDndNodeHandle(element);
+                },
+
+                /**
+                 * Find element closest by attribute
+                 *
+                 * @param {DOMElement} element
+                 * @param {string|function} attr
+                 * @returns {DOMElement}
+                 */
+                closestByAttr: function fnClosestByAttr(element, attr) {
+                    if (element && attr) {
+                        var $element = angular.element(element),
+                            $parent  = $element.parent();
+
+                        if ($parent) {
+                            var isPassed = false;
+
+                            switch (typeof attr) {
+                                case 'function':
+                                    isPassed = attr($parent);
+                                    break;
+                                default:
+                                    isPassed = typeof $parent.attr(attr) !== 'undefined';
+                                    break;
+                            }
+
+                            if (isPassed) {
+                                return $parent;
+                            } else {
+                                return fnClosestByAttr($parent, attr);
+                            }
+                        }
+                    }
+                }
+            };
+
+            return _$helper;
+        }]
+    );
+
+angular.module('ntt.TreeDnD')
+    .factory('$TreeDnDPlugin', [
+        '$injector',
+        function ($injector) {
+            return _fnget;
+
+            function _fnget(name) {
+                if (angular.isDefined($injector) && $injector.has(name)) {
+                    return $injector.get(name);
+                }
+            }
+        }]
+    );
+
+/**
+ * Factory `$TreeDnDTemplate`
+ * @name Factory.$TreeDnDTemplate
+ * @type {TreeDnDTemplate}
+ */
+angular.module('ntt.TreeDnD')
+    .factory('$TreeDnDTemplate', [
+        '$templateCache',
+        function ($templateCache) {
+            var templatePath = 'template/TreeDnD/TreeDnD.html',
+
+                /**
+                 * @private
+                 * @type {string}
+                 */
+                copyPath     = 'template/TreeDnD/TreeDnDStatusCopy.html',
+
+                /**
+                 * @private
+                 * @type {string}
+                 */
+                movePath     = 'template/TreeDnD/TreeDnDStatusMove.html',
+
+                /**
+                 * @private
+                 * @type {object}
+                 */
+                scopes       = {};
+
+            /**
+             * TreeDnDTemplate
+             *
+             * @constructor TreeDnDTemplate
+             * @hideConstructor
+             */
+            var InitTreeDnDTemplate = /** @lends TreeDnDTemplate */ {
+                /**
+                 * Set path of template move
+                 *
+                 * @param {string} path - Path of template
+                 * @param {$scope} scope - Scope of tree
+                 */
+                setMove: function (path, scope) {
+                    if (!scopes[scope.$id]) {
+                        scopes[scope.$id] = {};
+                    }
+                    scopes[scope.$id].movePath = path;
+                },
+
+                /**
+                 * Set path of template copy
+                 *
+                 * @param {string} path - Path of template
+                 * @param {$scope} scope - Scope of tree
+                 */
+                setCopy: function (path, scope) {
+                    if (!scopes[scope.$id]) {
+                        scopes[scope.$id] = {};
+                    }
+                    scopes[scope.$id].copyPath = path;
+                },
+
+                /**
+                 * Get template's path
+                 *
+                 * @returns {string}
+                 */
+                getPath: function () {
+                    return templatePath;
+                },
+
+                /**
+                 * Get template's copy
+                 *
+                 * @param {$scope} scope - Scope of tree
+                 * @returns {string|html}
+                 */
+                getCopy: function (scope) {
+                    if (scopes[scope.$id] && scopes[scope.$id].copyPath) {
+                        var temp = $templateCache.get(scopes[scope.$id].copyPath);
+                        if (temp) {
+                            return temp;
+                        }
+                    }
+
+                    return $templateCache.get(copyPath);
+                },
+
+                /**
+                 * Get template's move
+                 *
+                 * @param {$scope} scope - Scope of tree
+                 * @returns {string|html}
+                 */
+                getMove: function (scope) {
+                    if (scopes[scope.$id] && scopes[scope.$id].movePath) {
+                        var temp = $templateCache.get(scopes[scope.$id].movePath);
+                        if (temp) {
+                            return temp;
+                        }
+                    }
+
+                    return $templateCache.get(movePath);
+                }
+            };
+
+            return InitTreeDnDTemplate;
+        }]
+    );
+
+angular.module('ntt.TreeDnD')
+    .factory('$TreeDnDViewport', fnInitTreeDnDViewport);
+
+fnInitTreeDnDViewport.$inject = ['$window', '$document', '$timeout', '$q', '$compile'];
+
+function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
+
+    var viewport,
+        isUpdating    = false,
+        isRender      = false,
+        updateAgain   = false,
+        viewportRect,
+        items         = [],
+        nodeTemplate,
+        updateTimeout,
+        renderTime,
+        $initViewport = {
+            setViewport:   setViewport,
+            getViewport:   getViewport,
+            add:           add,
+            setTemplate:   setTemplate,
+            getItems:      getItems,
+            updateDelayed: updateDelayed
+        },
+        eWindow       = angular.element($window);
+
+    eWindow.on('load resize scroll', updateDelayed);
+
+    return $initViewport;
+
+    function update() {
+
+        viewportRect = {
+            width:  eWindow.prop('offsetWidth') || document.documentElement.clientWidth,
+            height: eWindow.prop('offsetHeight') || document.documentElement.clientHeight,
+            top:    $document[0].body.scrollTop || $document[0].documentElement.scrollTop,
+            left:   $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft
+        };
+
+        if (isUpdating || isRender) {
+            updateAgain = true;
+
+            return; // jmp out
+        }
+
+        isUpdating = true;
+
+        recursivePromise();
+    }
+
+    function recursivePromise() {
+        if (isRender) {
+            return;
+        }
+
+        var number = number > 0 ? number : items.length, item;
+
+        if (number > 0) {
+            item = items[0];
+
+            isRender   = true;
+            renderTime = $timeout(function () {
+                //item.element.html(nodeTemplate);
+                //$compile(item.element.contents())(item.scope);
+
+                items.splice(0, 1);
+                isRender = false;
+                number--;
+                $timeout.cancel(renderTime);
+                recursivePromise();
+            }, 0);
+
+        } else {
+            isUpdating = false;
+            if (updateAgain) {
+                updateAgain = false;
+                update();
+            }
+        }
+
+    }
+
+    /**
+     * Check if a point is inside specified bounds
+     * @param x
+     * @param y
+     * @param bounds
+     * @returns {boolean}
+     */
+    function pointIsInsideBounds(x, y, bounds) {
+        return x >= bounds.left &&
+            y >= bounds.top &&
+            x <= bounds.left + bounds.width &&
+            y <= bounds.top + bounds.height;
+    }
+
+    /**
+     * Set the viewport element
+     *
+     * @name setViewport
+     * @param element
+     * @callback setViewport
+     * @private
+     */
+    function setViewport(element) {
+        viewport = element;
+    }
+
+    /**
+     * Return the current viewport
+     *
+     * @returns {*}
+     * @callback getViewport
+     * @private
+     */
+    function getViewport() {
+        return viewport;
+    }
+
+    /**
+     * trigger an update
+     */
+    function updateDelayed() {
+        $timeout.cancel(updateTimeout);
+
+        updateTimeout = $timeout(
+            function () {
+                update();
+            },
+            0
+        );
+    }
+
+    /**
+     * Add listener for event
+     * @param {$scope} scope
+     * @param {DOMElement} element
+     */
+    function add(scope, element) {
+        updateDelayed();
+
+        items.push({
+            element: element,
+            scope:   scope
+        });
+    }
+
+    /**
+     *
+     *
+     * @param {$scope} scope
+     * @param {string} template
+     * @callback setTemplate
+     * @private
+     */
+    function setTemplate(scope, template) {
+        nodeTemplate = template;
+    }
+
+    /**
+     * Get list of items
+     * @returns {Node[]}
+     */
+    function getItems() {
+        return items;
+    }
+}
 
 /**
  * Factory $TreeDnDFilter
