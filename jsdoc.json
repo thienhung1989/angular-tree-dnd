@@ -1,28 +1,28 @@
 {
-  "tags": {
-    "allowUnknownTags": true
-  },
-  "opts": {
-    "destination": "./docs"
-  },
-  "plugins": [
-    "plugins/markdown"
-  ],
-  "templates": {
-    "cleverLinks": true,
-    "monospaceLinks": true,
-    "default": {
-      "outputSourceFiles": true
+    "tags": {
+        "allowUnknownTags": true
     },
-    "collapseSymbols": false,
-    "outputSourceFiles": true,
-    "outputSourcePath": true,
-    "path": "ink-docstrap",
-    "syntaxTheme": "default",
-    "theme": "paper",
-    "sort": true,
-    "navType": "vertical",
-    "linenums": true,
-    "dateFormat": "MMMM Do YYYY, h:mm:ss a"
-  }
+    "opts": {
+        "destination": "./docs"
+    },
+    "plugins": [
+        "plugins/markdown"
+    ],
+    "templates": {
+        "cleverLinks": true,
+        "monospaceLinks": true,
+        "default": {
+            "outputSourceFiles": true
+        },
+        "collapseSymbols": false,
+        "outputSourceFiles": true,
+        "outputSourcePath": true,
+        "path": "ink-docstrap",
+        "syntaxTheme": "default",
+        "theme": "paper",
+        "sort": true,
+        "navType": "vertical",
+        "linenums": true,
+        "dateFormat": "MMMM Do YYYY, h:mm:ss a"
+    }
 }

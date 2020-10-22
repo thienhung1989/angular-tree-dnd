@@ -979,8 +979,8 @@ function fnInitTreeDnD($timeout, $http, $compile, $parse, $window, $document, $t
                         }],
                         ['string', 'primaryKey', $attrs.primaryKey, 'primary_key', '__uid__'],
                         ['string', 'indentUnit', $attrs.indentUnit, 'indent_unit'],
-                        ['number', 'indent', 30, undefined, 30],
-                        ['number', 'indentPlus', 20, undefined, 20],
+                        ['number', 'indent', 30, 'indent', 30],
+                        ['number', 'indentPlus', 20, 'indent_plus', 20],
                         [
                             'object',
                             'callbacks',
