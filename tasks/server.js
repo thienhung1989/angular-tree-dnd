@@ -2,16 +2,16 @@
 
 module.exports = function (gulp, $) {
 
-    gulp.task('dev::connect', [], function () {
+    gulp.task('dev::connect', async () => {
         var livereloadPort = 35723;
 
         $.connect.server(
             {
-                port:       9000,
+                port: 9000,
                 livereload: {
                     port: livereloadPort
                 },
-                root:       './',
+                root: './',
                 middleware: function (connect) {
                     function mountFolder(connect, dir) {
                         return connect.static(require('path').resolve(dir));
@@ -27,9 +27,9 @@ module.exports = function (gulp, $) {
         );
     });
 
-    gulp.task('dev::open', function () {
+    gulp.task('dev::open', async () => {
         require('open')('http://localhost:9000/demo');
     });
 
-    gulp.task('dev::run', ['dev::connect', 'dev::open']);
+    gulp.task('dev::run', gulp.series('dev::connect', 'dev::open'));
 };

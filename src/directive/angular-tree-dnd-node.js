@@ -9,6 +9,15 @@ angular.module('ntt.TreeDnD')
                 link:       fnLink
             };
 
+            /**
+             * Link
+             *
+             * @param {Object} scope
+             * @param {Object} element
+             * @param {Object} attrs
+             *
+             * @private
+             */
             function fnLink(scope, element, attrs) {
 
                 scope.$node_class = '';

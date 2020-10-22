@@ -1,12 +1,29 @@
+/**
+ * Factory $TreeDnDHelper
+ * @namespace $TreeDnDHelper
+ * @name $TreeDnDHelper
+ */
 angular.module('ntt.TreeDnD')
     .factory('$TreeDnDHelper', [
         '$document', '$window',
         function ($document, $window) {
-            var _$helper = {
-                nodrag:          function (targetElm) {
+            var _$helper = /** @lends $TreeDnDHelper */ {
+                /**
+                 * Status is no draggable
+                 *
+                 * @param {DOMElement} targetElm
+                 * @returns {boolean}
+                 */
+                nodrag:   function (targetElm) {
                     return typeof targetElm.attr('data-nodrag') !== 'undefined';
                 },
-                eventObj:        function (e) {
+                /**
+                 *
+                 * Get event's object
+                 * @param {object} e
+                 * @returns {object|null}
+                 */
+                eventObj: function (e) {
                     var obj = e;
 
                     if (e.targetTouches !== undefined) {
@@ -17,7 +34,14 @@ angular.module('ntt.TreeDnD')
 
                     return obj;
                 },
-                dragInfo:        function (scope) {
+
+                /**
+                 * Get drag info
+                 *
+                 * @param {$scope} scope
+                 * @returns {object}
+                 */
+                dragInfo: function (scope) {
                     var _node   = scope.getData(),
                         _tree   = scope.getScopeTree(),
                         _parent = scope.getNode(_node.__parent_real__);
@@ -36,13 +60,34 @@ angular.module('ntt.TreeDnD')
                         changed: false
                     };
                 },
-                height:          function (element) {
+
+                /**
+                 * Get element's height
+                 *
+                 * @param {DOMElement} element
+                 * @returns {number}
+                 */
+                height: function (element) {
                     return element.prop('scrollHeight');
                 },
-                width:           function (element) {
+
+                /**
+                 * Get element's width
+                 *
+                 * @param {DOMElement} element
+                 * @returns {number}
+                 */
+                width: function (element) {
                     return element.prop('scrollWidth');
                 },
-                offset:          function (element) {
+
+                /**
+                 * Get element's offset
+                 *
+                 * @param {DOMElement} element
+                 * @returns {{width: *, height: *, top: *, left: *}}
+                 */
+                offset: function (element) {
                     var boundingClientRect = element[0].getBoundingClientRect();
 
                     return {
@@ -52,8 +97,38 @@ angular.module('ntt.TreeDnD')
                         left:   boundingClientRect.left + ($window.pageXOffset || $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft)
                     };
                 },
+
+                /**
+                 * Get position started of element drag or drop
+                 *
+                 * @param {Event} e
+                 * @param {DOMElement} target
+                 * @returns {ElementPosition}
+                 */
                 positionStarted: function (e, target) {
-                    return {
+                    /**
+                     * Element position information (when drag & drop)
+                     *
+                     * @name ElementPosition
+                     * @type {object}
+                     * @property {number} offsetX
+                     * @property {number} offsetY
+                     * @property {number} startX
+                     * @property {number} lastX
+                     * @property {number} startY
+                     * @property {number} lastY
+                     * @property {number} nowX
+                     * @property {number} nowY
+                     * @property {number} distX - Distance of X
+                     * @property {number} distY - Distance of Y
+                     * @property {number} dirAX - Direct of Ax
+                     * @property {number} dirX - Direct of X
+                     * @property {number} dirY - Direct of Y
+                     * @property {number} LastDirX - Last direct of X
+                     * @property {number} distAxX - Distance of AxX
+                     * @property {number} distAxY - Distance of AxY
+                     */
+                    var ElementPosition = {
                         offsetX:  e.pageX - this.offset(target).left,
                         offsetY:  e.pageY - this.offset(target).top,
                         startX:   e.pageX,
@@ -72,8 +147,19 @@ angular.module('ntt.TreeDnD')
                         distAxX:  0,
                         distAxY:  0
                     };
+
+                    return ElementPosition;
                 },
-                positionMoved:   function (e, pos, firstMoving) {
+
+                /**
+                 * Get position moved
+                 *
+                 * @param {Event} e
+                 * @param {ElementPosition} pos
+                 * @param {bool} firstMoving
+                 * @return {object}
+                 */
+                positionMoved: function (e, pos, firstMoving) {
                     // mouse position last events
                     pos.lastX = pos.nowX;
                     pos.lastY = pos.nowY;
@@ -121,13 +207,30 @@ angular.module('ntt.TreeDnD')
                     }
 
                     pos.dirAx = newAx;
+
+                    return pos;
                 },
-                replaceIndent:   function (scope, element, indent, attr) {
+
+                /**
+                 * Replace with indent
+                 *
+                 * @param {$scope} scope
+                 * @param {DOMElement} element
+                 * @param {number} indent
+                 * @param {string} attr
+                 */
+                replaceIndent: function (scope, element, indent, attr) {
                     attr = attr || 'left';
                     angular.element(element.children()[0]).css(attr, scope.$callbacks.calsIndent(indent));
                 },
 
-                isTreeDndNode:       function (element) {
+                /**
+                 * Is type tree node
+                 *
+                 * @param {DOMElement} element
+                 * @returns {boolean}
+                 */
+                isTreeDndNode: function (element) {
                     if (element) {
                         var $element = angular.element(element);
                         return $element && $element.length && typeof $element.attr('tree-dnd-node') !== 'undefined';
@@ -135,7 +238,14 @@ angular.module('ntt.TreeDnD')
 
                     return false;
                 },
-                isTreeDndNodes:      function (element) {
+
+                /**
+                 * Is tree nodes (container)
+                 *
+                 * @param {DOMElement} element
+                 * @returns {boolean}
+                 */
+                isTreeDndNodes: function (element) {
                     if (element) {
                         var $element = angular.element(element);
 
@@ -144,6 +254,13 @@ angular.module('ntt.TreeDnD')
 
                     return false;
                 },
+
+                /**
+                 * Is tree node handle (element to call event drag)
+                 *
+                 * @param {DOMElement} element
+                 * @returns {boolean}
+                 */
                 isTreeDndNodeHandle: function (element) {
                     if (element) {
                         var $element = angular.element(element);
@@ -153,12 +270,27 @@ angular.module('ntt.TreeDnD')
 
                     return false;
                 },
-                isTreeDndDroppable:  function (element) {
+
+                /**
+                 * Is tree droppable
+                 *
+                 * @param {DOMElement} element
+                 * @returns {boolean}
+                 */
+                isTreeDndDroppable: function (element) {
                     return _$helper.isTreeDndNode(element)
                         || _$helper.isTreeDndNodes(element)
                         || _$helper.isTreeDndNodeHandle(element);
                 },
-                closestByAttr:       function fnClosestByAttr(element, attr) {
+
+                /**
+                 * Find element closest by attribute
+                 *
+                 * @param {DOMElement} element
+                 * @param {string|function} attr
+                 * @returns {DOMElement}
+                 */
+                closestByAttr: function fnClosestByAttr(element, attr) {
                     if (element && attr) {
                         var $element = angular.element(element),
                             $parent  = $element.parent();
@@ -178,7 +310,7 @@ angular.module('ntt.TreeDnD')
                             if (isPassed) {
                                 return $parent;
                             } else {
-                                return fnClosestByAttr($parent);
+                                return fnClosestByAttr($parent, attr);
                             }
                         }
                     }
