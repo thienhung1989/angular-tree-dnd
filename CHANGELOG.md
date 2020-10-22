@@ -1,3 +1,10 @@
+## v3.0.10
+* Fixed:
+    * Missing attributes: indent & indent_plus.
+    * Upgrade gulp4.
+    * Add package-lock.json & yarn.lock.
+    * Add jsdoc3.
+
 ## v3.0.9
 * Fixed:
     * The tree control isn't working.
