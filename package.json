@@ -1,7 +1,7 @@
 {
     "author": "https://github.com/thienhung1989/angular-tree-dnd/graphs/contributors",
     "name": "angular-tree-dnd",
-    "version": "3.0.10",
+    "version": "3.0.11",
     "homepage": "http://thienhung1989.github.io/angular-tree-dnd/",
     "repository": {
         "type": "git",
@@ -25,27 +25,25 @@
     },
     "devDependencies": {
         "connect-livereload": "*",
+        "fancy-log": "*",
         "gulp": "^4.0",
         "gulp-autoprefixer": "*",
         "gulp-changed": "*",
         "gulp-clean": "*",
+        "gulp-clean-css": "*",
         "gulp-clone": "*",
         "gulp-concat": "*",
         "gulp-connect": "*",
         "gulp-filter": "*",
-        "gulp-jscs": "*",
         "gulp-jsdoc3": "*",
         "gulp-jshint": "*",
         "gulp-load-plugins": "*",
-        "gulp-minify-css": "*",
         "gulp-remove-code": "*",
         "gulp-rename": "*",
         "gulp-replace": "*",
         "gulp-sequence": "*",
         "gulp-sourcemaps": "*",
-        "gulp-symlink": "*",
         "gulp-uglify": "*",
-        "gulp-util": "*",
         "jshint": "*",
         "jshint-stylish": "*",
         "open": "*",
@@ -59,7 +57,7 @@
     ],
     "postcss": {
         "plugins": {
-            "autoprefixer": { }
+            "autoprefixer": {}
         }
     },
     "engines": {
