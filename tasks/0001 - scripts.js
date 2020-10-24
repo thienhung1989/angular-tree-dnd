@@ -1,5 +1,7 @@
 'use strict';
 
+let log = require('fancy-log');
+
 module.exports = function (gulp, $, pkg, through, fs) {
     gulp.task('js::jshint', async () => {
             return gulp.src([
@@ -107,7 +109,7 @@ module.exports = function (gulp, $, pkg, through, fs) {
                     {
                         // preserveComments: 'some'
                     }
-                ).on('error', $.util.log)
+                ).on('error', log)
             )
             .pipe($.replace(/\s*\*\s*@preserve/gi, ''))
             .pipe($.rename('ng-tree-dnd.min.js'))
