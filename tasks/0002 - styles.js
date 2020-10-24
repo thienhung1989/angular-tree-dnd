@@ -11,7 +11,7 @@ module.exports = function (gulp, $) {
                 cascade: false
             }))
             .pipe(gulp.dest('dist'))
-            .pipe($.minifyCss({compatibility: 'ie8'}))
+            .pipe($.cleanCss({compatibility: 'ie8'}))
             .pipe($.rename('ng-tree-dnd.min.css'))
             .pipe(gulp.dest('dist'));
     });
