@@ -13,19 +13,19 @@ angular.module('ntt.TreeDnD')
                  * @private
                  * @type {string}
                  */
-                copyPath     = 'template/TreeDnD/TreeDnDStatusCopy.html',
+                copyPath = 'template/TreeDnD/TreeDnDStatusCopy.html',
 
                 /**
                  * @private
                  * @type {string}
                  */
-                movePath     = 'template/TreeDnD/TreeDnDStatusMove.html',
+                movePath = 'template/TreeDnD/TreeDnDStatusMove.html',
 
                 /**
                  * @private
                  * @type {object}
                  */
-                scopes       = {};
+                scopes = {};
 
             /**
              * TreeDnDTemplate

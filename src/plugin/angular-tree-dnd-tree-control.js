@@ -22,8 +22,8 @@ angular.module('ntt.TreeDnD')
              * @alias $scope.tree
              */
             var _tree = {
-                selected_node:       undefined,
-                on_select:           undefined,
+                selected_node: undefined,
+                on_select: undefined,
                 /**
                  * @type {$scope.for_all_descendants}
                  */
@@ -497,7 +497,7 @@ angular.module('ntt.TreeDnD')
                  *
                  * @returns {Node|undefined}
                  */
-                get_prev_node:       function (node) {
+                get_prev_node: function (node) {
                     var tree = scope.tree;
 
                     node = node || tree.selected_node;

@@ -29,13 +29,13 @@ angular.module('ntt.TreeDnD')
                 }
 
                 var _i, _len, _nodes,
-                    _nodePassed   = fnBefore(options, node),
-                    _childPassed  = false,
+                    _nodePassed = fnBefore(options, node),
+                    _childPassed = false,
                     _filter_index = options.filter_index;
 
                 if (angular.isDefined(node[fieldChild])) {
                     _nodes = node[fieldChild];
-                    _len   = _nodes.length;
+                    _len = _nodes.length;
 
                     options.filter_index = 0;
                     for (_i = 0; _i < _len; _i++) {
@@ -83,8 +83,7 @@ angular.module('ntt.TreeDnD')
                         try {
                             var _regex = new RegExp(callback);
                             return _regex.test(data);
-                        }
-                        catch (err) {
+                        } catch (err) {
                             if (typeof data === 'string') {
                                 return data.indexOf(callback) > -1;
                             }
@@ -107,13 +106,13 @@ angular.module('ntt.TreeDnD')
                 if (angular.isArray(condition)) {
                     return for_each_filter(node, condition, isAnd);
                 } else {
-                    var _key      = condition.field,
+                    var _key = condition.field,
                         _callback = condition.callback,
                         _iO, _keysO, _lenO;
 
                     if (_key === '_$') {
                         _keysO = Object.keys(node);
-                        _lenO  = _keysO.length;
+                        _lenO = _keysO.length;
                         for (_iO = 0; _iO < _lenO; _iO++) {
                             if (_fnCheck(_callback, node[_keysO[_iO]])) {
                                 return true;
@@ -175,15 +174,15 @@ angular.module('ntt.TreeDnD')
                  * @property {int} __filtered_index__
                  */
                 if (isNodePassed === true) {
-                    node.__filtered__         = true;
+                    node.__filtered__ = true;
                     node.__filtered_visible__ = true;
-                    node.__filtered_index__   = options.filter_index++;
+                    node.__filtered_index__ = options.filter_index++;
                     return; //jmp
                 } else if (isChildPassed === true && options.showParent === true
                     || isParentPassed === true && options.showChild === true) {
-                    node.__filtered__         = false;
+                    node.__filtered__ = false;
                     node.__filtered_visible__ = true;
-                    node.__filtered_index__   = options.filter_index++;
+                    node.__filtered_index__ = options.filter_index++;
                     return; //jmp
                 }
 
@@ -240,8 +239,8 @@ angular.module('ntt.TreeDnD')
 
                 // convert filter object to array filter
                 if (typeof filters === 'object' && !angular.isArray(filters)) {
-                    _keysF  = Object.keys(filters);
-                    _lenF   = _keysF.length;
+                    _keysF = Object.keys(filters);
+                    _lenF = _keysF.length;
                     _filter = [];
 
                     if (_lenF > 0) {
@@ -255,7 +254,7 @@ angular.module('ntt.TreeDnD')
                                 _state = _fnConvert(filters[_keysF[_iF]]);
                             } else {
                                 _state = {
-                                    field:    _keysF[_iF],
+                                    field: _keysF[_iF],
                                     callback: filters[_keysF[_iF]]
                                 };
                             }
@@ -264,8 +263,7 @@ angular.module('ntt.TreeDnD')
                     }
 
                     return _filter;
-                }
-                else {
+                } else {
                     return filters;
                 }
             }
@@ -302,7 +300,7 @@ angular.module('ntt.TreeDnD')
                     return treeData;
                 }
 
-                options.filter       = _filter;
+                options.filter = _filter;
                 options.filter_index = 0;
                 for (_i = 0, _len = treeData.length; _i < _len; _i++) {
                     for_all_descendants(

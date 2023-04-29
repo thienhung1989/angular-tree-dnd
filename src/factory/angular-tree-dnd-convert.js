@@ -36,19 +36,19 @@ angular.module('ntt.TreeDnD')
                     return [];
                 }
 
-                var tree     = [],
-                    rootIds  = [],
-                    item     = data[0],
+                var tree = [],
+                    rootIds = [],
+                    item = data[0],
                     _primary = item[primaryKey],
                     treeObjs = {},
                     parentId, parent,
-                    len      = data.length,
-                    i        = 0;
+                    len = data.length,
+                    i = 0;
 
                 while (i < len) {
                     item = data[i++];
                     callback(item);
-                    _primary           = item[primaryKey];
+                    _primary = item[primaryKey];
                     treeObjs[_primary] = item;
                 }
 
@@ -59,9 +59,9 @@ angular.module('ntt.TreeDnD')
 
                     callback(item);
 
-                    _primary           = item[primaryKey];
+                    _primary = item[primaryKey];
                     treeObjs[_primary] = item;
-                    parentId           = item[parentKey];
+                    parentId = item[parentKey];
 
                     if (parentId) {
                         parent = treeObjs[parentId];
@@ -103,7 +103,7 @@ angular.module('ntt.TreeDnD')
 
                 var _tree = [],
                     _i,
-                    _len  = data ? data.length : 0,
+                    _len = data ? data.length : 0,
                     _copy, _child;
 
                 for (_i = 0; _i < _len; _i++) {

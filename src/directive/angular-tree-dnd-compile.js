@@ -4,7 +4,7 @@ angular.module('ntt.TreeDnD')
         function ($compile) {
             return {
                 restrict: 'A',
-                link:     function (scope, element, attrs) {
+                link: function (scope, element, attrs) {
                     scope.$watch(
                         attrs.compile,
                         function (new_val) {
@@ -28,7 +28,7 @@ angular.module('ntt.TreeDnD')
         function ($compile) {
             return {
                 restrict: 'A',
-                link:     function (scope, element, attrs) {
+                link: function (scope, element, attrs) {
                     scope.$watch(
                         attrs.compileReplace,
                         function (new_val) {

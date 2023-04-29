@@ -3,10 +3,10 @@ angular.module('ntt.TreeDnD')
         '$TreeDnDViewport',
         function ($TreeDnDViewport) {
             return {
-                restrict:   'A',
-                replace:    true,
+                restrict: 'A',
+                replace: true,
                 controller: 'treeDndNodeController',
-                link:       fnLink
+                link: fnLink
             };
 
             /**
@@ -27,7 +27,7 @@ angular.module('ntt.TreeDnD')
                     scope.$node_class = scope.$class.node;
                 }
                 var enabledDnD = typeof scope.dragEnabled === 'boolean' || typeof scope.dropEnabled === 'boolean',
-                    keyNode    = attrs.treeDndNode,
+                    keyNode = attrs.treeDndNode,
                     childsElem;
 
                 $TreeDnDViewport.add(scope, element);
@@ -40,7 +40,7 @@ angular.module('ntt.TreeDnD')
                     };
                 }
 
-                scope.$element            = element;
+                scope.$element = element;
                 scope[keyNode].__inited__ = true;
 
                 scope.getElementChilds = function () {
@@ -55,9 +55,9 @@ angular.module('ntt.TreeDnD')
 
                 var objprops = [],
                     objexpr,
-                    i, keyO  = Object.keys(scope[keyNode]),
-                    lenO     = keyO.length,
-                    hashKey  = scope[keyNode].__hashKey__,
+                    i, keyO = Object.keys(scope[keyNode]),
+                    lenO = keyO.length,
+                    hashKey = scope[keyNode].__hashKey__,
                     skipAttr = [
                         '__visible__',
                         '__children__',
@@ -74,7 +74,7 @@ angular.module('ntt.TreeDnD')
                     keepAttr = [
                         '__expanded__'
                     ],
-                    lenKeep  = keepAttr.length;
+                    lenKeep = keepAttr.length;
 
                 // skip __visible__
                 for (i = 0; i < lenO + lenKeep; i++) {
@@ -118,7 +118,7 @@ angular.module('ntt.TreeDnD')
                     }
 
                     var _childs = nodeOf.__children__,
-                        _len    = _childs.length,
+                        _len = _childs.length,
                         _i;
 
                     var _icon;
@@ -132,7 +132,7 @@ angular.module('ntt.TreeDnD')
                         }
                     }
 
-                    nodeOf.__icon__       = _icon;
+                    nodeOf.__icon__ = _icon;
                     nodeOf.__icon_class__ = scope.$class.icon[_icon];
 
                     if (!scope.isTable) {

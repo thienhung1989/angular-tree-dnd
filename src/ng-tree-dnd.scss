@@ -18,6 +18,7 @@
 
 .tree-dnd-animate-enter {
     @extend %extend_1;
+
     &.tree-dnd-animate-enter-active {
         opacity: 1;
         max-height: 30px;
@@ -27,19 +28,24 @@
 .tree-dnd-node {
     min-height: 20px;
     line-height: 20px;
+
     &.ng-enter {
         @extend %extend_1;
     }
+
     &.ng-enter-active {
         opacity: 1;
         max-height: 30px;
     }
+
     &.ng-leave {
         @extend %extend_2;
     }
+
     &.ng-leave-active {
         @extend %extend_3;
     }
+
     > td {
         position: relative;
     }
@@ -47,6 +53,7 @@
 
 .tree-dnd-animate-leave {
     @extend %extend_2;
+
     &.tree-dnd-animate-leave-active {
         @extend %extend_3;
     }

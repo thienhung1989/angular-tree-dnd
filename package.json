@@ -1,8 +1,8 @@
 {
     "author": "https://github.com/thienhung1989/angular-tree-dnd/graphs/contributors",
     "name": "angular-tree-dnd",
-    "version": "3.0.11",
-    "homepage": "http://thienhung1989.github.io/angular-tree-dnd/",
+    "version": "3.0.12",
+    "homepage": "https://thienhung1989.github.io/angular-tree-dnd/",
     "repository": {
         "type": "git",
         "url": "git://github.com/thienhung1989/angular-tree-dnd.git"
@@ -21,50 +21,35 @@
     },
     "main": "dist/ng-tree-dnd.min.js",
     "dependencies": {
-        "angular": ">=1.2.1"
+        "angular": ">=1.2"
     },
     "devDependencies": {
-        "connect-livereload": "*",
-        "fancy-log": "*",
-        "gulp": "^4.0",
-        "gulp-autoprefixer": "*",
-        "gulp-changed": "*",
-        "gulp-clean": "*",
-        "gulp-clean-css": "*",
-        "gulp-clone": "*",
-        "gulp-concat": "*",
-        "gulp-connect": "*",
-        "gulp-filter": "*",
-        "gulp-jsdoc3": "*",
-        "gulp-jshint": "*",
-        "gulp-load-plugins": "*",
-        "gulp-remove-code": "*",
-        "gulp-rename": "*",
-        "gulp-replace": "*",
-        "gulp-sequence": "*",
-        "gulp-sourcemaps": "*",
-        "gulp-uglify": "*",
-        "jshint": "*",
-        "jshint-stylish": "*",
-        "open": "*",
-        "require-dir": "*",
-        "through2": "*"
+        "autoprefixer": "^10.4.14",
+        "css-loader": "^6.7.3",
+        "mini-css-extract-plugin": "^2.7.5",
+        "postcss": "^8.4.23",
+        "postcss-loader": "^7.3.0",
+        "sass": "^1.62.1",
+        "sass-loader": "^13.2.2",
+        "style-loader": "^3.3.2",
+        "webpack": "^5.81.0",
+        "webpack-cli": "^5.0.2",
+        "webpack-dev-server": "^4.13.3"
     },
     "browserslist": [
         "last 2 version",
         "> 1%",
         "IE 10"
     ],
-    "postcss": {
-        "plugins": {
-            "autoprefixer": {}
-        }
-    },
     "engines": {
         "node": ">=0.8.0"
     },
     "scripts": {
-        "test": "gulp build"
+        "build": "webpack --mode=production --node-env=production",
+        "build:dev": "webpack --mode=development",
+        "build:prod": "webpack --mode=production --node-env=production",
+        "watch": "webpack --watch",
+        "serve": "webpack serve"
     },
     "license": "MIT"
 }

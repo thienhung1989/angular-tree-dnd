@@ -14,7 +14,7 @@ angular.module('ntt.TreeDnD')
                  * @param {DOMElement} targetElm
                  * @returns {boolean}
                  */
-                nodrag:   function (targetElm) {
+                nodrag: function (targetElm) {
                     return typeof targetElm.attr('data-nodrag') !== 'undefined';
                 },
                 /**
@@ -42,21 +42,21 @@ angular.module('ntt.TreeDnD')
                  * @returns {object}
                  */
                 dragInfo: function (scope) {
-                    var _node   = scope.getData(),
-                        _tree   = scope.getScopeTree(),
+                    var _node = scope.getData(),
+                        _tree = scope.getScopeTree(),
                         _parent = scope.getNode(_node.__parent_real__);
 
                     return {
-                        node:    _node,
-                        parent:  _parent,
-                        move:    {
+                        node: _node,
+                        parent: _parent,
+                        move: {
                             parent: _parent,
-                            pos:    _node.__index__
+                            pos: _node.__index__
                         },
-                        scope:   scope,
-                        target:  _tree,
-                        drag:    _tree,
-                        drop:    scope.getPrevSibling(_node),
+                        scope: scope,
+                        target: _tree,
+                        drag: _tree,
+                        drop: scope.getPrevSibling(_node),
                         changed: false
                     };
                 },
@@ -91,10 +91,10 @@ angular.module('ntt.TreeDnD')
                     var boundingClientRect = element[0].getBoundingClientRect();
 
                     return {
-                        width:  element.prop('offsetWidth'),
+                        width: element.prop('offsetWidth'),
                         height: element.prop('offsetHeight'),
-                        top:    boundingClientRect.top + ($window.pageYOffset || $document[0].body.scrollTop || $document[0].documentElement.scrollTop),
-                        left:   boundingClientRect.left + ($window.pageXOffset || $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft)
+                        top: boundingClientRect.top + ($window.pageYOffset || $document[0].body.scrollTop || $document[0].documentElement.scrollTop),
+                        left: boundingClientRect.left + ($window.pageXOffset || $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft)
                     };
                 },
 
@@ -129,23 +129,23 @@ angular.module('ntt.TreeDnD')
                      * @property {number} distAxY - Distance of AxY
                      */
                     var ElementPosition = {
-                        offsetX:  e.pageX - this.offset(target).left,
-                        offsetY:  e.pageY - this.offset(target).top,
-                        startX:   e.pageX,
-                        lastX:    e.pageX,
-                        startY:   e.pageY,
-                        lastY:    e.pageY,
-                        nowX:     0,
-                        nowY:     0,
-                        distX:    0,
-                        distY:    0,
-                        dirAx:    0,
-                        dirX:     0,
-                        dirY:     0,
+                        offsetX: e.pageX - this.offset(target).left,
+                        offsetY: e.pageY - this.offset(target).top,
+                        startX: e.pageX,
+                        lastX: e.pageX,
+                        startY: e.pageY,
+                        lastY: e.pageY,
+                        nowX: 0,
+                        nowY: 0,
+                        distX: 0,
+                        distY: 0,
+                        dirAx: 0,
+                        dirX: 0,
+                        dirY: 0,
                         lastDirX: 0,
                         lastDirY: 0,
-                        distAxX:  0,
-                        distAxY:  0
+                        distAxX: 0,
+                        distAxY: 0
                     };
 
                     return ElementPosition;
@@ -185,7 +185,7 @@ angular.module('ntt.TreeDnD')
 
                     // do nothing on first move
                     if (firstMoving) {
-                        pos.dirAx  = newAx;
+                        pos.dirAx = newAx;
                         pos.moving = true;
 
                         return; // jmp out
@@ -293,7 +293,7 @@ angular.module('ntt.TreeDnD')
                 closestByAttr: function fnClosestByAttr(element, attr) {
                     if (element && attr) {
                         var $element = angular.element(element),
-                            $parent  = $element.parent();
+                            $parent = $element.parent();
 
                         if ($parent) {
                             var isPassed = false;

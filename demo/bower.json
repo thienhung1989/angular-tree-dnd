@@ -1,5 +1,5 @@
 {
-    "name": "angular-tree-dnd",
+    "name": "angular-tree-dnd-demo",
     "version": "3.0.12",
     "authors": [
         "Nguyễn Thiện Hùng"
@@ -45,6 +45,12 @@
         "src"
     ],
     "dependencies": {
-        "angular": ">=1.2"
+        "angular": ">=1.2",
+        "angular-mocks": ">=1.2",
+        "angular-route": ">=1.2",
+        "angular-animate": ">=1.2",
+        "angular-bootstrap": "*",
+        "bootstrap-css": "^3.3",
+        "angularjs-toaster": "*"
     }
 }

@@ -6,23 +6,23 @@ fnInitTreeDnDViewport.$inject = ['$window', '$document', '$timeout', '$q', '$com
 function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
 
     var viewport,
-        isUpdating    = false,
-        isRender      = false,
-        updateAgain   = false,
+        isUpdating = false,
+        isRender = false,
+        updateAgain = false,
         viewportRect,
-        items         = [],
+        items = [],
         nodeTemplate,
         updateTimeout,
         renderTime,
         $initViewport = {
-            setViewport:   setViewport,
-            getViewport:   getViewport,
-            add:           add,
-            setTemplate:   setTemplate,
-            getItems:      getItems,
+            setViewport: setViewport,
+            getViewport: getViewport,
+            add: add,
+            setTemplate: setTemplate,
+            getItems: getItems,
             updateDelayed: updateDelayed
         },
-        eWindow       = angular.element($window);
+        eWindow = angular.element($window);
 
     eWindow.on('load resize scroll', updateDelayed);
 
@@ -31,10 +31,10 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
     function update() {
 
         viewportRect = {
-            width:  eWindow.prop('offsetWidth') || document.documentElement.clientWidth,
+            width: eWindow.prop('offsetWidth') || document.documentElement.clientWidth,
             height: eWindow.prop('offsetHeight') || document.documentElement.clientHeight,
-            top:    $document[0].body.scrollTop || $document[0].documentElement.scrollTop,
-            left:   $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft
+            top: $document[0].body.scrollTop || $document[0].documentElement.scrollTop,
+            left: $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft
         };
 
         if (isUpdating || isRender) {
@@ -58,7 +58,7 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
         if (number > 0) {
             item = items[0];
 
-            isRender   = true;
+            isRender = true;
             renderTime = $timeout(function () {
                 //item.element.html(nodeTemplate);
                 //$compile(item.element.contents())(item.scope);
@@ -141,7 +141,7 @@ function fnInitTreeDnDViewport($window, $document, $timeout, $q, $compile) {
 
         items.push({
             element: element,
-            scope:   scope
+            scope: scope
         });
     }
 

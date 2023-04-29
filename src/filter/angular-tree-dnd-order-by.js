@@ -8,7 +8,7 @@ angular.module('ntt.TreeDnD')
     .factory('$TreeDnDOrderBy', [
         '$filter',
         function ($filter) {
-            var _fnOrderBy          = $filter('orderBy'),
+            var _fnOrderBy = $filter('orderBy'),
                 /**
                  * Foreach all descendants
                  *
@@ -25,7 +25,7 @@ angular.module('ntt.TreeDnD')
 
                     if (angular.isDefined(node[name])) {
                         _nodes = node[name];
-                        _len   = _nodes.length;
+                        _len = _nodes.length;
                         // OrderBy children
                         for (_i = 0; _i < _len; _i++) {
                             _nodes[_i] = for_all_descendants(options, _nodes[_i], name, fnOrderBy);
@@ -44,7 +44,7 @@ angular.module('ntt.TreeDnD')
                  * @returns {Node[]}
                  * @private
                  */
-                _fnOrder            = function _fnOrder(list, orderBy) {
+                _fnOrder = function _fnOrder(list, orderBy) {
                     return _fnOrderBy(list, orderBy);
                 },
 
@@ -57,7 +57,7 @@ angular.module('ntt.TreeDnD')
                  * @returns {Node[]}
                  * @callback fnInitTreeOrderBy
                  */
-                fnInitTreeOrderBy   = function fnInitTreeOrderBy(treeData, orderBy) {
+                fnInitTreeOrderBy = function fnInitTreeOrderBy(treeData, orderBy) {
                     if (!angular.isArray(treeData)
                         || treeData.length === 0
                         || !(angular.isArray(orderBy) || typeof orderBy === 'object' || angular.isString(orderBy) || angular.isFunction(orderBy))

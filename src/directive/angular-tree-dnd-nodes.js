@@ -1,10 +1,10 @@
 angular.module('ntt.TreeDnD')
     .directive('treeDndNodes', function () {
         return {
-            restrict:   'A',
-            replace:    true,
+            restrict: 'A',
+            replace: true,
             controller: 'treeDndNodesController',
-            link:       fnLink
+            link: fnLink
         };
 
         function fnLink(scope, element/*, attrs*/) {

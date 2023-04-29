@@ -1,6 +1,10 @@
+## v3.0.12
+- Fixed:
+    + Remove lib no use for dev.
+    + Convert to using webpack framework.
+
 ## v3.0.11
 * Fixed:
-    * Upgrade version: v3.0.11.
     * Remove lib no use for dev.
 
 ## v3.0.10
